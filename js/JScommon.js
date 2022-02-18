@@ -181,7 +181,7 @@ function GetKeyboardMask() {
 	if (!c && a && !s)
 		ret = KMask.alt;
 	return ret;
-};
+}
 // }}
 // {{
 // Used in window.GetColorCUI()
@@ -233,9 +233,9 @@ function StringFormat() {
 			break;
 		default:
 			return 0;
-	};
+	}
 	return ((h_align << 28) | (v_align << 24) | (trimming << 20) | flags);
-};
+}
 StringAlignment = {
 	Near: 0,
 	Centre: 1,
@@ -265,32 +265,32 @@ AlbumArtId = {
 // Used everywhere!
 function RGB(r, g, b) {
 	return (0xff000000 | (r << 16) | (g << 8) | (b));
-};
+}
 function RGBA(r, g, b, a) {
 	return ((a << 24) | (r << 16) | (g << 8) | (b));
-};
+}
 function getAlpha(color) {
 	return ((color >> 24) & 0xff);
-};
+}
 
 function getRed(color) {
 	return ((color >> 16) & 0xff);
-};
+}
 
 function getGreen(color) {
 	return ((color >> 8) & 0xff);
-};
+}
 
 function getBlue(color) {
 	return (color & 0xff);
-};
+}
 
 function negative(colour) {
 	var R = getRed(colour);
 	var G = getGreen(colour);
 	var B = getBlue(colour);
 	return RGB(Math.abs(R - 255), Math.abs(G - 255), Math.abs(B - 255));
-};
+}
 
 function toRGB(d) { // convert back to RGB values
 	var d = d - 0xff000000;
@@ -298,7 +298,7 @@ function toRGB(d) { // convert back to RGB values
 	var g = d >> 8 & 0xFF;
 	var b = d & 0xFF;
 	return [r, g, b];
-};
+}
 
 function blendColors(c1, c2, factor) {
 	// When factor is 0, result is 100% color1, when factor is 1, result is 100% color2.
@@ -308,7 +308,7 @@ function blendColors(c1, c2, factor) {
 	var g = Math.round(c1[1] + factor * (c2[1] - c1[1]));
 	var b = Math.round(c1[2] + factor * (c2[2] - c1[2]));
 	return (0xff000000 | (r << 16) | (g << 8) | (b));
-};
+}
 
 function draw_glass_reflect(w, h) {
 	// Mask for glass effect
@@ -328,7 +328,7 @@ function draw_glass_reflect(w, h) {
 	var Mask = Mask_img.Resize(w, h);
 	glass_img.ApplyMask(Mask);
 	return glass_img;
-};
+}
 
 function drawBlurbox(w, h, bgcolor, boxcolor, radius, iteration) {
 	// Create a image which background is true transparent
@@ -345,7 +345,7 @@ function drawBlurbox(w, h, bgcolor, boxcolor, radius, iteration) {
 	gb.DrawImage(g_blurbox, 0, -10, w + 40, h + 40, 0, 0, w + 40, h + 40, 0, 255);
 	g_blurbox_main.ReleaseGraphics(gb);
 	return g_blurbox_main;
-};
+}
 
 function num(strg, nb) {
 	if (!strg) return "";
@@ -355,10 +355,10 @@ function num(strg, nb) {
 	if (k > 0) {
 		for (i = 0; i < k; i++) {
 			str = "0" + str;
-		};
-	};
+		}
+	}
 	return str.toString();
-};
+}
 //Time formatting secondes -> 0:00
 function TimeFromSeconds(t) {
 	var zpad = function (n) {
@@ -373,7 +373,7 @@ function TimeFromSeconds(t) {
 	if (h > 0)
 		return h.toString() + ":" + zpad(m) + ":" + zpad(s);
 	return m.toString() + ":" + zpad(s);
-};
+}
 function TrackType(trkpath) {
 	var taggable;
 	var type;
@@ -405,15 +405,15 @@ function TrackType(trkpath) {
 		default:
 			taggable = 0;
 			type = 5;
-	};
+	}
 	return type;
-};
+}
 function replaceAll(str, search, repl) {
 	while (str.indexOf(search) != -1) {
 		str = str.replace(search, repl);
-	};
+	}
 	return str;
-};
+}
 function removeAccents(str) {
 	/*
 	var norm = new Array('À','Á','Â','Ã','Ä','Å','Æ','Ç','È','É','Ê','Ë',
@@ -427,7 +427,7 @@ function removeAccents(str) {
 	};
 	*/
 	return str;
-};
+}
 //}}
 
 //=================================================// Button object
@@ -465,7 +465,7 @@ button = function (normal, hover, down) {
 						this.state = this.ishover ? ButtonStates.down : ButtonStates.normal;
 						this.isdown = true;
 						break;
-				};
+				}
 				break;
 			case "up":
 				this.state = this.ishover ? ButtonStates.hover : ButtonStates.normal;
@@ -480,12 +480,12 @@ button = function (normal, hover, down) {
 					case ButtonStates.hover:
 						this.state = this.ishover ? ButtonStates.hover : ButtonStates.normal;
 						break;
-				};
+				}
 				break;
 			case "leave":
 				this.state = this.isdown ? ButtonStates.down : ButtonStates.normal;
 				break;
-		};
+		}
 		if (this.state != this.old)
 			this.repaint();
 		return this.state;
@@ -517,7 +517,7 @@ function decode_colour(opt_colour, resultype) {
 					XYZ_colour.S = 0;
 					XYZ_colour.L = 0;
 					XYZ_colour.RGBcolour = RGB(0, 0, 0)
-			};
+			}
 			return XYZ_colour;
 			break;
 		default:
@@ -531,10 +531,10 @@ function decode_colour(opt_colour, resultype) {
 					R_read = 0;
 					G_read = 0;
 					B_read = 0
-			};
+			}
 			return RGB(R_read, G_read, B_read);
-	};
-};
+	}
+}
 
 function HSL2RGB(zH, zS, zL, result) {
 	var L = zL / 100;
@@ -560,7 +560,7 @@ function HSL2RGB(zH, zS, zL, result) {
 		R = 255 * Hue2RGB(var_1, var_2, H + (1 / 3));
 		G = 255 * Hue2RGB(var_1, var_2, H);
 		B = 255 * Hue2RGB(var_1, var_2, H - (1 / 3));
-	};
+	}
 	switch (result) {
 		case "R":
 			return Math.round(R);
@@ -573,8 +573,8 @@ function HSL2RGB(zH, zS, zL, result) {
 			break;
 		default:
 			return RGB(Math.round(R), Math.round(G), Math.round(B));
-	};
-};
+	}
+}
 
 function Hue2RGB(v1, v2, vH) {
 	if (vH < 0)
@@ -588,7 +588,7 @@ function Hue2RGB(v1, v2, vH) {
 	if ((3 * vH) < 2)
 		return (v1 + (v2 - v1) * ((2 / 3) - vH) * 6);
 	return (v1);
-};
+}
 
 function RGB2HSL(RGB_colour) {
 	var R = (getRed(RGB_colour) / 255);
@@ -631,13 +631,13 @@ function RGB2HSL(RGB_colour) {
 			H += 1;
 		if (H > 1)
 			H -= 1;
-	};
+	}
 	HSL_colour.RGB = RGB_colour;
 	HSL_colour.H = Math.round(H * 100);
 	HSL_colour.S = Math.round(S * 100);
 	HSL_colour.L = Math.round(L * 100);
 	return HSL_colour;
-};
+}
 
 function DrawColoredText(gr, text, font, default_color, x, y, w, h, alignment, force_default_color) {
 	var txt = "",
@@ -658,7 +658,7 @@ function DrawColoredText(gr, text, font, default_color, x, y, w, h, alignment, f
 				var full_lg = gr.CalcTextWidth(tab[0], font);
 				for (var m = i; m < fin; m += 2) {
 					full_lg += gr.CalcTextWidth(tab[m + 1], font);
-				};
+				}
 				if (full_lg > w)
 					full_lg = w;
 				var delta_align = ((w - full_lg) / 2);
@@ -667,14 +667,14 @@ function DrawColoredText(gr, text, font, default_color, x, y, w, h, alignment, f
 				var full_lg = gr.CalcTextWidth(tab[0], font);
 				for (var m = i; m < fin; m += 2) {
 					full_lg += gr.CalcTextWidth(tab[m + 1], font);
-				};
+				}
 				if (full_lg > w)
 					full_lg = w;
 				var delta_align = (w - full_lg);
 				break;
 			default:
 				var delta_align = 0;
-		};
+		}
 
 		// if first part is default color
 		if (pos > 0) {
@@ -682,23 +682,23 @@ function DrawColoredText(gr, text, font, default_color, x, y, w, h, alignment, f
 			lg = gr.CalcTextWidth(txt, font);
 			gr.GdiDrawText(txt, font, color, x + delta_align + z, y, w - z, h, DT_LEFT | DT_CALCRECT | DT_VCENTER | DT_END_ELLIPSIS | DT_NOPREFIX);
 			z += lg;
-		};
+		}
 
 		// draw all other colored parts
 		while (i < fin && z < w) {
 			if (!force_default_color) {
 				tmp = tab[i];
 				color = eval("0xFF" + tmp.substr(4, 2) + tmp.substr(2, 2) + tmp.substr(0, 2));
-			};
+			}
 			//color = RGB(parseInt(tmp.substr(0,2),16), parseInt(tmp.substr(2,2),16), parseInt(tmp.substr(4,2),16));
 			txt = tab[i + 1];
 			lg = gr.CalcTextWidth(txt, font);
 			gr.GdiDrawText(txt, font, color, x + delta_align + z, y, w - z, h, DT_LEFT | DT_CALCRECT | DT_VCENTER | DT_END_ELLIPSIS | DT_NOPREFIX);
 			z += lg;
 			i += 2;
-		};
-	};
-};
+		}
+	}
+}
 
 function DrawPolyStar(gr, x, y, out_radius, in_radius, points, line_thickness, line_color, fill_color, angle, opacity) {
 	// ---------------------
@@ -716,7 +716,7 @@ function DrawPolyStar(gr, x, y, out_radius, in_radius, points, line_thickness, l
 		var y_point = Math.ceil(r * Math.sin(Math.PI * i / points * 2 - Math.PI / 2));
 		point_arr.push(x_point + out_radius / 2);
 		point_arr.push(y_point + out_radius / 2);
-	};
+	}
 
 	//---> Crate poligon image
 	var img = gdi.CreateImage(out_radius, out_radius);
@@ -729,28 +729,28 @@ function DrawPolyStar(gr, x, y, out_radius, in_radius, points, line_thickness, l
 
 	//---> Draw image
 	gr.DrawImage(img, x, y, out_radius, out_radius, 0, 0, out_radius, out_radius, angle, opacity);
-};
+}
 
 function zoom(value, factor) {
 	return Math.ceil(value * factor / 100);
-};
+}
 
 function get_system_scrollbar_width() {
 	var tmp = utils.GetSystemMetrics(SM_CXVSCROLL);
 	return tmp;
-};
+}
 
 function get_system_scrollbar_height() {
 	var tmp = utils.GetSystemMetrics(SM_CYHSCROLL);
 	return tmp;
-};
+}
 
 String.prototype.repeat = function (num) {
 	if (num >= 0 && num <= 5) {
 		var g = Math.round(num);
 	} else {
 		return "";
-	};
+	}
 	return new Array(g + 1).join(this);
 };
 
@@ -761,23 +761,23 @@ function cloneObject(obj) {
 			clone[i] = cloneObject(obj[i]);
 		else
 			clone[i] = obj[i];
-	};
+	}
 	return clone;
-};
+}
 
 function compareObject(o1, o2) {
 	for (var p in o1) {
 		if (o1[p] != o2[p]) {
 			return false;
-		};
-	};
+		}
+	}
 	for (var p in o2) {
 		if (o1[p] != o2[p]) {
 			return false;
-		};
-	};
+		}
+	}
 	return true;
-};
+}
 
 function getTimestamp() {
 	var d,
@@ -799,7 +799,7 @@ function getTimestamp() {
 		s3 = "0" + s3;
 	timestamp = s1 + ((s2 < 10) ? "-0" : "-") + s2 + ((s3 < 10) ? "-0" : "-") + s3 + ((hh < 10) ? " 0" : " ") + hh + ((min < 10) ? ":0" : ":") + min + ((sec < 10) ? ":0" : ":") + sec;
 	return timestamp;
-};
+}
 
 function Utf8Encode(string) {
 	string = string.replace(/\r\n/g, "\n");
@@ -815,10 +815,10 @@ function Utf8Encode(string) {
 			utftext += String.fromCharCode((c >> 12) | 224);
 			utftext += String.fromCharCode(((c >> 6) & 63) | 128);
 			utftext += String.fromCharCode((c & 63) | 128);
-		};
-	};
+		}
+	}
 	return utftext;
-};
+}
 
 function crc32(str) {
 	//  discuss at: http://phpjs.org/functions/crc32/
@@ -841,10 +841,10 @@ function crc32(str) {
 		y = (crc ^ str.charCodeAt(i)) & 0xFF;
 		x = '0x' + table.substr(y * 9, 8);
 		crc = (crc >>> 8) ^ x;
-	};
+	}
 
 	return crc ^ (-1);
-};
+}
 
 // --- UIHacks
 
@@ -884,7 +884,7 @@ WindowState = {
 function on_load() {
 	if (!fso.FolderExists(CACHE_FOLDER))
 		fso.CreateFolder(CACHE_FOLDER);
-};
+}
 
 function resize(source, crc) {
 	var img = gdi.Image(source);
@@ -906,20 +906,20 @@ function getpath_(temp) {
 		for (var j in path_) {
 			if (path_[j].toLowerCase().indexOf(".jpg") > -1 || path_[j].toLowerCase().indexOf(".png") > -1 || path_[j].toLowerCase().indexOf(".gif") > -1) {
 				return path_[j];
-			};
-		};
-	};
+			}
+		}
+	}
 	return null;
-};
+}
 
 function check_cache(metadb, albumIndex) {
 	//var crc = ppt.tf_crc.EvalWithMetadb(metadb);
 	var crc = brw.groups[albumIndex].cachekey;
 	if (fso.FileExists(CACHE_FOLDER + crc)) {
 		return crc;
-	};
+	}
 	return null;
-};
+}
 
 function load_image_from_cache(metadb, crc) {
 	if (fso.FileExists(CACHE_FOLDER + crc)) { // image in folder cache
@@ -927,8 +927,8 @@ function load_image_from_cache(metadb, crc) {
 		return tdi;
 	} else {
 		return -1;
-	};
-};
+	}
+}
 
 function process_cachekey(str) {
 	var str_return = "";
@@ -940,9 +940,9 @@ function process_cachekey(str) {
 			str_return += str.charAt(i);
 		if (charcode > 47 && charcode < 58)
 			str_return += str.charAt(i);
-	};
+	}
 	return str_return;
-};
+}
 
 // ===================================================== // Wallpaper
 function setWallpaperImg() {
@@ -963,7 +963,7 @@ function setWallpaperImg() {
 		return FormatWallpaper(tmp);
 	}
 	return tmp;
-};
+}
 
 function FormatWallpaper(img) {
 	if (!img || !ww || !wh)
@@ -979,10 +979,10 @@ function FormatWallpaper(img) {
 	if (ppt.wallpaperblurred) {
 		var blur_factor = ppt.wallpaperblurvalue; // [1-90]
 		tmp_img = draw_blurred_image(tmp_img, 0, 0, tmp_img.Width, tmp_img.Height, 0, 0, tmp_img.Width, tmp_img.Height, blur_factor, 0x00ffffff);
-	};
+	}
 
 	return tmp_img.CreateRawBitmap();
-};
+}
 
 function draw_blurred_image(image, ix, iy, iw, ih, bx, by, bw, bh, blur_value, overlay_color) {
 	var blurValue = blur_value;
@@ -1006,23 +1006,23 @@ function draw_blurred_image(image, ix, iy, iw, ih, bx, by, bw, bh, blur_value, o
 	if (ix != bx || iy != by || iw != bw || ih != bh) {
 		gb.DrawImage(image, ix, iy, iw, ih, 0, 0, image.Width, image.Height, 0, 255);
 		gb.FillSolidRect(bx, by, bw, bh, 0xffffffff);
-	};
+	}
 	gb.DrawImage(bbox, bx, by, bw, bh, 0, 0, bbox.Width, bbox.Height, 0, 255);
 
 	// overlay
 	if (overlay_color != null) {
 		gb.FillSolidRect(bx, by, bw, bh, overlay_color);
-	};
+	}
 
 	// top border of blur area
 	if (ix != bx || iy != by || iw != bw || ih != bh) {
 		gb.FillSolidRect(bx, by, bw, 1, 0x22ffffff);
 		gb.FillSolidRect(bx, by - 1, bw, 1, 0x22000000);
-	};
+	}
 	newImg.ReleaseGraphics(gb);
 
 	return newImg;
-};
+}
 
 //=================================================// Custom functions
 function match(input, str) {
@@ -1031,9 +1031,9 @@ function match(input, str) {
 	for (var j in str) {
 		if (input.indexOf(str[j]) < 0)
 			return false;
-	};
+	}
 	return true;
-};
+}
 
 function process_string(str) {
 	str_ = [];
@@ -1044,6 +1044,6 @@ function process_string(str) {
 	for (var i in str) {
 		if (str[i] != "")
 			str_[str_.length] = str[i];
-	};
+	}
 	return str_;
-};
+}

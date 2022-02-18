@@ -8,10 +8,9 @@
         "ecmaVersion": "latest",
         "sourceType": "module"
     },
-    "plugins": [
-        "@typescript-eslint"
-    ],
     "rules": {
-        "no-invalid-this": 2
+        // "no-invalid-this": 2,
+        "no-extra-semi": "error",
+        "no-extra-boolean-cast": "error"
     }
 }

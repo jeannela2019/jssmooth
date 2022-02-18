@@ -3,4 +3,5 @@ dist
 *.bak
 .idea
 .vs
+/*.log
 

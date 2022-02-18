@@ -160,7 +160,7 @@ oInputbox = function (w, h, default_text, empty_text, textcolor, backcolor, bord
 		if (!is_focused && this.edit) {
 			if (this.text.length == 0) {
 				this.text = this.default_text;
-			};
+			}
 			this.edit = false;
 			// clear timer
 			if (cInputbox.timer_cursor) {
@@ -302,7 +302,7 @@ oInputbox = function (w, h, default_text, empty_text, textcolor, backcolor, bord
 					this.repaint();
 				}
 				break;
-		};
+		}
 	};
 
 	this.show_context_menu = function (x, y) {
@@ -369,7 +369,7 @@ oInputbox = function (w, h, default_text, empty_text, textcolor, backcolor, bord
 						this.CalcText();
 						this.repaint();
 					}
-				};
+				}
 				break;
 			case 20:
 				window.ShowProperties();
@@ -553,7 +553,7 @@ oInputbox = function (w, h, default_text, empty_text, textcolor, backcolor, bord
 							}
 							this.repaint();
 						}
-					};
+					}
 					if (vkey == VK_END) { // SHIFT + END
 						if (this.edit) {
 							if (!this.select) {
@@ -584,7 +584,7 @@ oInputbox = function (w, h, default_text, empty_text, textcolor, backcolor, bord
 
 							this.repaint();
 						}
-					};
+					}
 					if (vkey == VK_LEFT) { // SHIFT + KEY LEFT
 						if (this.edit) {
 							if (!this.select) {
@@ -615,7 +615,7 @@ oInputbox = function (w, h, default_text, empty_text, textcolor, backcolor, bord
 							}
 							this.repaint();
 						}
-					};
+					}
 					if (vkey == VK_RIGHT) { // SHIFT + KEY RIGHT
 						if (this.edit) {
 							if (!this.select) {
@@ -644,7 +644,7 @@ oInputbox = function (w, h, default_text, empty_text, textcolor, backcolor, bord
 							}
 							this.repaint();
 						}
-					};
+					}
 					break;
 				case KMask.ctrl:
 					if (vkey == 65) { // CTRL+A
@@ -655,12 +655,12 @@ oInputbox = function (w, h, default_text, empty_text, textcolor, backcolor, bord
 							this.select = true;
 							this.repaint();
 						}
-					};
+					}
 					if (vkey == 67) { // CTRL+C
 						if (this.edit && this.select) {
 							cInputbox.doc.parentWindow.clipboardData.setData("Text", this.text_selected);
 						}
-					};
+					}
 					if (vkey == 88) { // CTRL+X
 						if (this.edit && this.select) {
 							//save text avant MAJ
@@ -677,13 +677,13 @@ oInputbox = function (w, h, default_text, empty_text, textcolor, backcolor, bord
 							this.CalcText();
 							this.repaint();
 						}
-					};
+					}
 					if (vkey == 90) { // CTRL+Z (annulation saisie)
 						if (this.edit) {
 							this.text = this.stext;
 							this.repaint();
 						}
-					};
+					}
 					if (vkey == 86) { // CTRL+V
 						cInputbox.clipboard = cInputbox.doc.parentWindow.clipboardData.getData("Text");
 						if (this.edit && cInputbox.clipboard) {
@@ -715,8 +715,8 @@ oInputbox = function (w, h, default_text, empty_text, textcolor, backcolor, bord
 								this.CalcText();
 								this.repaint();
 							}
-						};
-					};
+						}
+					}
 					break;
 			}
 		}
