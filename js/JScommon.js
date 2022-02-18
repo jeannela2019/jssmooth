@@ -220,19 +220,19 @@ FontTypeDUI = {
 // Used in gr.DrawString()
 function StringFormat() {
 	var h_align = 0,
-	v_align = 0,
-	trimming = 0,
-	flags = 0;
+		v_align = 0,
+		trimming = 0,
+		flags = 0;
 	switch (arguments.length) {
-	case 3:
-		trimming = arguments[2];
-	case 2:
-		v_align = arguments[1];
-	case 1:
-		h_align = arguments[0];
-		break;
-	default:
-		return 0;
+		case 3:
+			trimming = arguments[2];
+		case 2:
+			v_align = arguments[1];
+		case 1:
+			h_align = arguments[0];
+			break;
+		default:
+			return 0;
 	};
 	return ((h_align << 28) | (v_align << 24) | (trimming << 20) | flags);
 };
@@ -378,33 +378,33 @@ function TrackType(trkpath) {
 	var taggable;
 	var type;
 	switch (trkpath) {
-	case "file":
-		taggable = 1;
-		type = 0;
-		break;
-	case "cdda":
-		taggable = 1;
-		type = 1;
-		break;
-	case "FOO_":
-		taggable = 0;
-		type = 2;
-		break;
-	case "http":
-		taggable = 0;
-		type = 3;
-		break;
-	case "mms:":
-		taggable = 0;
-		type = 3;
-		break;
-	case "unpa":
-		taggable = 0;
-		type = 4;
-		break;
-	default:
-		taggable = 0;
-		type = 5;
+		case "file":
+			taggable = 1;
+			type = 0;
+			break;
+		case "cdda":
+			taggable = 1;
+			type = 1;
+			break;
+		case "FOO_":
+			taggable = 0;
+			type = 2;
+			break;
+		case "http":
+			taggable = 0;
+			type = 3;
+			break;
+		case "mms:":
+			taggable = 0;
+			type = 3;
+			break;
+		case "unpa":
+			taggable = 0;
+			type = 4;
+			break;
+		default:
+			taggable = 0;
+			type = 5;
 	};
 	return type;
 };
@@ -458,33 +458,33 @@ button = function (normal, hover, down) {
 		this.ishover = (x > this.x && x < this.x + this.w - 1 && y > this.y && y < this.y + this.h - 1);
 		this.old = this.state;
 		switch (event) {
-		case "down":
-			switch (this.state) {
-			case ButtonStates.normal:
-			case ButtonStates.hover:
-				this.state = this.ishover ? ButtonStates.down : ButtonStates.normal;
-				this.isdown = true;
+			case "down":
+				switch (this.state) {
+					case ButtonStates.normal:
+					case ButtonStates.hover:
+						this.state = this.ishover ? ButtonStates.down : ButtonStates.normal;
+						this.isdown = true;
+						break;
+				};
 				break;
-			};
-			break;
-		case "up":
-			this.state = this.ishover ? ButtonStates.hover : ButtonStates.normal;
-			this.isdown = false;
-			break;
-		case "right":
-
-			break;
-		case "move":
-			switch (this.state) {
-			case ButtonStates.normal:
-			case ButtonStates.hover:
+			case "up":
 				this.state = this.ishover ? ButtonStates.hover : ButtonStates.normal;
+				this.isdown = false;
 				break;
-			};
-			break;
-		case "leave":
-			this.state = this.isdown ? ButtonStates.down : ButtonStates.normal;
-			break;
+			case "right":
+
+				break;
+			case "move":
+				switch (this.state) {
+					case ButtonStates.normal:
+					case ButtonStates.hover:
+						this.state = this.ishover ? ButtonStates.hover : ButtonStates.normal;
+						break;
+				};
+				break;
+			case "leave":
+				this.state = this.isdown ? ButtonStates.down : ButtonStates.normal;
+				break;
 		};
 		if (this.state != this.old)
 			this.repaint();
@@ -501,38 +501,38 @@ function decode_colour(opt_colour, resultype) {
 		L: 0
 	};
 	var R_read,
-	G_read,
-	B_read;
+		G_read,
+		B_read;
 	switch (resultype) {
-	case 1:
-		switch (opt_colour.length) {
-		case 23:
-			XYZ_colour.H = Math.round(opt_colour.substring(0, 3));
-			XYZ_colour.S = Math.round(opt_colour.substring(4, 7));
-			XYZ_colour.L = Math.round(opt_colour.substring(8, 11));
-			XYZ_colour.RGBcolour = HSL2RGB(XYZ_colour.H, XYZ_colour.S, XYZ_colour.L, "RGB");
+		case 1:
+			switch (opt_colour.length) {
+				case 23:
+					XYZ_colour.H = Math.round(opt_colour.substring(0, 3));
+					XYZ_colour.S = Math.round(opt_colour.substring(4, 7));
+					XYZ_colour.L = Math.round(opt_colour.substring(8, 11));
+					XYZ_colour.RGBcolour = HSL2RGB(XYZ_colour.H, XYZ_colour.S, XYZ_colour.L, "RGB");
+					break;
+				default:
+					XYZ_colour.H = 0;
+					XYZ_colour.S = 0;
+					XYZ_colour.L = 0;
+					XYZ_colour.RGBcolour = RGB(0, 0, 0)
+			};
+			return XYZ_colour;
 			break;
 		default:
-			XYZ_colour.H = 0;
-			XYZ_colour.S = 0;
-			XYZ_colour.L = 0;
-			XYZ_colour.RGBcolour = RGB(0, 0, 0)
-		};
-		return XYZ_colour;
-		break;
-	default:
-		switch (opt_colour.length) {
-		case 23:
-			R_read = Math.round(opt_colour.substring(12, 15));
-			G_read = Math.round(opt_colour.substring(16, 19));
-			B_read = Math.round(opt_colour.substring(20, 23));
-			break;
-		default:
-			R_read = 0;
-			G_read = 0;
-			B_read = 0
-		};
-		return RGB(R_read, G_read, B_read);
+			switch (opt_colour.length) {
+				case 23:
+					R_read = Math.round(opt_colour.substring(12, 15));
+					G_read = Math.round(opt_colour.substring(16, 19));
+					B_read = Math.round(opt_colour.substring(20, 23));
+					break;
+				default:
+					R_read = 0;
+					G_read = 0;
+					B_read = 0
+			};
+			return RGB(R_read, G_read, B_read);
 	};
 };
 
@@ -541,10 +541,10 @@ function HSL2RGB(zH, zS, zL, result) {
 	var S = zS / 100;
 	var H = zH / 100;
 	var R,
-	G,
-	B,
-	var_1,
-	var_2;
+		G,
+		B,
+		var_1,
+		var_2;
 	if (S == 0) { //HSL from 0 to 1
 		R = L * 255; //RGB results from 0 to 255
 		G = L * 255;
@@ -562,17 +562,17 @@ function HSL2RGB(zH, zS, zL, result) {
 		B = 255 * Hue2RGB(var_1, var_2, H - (1 / 3));
 	};
 	switch (result) {
-	case "R":
-		return Math.round(R);
-		break;
-	case "G":
-		return Math.round(G);
-		break;
-	case "B":
-		return Math.round(B);
-		break;
-	default:
-		return RGB(Math.round(R), Math.round(G), Math.round(B));
+		case "R":
+			return Math.round(R);
+			break;
+		case "G":
+			return Math.round(G);
+			break;
+		case "B":
+			return Math.round(B);
+			break;
+		default:
+			return RGB(Math.round(R), Math.round(G), Math.round(B));
 	};
 };
 
@@ -641,11 +641,11 @@ function RGB2HSL(RGB_colour) {
 
 function DrawColoredText(gr, text, font, default_color, x, y, w, h, alignment, force_default_color) {
 	var txt = "",
-	color = default_color,
-	lg = 0,
-	i = 1,
-	z = 0,
-	tmp = "";
+		color = default_color,
+		lg = 0,
+		i = 1,
+		z = 0,
+		tmp = "";
 	var pos = text.indexOf(String.fromCharCode(3));
 	if (pos < 0) { // no specific color
 		gr.GdiDrawText(text, font, default_color, x, y, w, h, alignment | DT_CALCRECT | DT_VCENTER | DT_END_ELLIPSIS | DT_NOPREFIX);
@@ -654,26 +654,26 @@ function DrawColoredText(gr, text, font, default_color, x, y, w, h, alignment, f
 		var fin = tab.length;
 
 		switch (alignment) {
-		case DT_CENTER:
-			var full_lg = gr.CalcTextWidth(tab[0], font);
-			for (var m = i; m < fin; m += 2) {
-				full_lg += gr.CalcTextWidth(tab[m + 1], font);
-			};
-			if (full_lg > w)
-				full_lg = w;
-			var delta_align = ((w - full_lg) / 2);
-			break;
-		case DT_RIGHT:
-			var full_lg = gr.CalcTextWidth(tab[0], font);
-			for (var m = i; m < fin; m += 2) {
-				full_lg += gr.CalcTextWidth(tab[m + 1], font);
-			};
-			if (full_lg > w)
-				full_lg = w;
-			var delta_align = (w - full_lg);
-			break;
-		default:
-			var delta_align = 0;
+			case DT_CENTER:
+				var full_lg = gr.CalcTextWidth(tab[0], font);
+				for (var m = i; m < fin; m += 2) {
+					full_lg += gr.CalcTextWidth(tab[m + 1], font);
+				};
+				if (full_lg > w)
+					full_lg = w;
+				var delta_align = ((w - full_lg) / 2);
+				break;
+			case DT_RIGHT:
+				var full_lg = gr.CalcTextWidth(tab[0], font);
+				for (var m = i; m < fin; m += 2) {
+					full_lg += gr.CalcTextWidth(tab[m + 1], font);
+				};
+				if (full_lg > w)
+					full_lg = w;
+				var delta_align = (w - full_lg);
+				break;
+			default:
+				var delta_align = 0;
 		};
 
 		// if first part is default color
@@ -757,7 +757,7 @@ String.prototype.repeat = function (num) {
 function cloneObject(obj) {
 	var clone = {};
 	for (var i in obj) {
-		if (typeof(obj[i]) == "object" && obj[i] != null)
+		if (typeof (obj[i]) == "object" && obj[i] != null)
 			clone[i] = cloneObject(obj[i]);
 		else
 			clone[i] = obj[i];
@@ -781,13 +781,13 @@ function compareObject(o1, o2) {
 
 function getTimestamp() {
 	var d,
-	s1,
-	s2,
-	s3,
-	hh,
-	min,
-	sec,
-	timestamp;
+		s1,
+		s2,
+		s3,
+		hh,
+		min,
+		sec,
+		timestamp;
 	d = new Date();
 	s1 = d.getFullYear();
 	s2 = (d.getMonth() + 1);
@@ -900,7 +900,7 @@ function resize(source, crc) {
 
 function getpath_(temp) {
 	var img_path = "",
-	path_;
+		path_;
 	for (var iii in cover_img) {
 		path_ = utils.Glob(temp + cover_img[iii], exc_mask = FILE_ATTRIBUTE_DIRECTORY, inc_mask = 0xffffffff);
 		for (var j in path_) {

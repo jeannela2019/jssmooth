@@ -1,7 +1,8 @@
 var need_repaint = false;
+const imagePath = smoothPath + "images\\"
 
 images = {
-	path: fb.ComponentPath + "samples\\js-smooth\\images\\",
+	path: imagePath,
 	glass_reflect: null,
 	loading_angle: 0,
 	loading_draw: null,
@@ -3282,7 +3283,7 @@ function get_metrics() {
 	} else {
 		ppt.headerBarHeight = 0;
 	};
-	cScrollBar.width = Math.floor(cScrollBar.defaultWidth * g_zoom_percent / 100);
+	// cScrollBar.width = Math.floor(cScrollBar.defaultWidth * g_zoom_percent / 100);
 	cScrollBar.minCursorHeight = Math.round(cScrollBar.defaultMinCursorHeight * g_zoom_percent / 100);
 
 	cFilterBox.w = Math.floor(cFilterBox.default_w * g_zoom_percent / 100);

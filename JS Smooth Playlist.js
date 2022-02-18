@@ -1,8 +1,9 @@
-window.DefinePanel("JS Smooth Playlist", { author : "Br3tt aka Falstaff", features : { drag_n_drop : true }});
-include(fb.ComponentPath + "samples\\js-smooth\\js\\JScommon.js");
-include(fb.ComponentPath + "samples\\js-smooth\\js\\JSinputbox.js");
-include(fb.ComponentPath + "samples\\js-smooth\\js\\jssp.js");
+const smoothPath = `${fb.ProfilePath}packages\\jssmooth\\`;
 
+window.DefinePanel("JS Smooth Browser", { author: "origin by Br3tt aka Falstaff" });
+include(smoothPath + "js\\JScommon.js");
+include(smoothPath + "js\\JSinputbox.js");
+include(smoothPath + "js\\jssp.js");
 /*
 [Features]
  * Groups (collpase or expand, add extra lines, ...)

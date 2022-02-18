@@ -86,7 +86,7 @@ cScrollBar = {
 };
 
 images = {
-	path: fb.ComponentPath + "samples\\js-smooth\\images\\"
+	path: smoothPath + "images\\",
 };
 
 blink = {
@@ -232,40 +232,40 @@ oFilterBox = function () {
 
 	this.on_mouse = function (event, x, y, delta) {
 		switch (event) {
-		case "lbtn_down":
-			this.inputbox.check("down", x, y);
-			if (this.inputbox.text.length > 0)
-				this.reset_bt.checkstate("down", x, y);
-			break;
-		case "lbtn_up":
-			this.inputbox.check("up", x, y);
-			if (this.inputbox.text.length > 0) {
-				if (this.reset_bt.checkstate("up", x, y) == ButtonStates.hover) {
-					this.inputbox.text = "";
-					this.inputbox.offset = 0;
-					g_sendResponse();
+			case "lbtn_down":
+				this.inputbox.check("down", x, y);
+				if (this.inputbox.text.length > 0)
+					this.reset_bt.checkstate("down", x, y);
+				break;
+			case "lbtn_up":
+				this.inputbox.check("up", x, y);
+				if (this.inputbox.text.length > 0) {
+					if (this.reset_bt.checkstate("up", x, y) == ButtonStates.hover) {
+						this.inputbox.text = "";
+						this.inputbox.offset = 0;
+						g_sendResponse();
+					};
 				};
-			};
-			break;
-		case "lbtn_dblclk":
-			this.inputbox.check("dblclk", x, y);
-			break;
-		case "rbtn_up":
-			this.inputbox.check("right", x, y);
-			break;
-		case "move":
-			this.inputbox.check("move", x, y);
-			if (this.inputbox.text.length > 0)
-				this.reset_bt.checkstate("move", x, y);
-			break;
+				break;
+			case "lbtn_dblclk":
+				this.inputbox.check("dblclk", x, y);
+				break;
+			case "rbtn_up":
+				this.inputbox.check("right", x, y);
+				break;
+			case "move":
+				this.inputbox.check("move", x, y);
+				if (this.inputbox.text.length > 0)
+					this.reset_bt.checkstate("move", x, y);
+				break;
 		};
 	};
 
 	this.on_key = function (event, vkey) {
 		switch (event) {
-		case "down":
-			this.inputbox.on_key_down(vkey);
-			break;
+			case "down":
+				this.inputbox.on_key_down(vkey);
+				break;
 		};
 	};
 
@@ -416,15 +416,15 @@ oScrollbar = function (themed) {
 
 		for (i = 1; i < this.buttons.length; i++) {
 			switch (i) {
-			case this.buttonType.cursor:
-				this.buttons[this.buttonType.cursor] = new button(this.cursorImage_normal, this.cursorImage_hover, this.cursorImage_down);
-				break;
-			case this.buttonType.up:
-				this.buttons[this.buttonType.up] = new button(this.upImage_normal.Resize(this.w, this.w, 2), this.upImage_hover.Resize(this.w, this.w, 2), this.upImage_down.Resize(this.w, this.w, 2));
-				break;
-			case this.buttonType.down:
-				this.buttons[this.buttonType.down] = new button(this.downImage_normal.Resize(this.w, this.w, 2), this.downImage_hover.Resize(this.w, this.w, 2), this.downImage_down.Resize(this.w, this.w, 2));
-				break;
+				case this.buttonType.cursor:
+					this.buttons[this.buttonType.cursor] = new button(this.cursorImage_normal, this.cursorImage_hover, this.cursorImage_down);
+					break;
+				case this.buttonType.up:
+					this.buttons[this.buttonType.up] = new button(this.upImage_normal.Resize(this.w, this.w, 2), this.upImage_hover.Resize(this.w, this.w, 2), this.upImage_down.Resize(this.w, this.w, 2));
+					break;
+				case this.buttonType.down:
+					this.buttons[this.buttonType.down] = new button(this.downImage_normal.Resize(this.w, this.w, 2), this.downImage_hover.Resize(this.w, this.w, 2), this.downImage_down.Resize(this.w, this.w, 2));
+					break;
 			};
 		};
 	};
@@ -578,42 +578,42 @@ oScrollbar = function (themed) {
 		if (!this.buttons[this.buttonType.cursor])
 			return;
 		switch (event) {
-		case "down":
-			var tmp = this.buttons[this.buttonType.cursor].checkstate(event, x, y);
-			if (tmp == ButtonStates.down) {
-				this.cursorClickX = x;
-				this.cursorClickY = y;
-				this.cursorDrag = true;
-				this.cursorDragDelta = y - this.cursory;
-			};
-			break;
-		case "up":
-			this.buttons[this.buttonType.cursor].checkstate(event, x, y);
-			if (this.cursorDrag) {
-				this.setScrollFromCursorPos();
-				brw.repaint();
-			};
-			this.cursorClickX = 0;
-			this.cursorClickY = 0;
-			this.cursorDrag = false;
-			break;
-		case "move":
-			this.buttons[this.buttonType.cursor].checkstate(event, x, y);
-			if (this.cursorDrag) {
-				this.cursory = y - this.cursorDragDelta;
-				if (this.cursory + this.cursorh > this.areay + this.areah) {
-					this.cursory = (this.areay + this.areah) - this.cursorh;
+			case "down":
+				var tmp = this.buttons[this.buttonType.cursor].checkstate(event, x, y);
+				if (tmp == ButtonStates.down) {
+					this.cursorClickX = x;
+					this.cursorClickY = y;
+					this.cursorDrag = true;
+					this.cursorDragDelta = y - this.cursory;
 				};
-				if (this.cursory < this.areay) {
-					this.cursory = this.areay;
+				break;
+			case "up":
+				this.buttons[this.buttonType.cursor].checkstate(event, x, y);
+				if (this.cursorDrag) {
+					this.setScrollFromCursorPos();
+					brw.repaint();
 				};
-				this.setScrollFromCursorPos();
-				brw.repaint();
-			};
-			break;
-		case "leave":
-			this.buttons[this.buttonType.cursor].checkstate(event, 0, 0);
-			break;
+				this.cursorClickX = 0;
+				this.cursorClickY = 0;
+				this.cursorDrag = false;
+				break;
+			case "move":
+				this.buttons[this.buttonType.cursor].checkstate(event, x, y);
+				if (this.cursorDrag) {
+					this.cursory = y - this.cursorDragDelta;
+					if (this.cursory + this.cursorh > this.areay + this.areah) {
+						this.cursory = (this.areay + this.areah) - this.cursorh;
+					};
+					if (this.cursory < this.areay) {
+						this.cursory = this.areay;
+					};
+					this.setScrollFromCursorPos();
+					brw.repaint();
+				};
+				break;
+			case "leave":
+				this.buttons[this.buttonType.cursor].checkstate(event, 0, 0);
+				break;
 		};
 	};
 
@@ -640,62 +640,62 @@ oScrollbar = function (themed) {
 		var scroll_step_page = brw.h;
 
 		switch (event) {
-		case "down":
-		case "dblclk":
-			if ((this.isHoverCursor || this.cursorDrag) && !this.buttonClick && !this.isHoverEmptyArea) {
-				this.cursorCheck(event, x, y);
-			} else {
-				// buttons events
-				var bt_state = ButtonStates.normal;
-				for (var i = 1; i < 3; i++) {
-					switch (i) {
-					case 1: // up button
-						bt_state = this.buttons[i].checkstate(event, x, y);
-						if ((event == "down" && bt_state == ButtonStates.down) || (event == "dblclk" && bt_state == ButtonStates.hover)) {
-							this.buttonClick = true;
-							scroll = scroll - scroll_step;
-							scroll = check_scroll(scroll);
-							if (!cScrollBar.timerID) {
-								cScrollBar.timerID = window.SetInterval(function () {
-										if (cScrollBar.timerCounter > 6) {
-											scroll = scroll - scroll_step;
-											scroll = check_scroll(scroll);
-										} else {
-											cScrollBar.timerCounter++;
-										};
-									}, 80);
-							};
+			case "down":
+			case "dblclk":
+				if ((this.isHoverCursor || this.cursorDrag) && !this.buttonClick && !this.isHoverEmptyArea) {
+					this.cursorCheck(event, x, y);
+				} else {
+					// buttons events
+					var bt_state = ButtonStates.normal;
+					for (var i = 1; i < 3; i++) {
+						switch (i) {
+							case 1: // up button
+								bt_state = this.buttons[i].checkstate(event, x, y);
+								if ((event == "down" && bt_state == ButtonStates.down) || (event == "dblclk" && bt_state == ButtonStates.hover)) {
+									this.buttonClick = true;
+									scroll = scroll - scroll_step;
+									scroll = check_scroll(scroll);
+									if (!cScrollBar.timerID) {
+										cScrollBar.timerID = window.SetInterval(function () {
+											if (cScrollBar.timerCounter > 6) {
+												scroll = scroll - scroll_step;
+												scroll = check_scroll(scroll);
+											} else {
+												cScrollBar.timerCounter++;
+											};
+										}, 80);
+									};
+								};
+								break;
+							case 2: // down button
+								bt_state = this.buttons[i].checkstate(event, x, y);
+								if ((event == "down" && bt_state == ButtonStates.down) || (event == "dblclk" && bt_state == ButtonStates.hover)) {
+									this.buttonClick = true;
+									scroll = scroll + scroll_step;
+									scroll = check_scroll(scroll);
+									if (!cScrollBar.timerID) {
+										cScrollBar.timerID = window.SetInterval(function () {
+											if (cScrollBar.timerCounter > 6) {
+												scroll = scroll + scroll_step;
+												scroll = check_scroll(scroll);
+											} else {
+												cScrollBar.timerCounter++;
+											};
+										}, 80);
+									};
+								};
+								break;
 						};
-						break;
-					case 2: // down button
-						bt_state = this.buttons[i].checkstate(event, x, y);
-						if ((event == "down" && bt_state == ButtonStates.down) || (event == "dblclk" && bt_state == ButtonStates.hover)) {
-							this.buttonClick = true;
-							scroll = scroll + scroll_step;
-							scroll = check_scroll(scroll);
-							if (!cScrollBar.timerID) {
-								cScrollBar.timerID = window.SetInterval(function () {
-										if (cScrollBar.timerCounter > 6) {
-											scroll = scroll + scroll_step;
-											scroll = check_scroll(scroll);
-										} else {
-											cScrollBar.timerCounter++;
-										};
-									}, 80);
-							};
-						};
-						break;
 					};
-				};
-				if (!this.buttonClick && this.isHoverEmptyArea) {
-					// check click on empty area scrollbar
-					if (y < this.cursory) {
-						// up
-						this.buttonClick = true;
-						scroll = scroll - scroll_step_page;
-						scroll = check_scroll(scroll);
-						if (!cScrollBar.timerID) {
-							cScrollBar.timerID = window.SetInterval(function () {
+					if (!this.buttonClick && this.isHoverEmptyArea) {
+						// check click on empty area scrollbar
+						if (y < this.cursory) {
+							// up
+							this.buttonClick = true;
+							scroll = scroll - scroll_step_page;
+							scroll = check_scroll(scroll);
+							if (!cScrollBar.timerID) {
+								cScrollBar.timerID = window.SetInterval(function () {
 									if (cScrollBar.timerCounter > 6 && m_y < brw.scrollbar.cursory) {
 										scroll = scroll - scroll_step_page;
 										scroll = check_scroll(scroll);
@@ -703,14 +703,14 @@ oScrollbar = function (themed) {
 										cScrollBar.timerCounter++;
 									};
 								}, 80);
-						};
-					} else {
-						// down
-						this.buttonClick = true;
-						scroll = scroll + scroll_step_page;
-						scroll = check_scroll(scroll);
-						if (!cScrollBar.timerID) {
-							cScrollBar.timerID = window.SetInterval(function () {
+							};
+						} else {
+							// down
+							this.buttonClick = true;
+							scroll = scroll + scroll_step_page;
+							scroll = check_scroll(scroll);
+							if (!cScrollBar.timerID) {
+								cScrollBar.timerID = window.SetInterval(function () {
 									if (cScrollBar.timerCounter > 6 && m_y > brw.scrollbar.cursory + brw.scrollbar.cursorh) {
 										scroll = scroll + scroll_step_page;
 										scroll = check_scroll(scroll);
@@ -718,42 +718,42 @@ oScrollbar = function (themed) {
 										cScrollBar.timerCounter++;
 									};
 								}, 80);
+							};
 						};
 					};
 				};
-			};
-			break;
-		case "right":
-		case "up":
-			if (cScrollBar.timerID) {
-				window.ClearInterval(cScrollBar.timerID);
-				cScrollBar.timerID = false;
-			};
-			cScrollBar.timerCounter = -1;
+				break;
+			case "right":
+			case "up":
+				if (cScrollBar.timerID) {
+					window.ClearInterval(cScrollBar.timerID);
+					cScrollBar.timerID = false;
+				};
+				cScrollBar.timerCounter = -1;
 
-			this.cursorCheck(event, x, y);
-			for (var i = 1; i < 3; i++) {
-				this.buttons[i].checkstate(event, x, y);
-			};
-			this.buttonClick = false;
-			break;
-		case "move":
-			this.cursorCheck(event, x, y);
-			for (var i = 1; i < 3; i++) {
-				this.buttons[i].checkstate(event, x, y);
-			};
-			break;
-		case "wheel":
-			if (!this.buttonClick) {
-				this.updateScrollbar();
-			};
-			break;
-		case "leave":
-			this.cursorCheck(event, 0, 0);
-			for (var i = 1; i < 3; i++) {
-				this.buttons[i].checkstate(event, 0, 0);
-			};
-			break;
+				this.cursorCheck(event, x, y);
+				for (var i = 1; i < 3; i++) {
+					this.buttons[i].checkstate(event, x, y);
+				};
+				this.buttonClick = false;
+				break;
+			case "move":
+				this.cursorCheck(event, x, y);
+				for (var i = 1; i < 3; i++) {
+					this.buttons[i].checkstate(event, x, y);
+				};
+				break;
+			case "wheel":
+				if (!this.buttonClick) {
+					this.updateScrollbar();
+				};
+				break;
+			case "leave":
+				this.cursorCheck(event, 0, 0);
+				for (var i = 1; i < 3; i++) {
+					this.buttons[i].checkstate(event, 0, 0);
+				};
+				break;
 		};
 	};
 };
@@ -771,10 +771,10 @@ oBrowser = function (name) {
 
 	this.launch_populate = function () {
 		var launch_timer = window.SetTimeout(function () {
-				brw.populate(true, true);
-				launch_timer && window.ClearTimeout(launch_timer);
-				launch_timer = false;
-			}, 5);
+			brw.populate(true, true);
+			launch_timer && window.ClearTimeout(launch_timer);
+			launch_timer = false;
+		}, 5);
 	};
 
 	this.repaint = function () {
@@ -915,178 +915,178 @@ oBrowser = function (name) {
 			cPlaylistManager.playlist_switch_pending = false;
 		};
 
-			if (this.rows.length > 0) {
+		if (this.rows.length > 0) {
 
-				var ax = this.marginLR;
-				var ay = 0;
-				var aw = this.w;
-				var ah = ppt.rowHeight;
-				var g = 0;
+			var ax = this.marginLR;
+			var ay = 0;
+			var aw = this.w;
+			var ah = ppt.rowHeight;
+			var g = 0;
 
-				for (var i = g_start_; i <= g_end_; i++) {
+			for (var i = g_start_; i <= g_end_; i++) {
 
-					ay = Math.floor(this.y + (i * ah) - scroll_);
-					this.rows[i].x = ax;
-					this.rows[i].y = ay;
+				ay = Math.floor(this.y + (i * ah) - scroll_);
+				this.rows[i].x = ax;
+				this.rows[i].y = ay;
 
-					if (ay > this.y - ppt.headerBarHeight - ah && ay < this.y + this.h) {
-						// =========
-						// row bg
-						// =========
-						var track_color_txt = g_color_normal_txt;
+				if (ay > this.y - ppt.headerBarHeight - ah && ay < this.y + this.h) {
+					// =========
+					// row bg
+					// =========
+					var track_color_txt = g_color_normal_txt;
 
-						// active playlist row bg
-						if (this.rows[i].idx == plman.ActivePlaylist) {
-							track_color_txt = (ppt.enableCustomColors ? g_color_selected_txt : g_color_normal_bg);
-							gr.FillSolidRect(ax, ay, aw, ah, g_color_selected_bg & 0xb0ffffff);
-							// default bg (odd/even)
-							if (i % 2 == 0) {
-								gr.FillSolidRect(ax, ay, aw, ah, RGBA(255, 255, 255, 5));
-							} else {
-								gr.FillSolidRect(ax, ay, aw, ah, RGBA(0, 0, 0, 5));
-							};
+					// active playlist row bg
+					if (this.rows[i].idx == plman.ActivePlaylist) {
+						track_color_txt = (ppt.enableCustomColors ? g_color_selected_txt : g_color_normal_bg);
+						gr.FillSolidRect(ax, ay, aw, ah, g_color_selected_bg & 0xb0ffffff);
+						// default bg (odd/even)
+						if (i % 2 == 0) {
+							gr.FillSolidRect(ax, ay, aw, ah, RGBA(255, 255, 255, 5));
 						} else {
-							if (fb.IsPlaying) {
-								var row_playing = this.getRowIdFromIdx(plman.PlayingPlaylist);
-								if (i == row_playing) {
-									track_color_txt = g_color_selected_bg;
-								};
-							};
-							// default bg (odd/even)
-							if (i % 2 != 0) {
-								gr.FillSolidRect(ax, ay, aw, ah, g_color_normal_txt & 0x05ffffff);
+							gr.FillSolidRect(ax, ay, aw, ah, RGBA(0, 0, 0, 5));
+						};
+					} else {
+						if (fb.IsPlaying) {
+							var row_playing = this.getRowIdFromIdx(plman.PlayingPlaylist);
+							if (i == row_playing) {
+								track_color_txt = g_color_selected_bg;
 							};
 						};
-
-						// hover item
-						if (i == this.selectedRow) {
-							gr.DrawRect(ax + 1, ay + 1, aw - 2, ah - 2, 2.0, g_color_selected_bg & 0xd0ffffff);
+						// default bg (odd/even)
+						if (i % 2 != 0) {
+							gr.FillSolidRect(ax, ay, aw, ah, g_color_normal_txt & 0x05ffffff);
 						};
+					};
 
-						// target location mark
-						if (cPlaylistManager.drag_target_id == i) {
-							if (cPlaylistManager.drag_target_id > cPlaylistManager.drag_source_id) {
-								gr.DrawRect(ax, ay + ppt.rowHeight - 2, aw - 1, 1, 2.0, g_color_selected_bg);
-							} else if (cPlaylistManager.drag_target_id < cPlaylistManager.drag_source_id) {
-								gr.DrawRect(ax, ay + 1, aw - 1, 1, 2.0, g_color_selected_bg);
-							};
+					// hover item
+					if (i == this.selectedRow) {
+						gr.DrawRect(ax + 1, ay + 1, aw - 2, ah - 2, 2.0, g_color_selected_bg & 0xd0ffffff);
+					};
+
+					// target location mark
+					if (cPlaylistManager.drag_target_id == i) {
+						if (cPlaylistManager.drag_target_id > cPlaylistManager.drag_source_id) {
+							gr.DrawRect(ax, ay + ppt.rowHeight - 2, aw - 1, 1, 2.0, g_color_selected_bg);
+						} else if (cPlaylistManager.drag_target_id < cPlaylistManager.drag_source_id) {
+							gr.DrawRect(ax, ay + 1, aw - 1, 1, 2.0, g_color_selected_bg);
 						};
+					};
 
-						if (g_dragndrop_status && i == g_dragndrop_targetPlaylistId && !this.rows[i].isAutoPlaylist) {
-							gr.DrawRect(ax + 1, ay + 1, aw - 2, ah - 2, 2.0, g_color_normal_txt & 0xa0ffffff);
-						};
+					if (g_dragndrop_status && i == g_dragndrop_targetPlaylistId && !this.rows[i].isAutoPlaylist) {
+						gr.DrawRect(ax + 1, ay + 1, aw - 2, ah - 2, 2.0, g_color_normal_txt & 0xa0ffffff);
+					};
 
-						// draw blink rectangle after an external drag'n drop files
-						if (blink.counter > -1) {
-							if (i == blink.id && !this.rows[i].isAutoPlaylist) {
-								if (blink.counter <= 5 && Math.floor(blink.counter / 2) == Math.ceil(blink.counter / 2)) {
-									gr.DrawRect(ax + 1, ay + 1, aw - 2, ah - 2, 2.0, g_color_selected_bg & 0xd0ffffff);
-								};
-							};
-						};
-
-						// =====
-						// text
-						// =====
-						if (ay >= (0 - ah) && ay < this.y + this.h) {
-
-							// playlist icon
-							var rh = ppt.rowHeight - 10;
-							if (fb.IsPlaying && this.rows[i].idx == plman.PlayingPlaylist) {
-								if (this.rows[i].idx == plman.ActivePlaylist) {
-									if (plman.IsAutoPlaylist(this.rows[i].idx)) {
-										gr.DrawImage(images.icon_auto_pl_playing_sel.Resize(rh, rh, 2), ax, ay + 5, rh, rh, 0, 0, rh, rh, 0, 255);
-									} else {
-										gr.DrawImage(images.icon_normal_pl_playing_sel.Resize(rh, rh, 2), ax, ay + 5, rh, rh, 0, 0, rh, rh, 0, 255);
-									};
-								} else {
-									if (plman.IsAutoPlaylist(this.rows[i].idx)) {
-										gr.DrawImage(images.icon_auto_pl_playing.Resize(rh, rh, 2), ax, ay + 5, rh, rh, 0, 0, rh, rh, 0, 255);
-									} else {
-										gr.DrawImage(images.icon_normal_pl_playing.Resize(rh, rh, 2), ax, ay + 5, rh, rh, 0, 0, rh, rh, 0, 255);
-									};
-								};
-							} else {
-								if (this.rows[i].idx == plman.ActivePlaylist) {
-									if (plman.IsAutoPlaylist(this.rows[i].idx)) {
-										gr.DrawImage(images.icon_auto_pl_sel.Resize(rh, rh, 2), ax, ay + 5, rh, rh, 0, 0, rh, rh, 0, 255);
-									} else {
-										gr.DrawImage(images.icon_normal_pl_sel.Resize(rh, rh, 2), ax, ay + 5, rh, rh, 0, 0, rh, rh, 0, 255);
-									};
-								} else {
-									if (plman.IsAutoPlaylist(this.rows[i].idx)) {
-										gr.DrawImage(images.icon_auto_pl.Resize(rh, rh, 2), ax, ay + 5, rh, rh, 0, 0, rh, rh, 0, 255);
-									} else {
-										gr.DrawImage(images.icon_normal_pl.Resize(rh, rh, 2), ax, ay + 5, rh, rh, 0, 0, rh, rh, 0, 255);
-									};
-								};
-							};
-
-							if (fb.IsPlaying && i == plman.PlayingPlaylist) {
-								var font = g_font_bold;
-							} else {
-								var font = g_font;
-							};
-
-							// fields
-							var track_name_part = this.rows[i].name;
-							var track_total_part = plman.PlaylistItemCount(this.rows[i].idx);
-
-							cColumns.track_name_part = gr.CalcTextWidth(track_name_part, font) + 15;
-							cColumns.track_total_part = gr.CalcTextWidth(track_total_part, font) + 15;
-
-							var tx = ax + rh;
-							var tw = aw - rh;
-
-							if (this.inputboxID == i) {
-								this.inputbox.draw(gr, tx + 2, ay + 5);
-							} else {
-								gr.GdiDrawText(track_name_part, font, track_color_txt, tx, ay, tw - cColumns.track_total_part - 5, ah, DT_LEFT | DT_VCENTER | DT_CALCRECT | DT_END_ELLIPSIS | DT_NOPREFIX);
-								gr.GdiDrawText(track_total_part, font, track_color_txt, tx + tw - cColumns.track_total_part - 5, ay, cColumns.track_total_part, ah, DT_RIGHT | DT_VCENTER | DT_CALCRECT | DT_END_ELLIPSIS | DT_NOPREFIX);
+					// draw blink rectangle after an external drag'n drop files
+					if (blink.counter > -1) {
+						if (i == blink.id && !this.rows[i].isAutoPlaylist) {
+							if (blink.counter <= 5 && Math.floor(blink.counter / 2) == Math.ceil(blink.counter / 2)) {
+								gr.DrawRect(ax + 1, ay + 1, aw - 2, ah - 2, 2.0, g_color_selected_bg & 0xd0ffffff);
 							};
 						};
 					};
-				};
-				// draw scrollbar
-				if (cScrollBar.enabled) {
-					brw.scrollbar && brw.scrollbar.draw(gr);
-				};
 
-			} else { // no playlist, manager panel is empty
+					// =====
+					// text
+					// =====
+					if (ay >= (0 - ah) && ay < this.y + this.h) {
 
-				// draw scrollbar
-				if (cScrollBar.enabled) {
-					brw.scrollbar && brw.scrollbar.draw(gr);
+						// playlist icon
+						var rh = ppt.rowHeight - 10;
+						if (fb.IsPlaying && this.rows[i].idx == plman.PlayingPlaylist) {
+							if (this.rows[i].idx == plman.ActivePlaylist) {
+								if (plman.IsAutoPlaylist(this.rows[i].idx)) {
+									gr.DrawImage(images.icon_auto_pl_playing_sel.Resize(rh, rh, 2), ax, ay + 5, rh, rh, 0, 0, rh, rh, 0, 255);
+								} else {
+									gr.DrawImage(images.icon_normal_pl_playing_sel.Resize(rh, rh, 2), ax, ay + 5, rh, rh, 0, 0, rh, rh, 0, 255);
+								};
+							} else {
+								if (plman.IsAutoPlaylist(this.rows[i].idx)) {
+									gr.DrawImage(images.icon_auto_pl_playing.Resize(rh, rh, 2), ax, ay + 5, rh, rh, 0, 0, rh, rh, 0, 255);
+								} else {
+									gr.DrawImage(images.icon_normal_pl_playing.Resize(rh, rh, 2), ax, ay + 5, rh, rh, 0, 0, rh, rh, 0, 255);
+								};
+							};
+						} else {
+							if (this.rows[i].idx == plman.ActivePlaylist) {
+								if (plman.IsAutoPlaylist(this.rows[i].idx)) {
+									gr.DrawImage(images.icon_auto_pl_sel.Resize(rh, rh, 2), ax, ay + 5, rh, rh, 0, 0, rh, rh, 0, 255);
+								} else {
+									gr.DrawImage(images.icon_normal_pl_sel.Resize(rh, rh, 2), ax, ay + 5, rh, rh, 0, 0, rh, rh, 0, 255);
+								};
+							} else {
+								if (plman.IsAutoPlaylist(this.rows[i].idx)) {
+									gr.DrawImage(images.icon_auto_pl.Resize(rh, rh, 2), ax, ay + 5, rh, rh, 0, 0, rh, rh, 0, 255);
+								} else {
+									gr.DrawImage(images.icon_normal_pl.Resize(rh, rh, 2), ax, ay + 5, rh, rh, 0, 0, rh, rh, 0, 255);
+								};
+							};
+						};
+
+						if (fb.IsPlaying && i == plman.PlayingPlaylist) {
+							var font = g_font_bold;
+						} else {
+							var font = g_font;
+						};
+
+						// fields
+						var track_name_part = this.rows[i].name;
+						var track_total_part = plman.PlaylistItemCount(this.rows[i].idx);
+
+						cColumns.track_name_part = gr.CalcTextWidth(track_name_part, font) + 15;
+						cColumns.track_total_part = gr.CalcTextWidth(track_total_part, font) + 15;
+
+						var tx = ax + rh;
+						var tw = aw - rh;
+
+						if (this.inputboxID == i) {
+							this.inputbox.draw(gr, tx + 2, ay + 5);
+						} else {
+							gr.GdiDrawText(track_name_part, font, track_color_txt, tx, ay, tw - cColumns.track_total_part - 5, ah, DT_LEFT | DT_VCENTER | DT_CALCRECT | DT_END_ELLIPSIS | DT_NOPREFIX);
+							gr.GdiDrawText(track_total_part, font, track_color_txt, tx + tw - cColumns.track_total_part - 5, ay, cColumns.track_total_part, ah, DT_RIGHT | DT_VCENTER | DT_CALCRECT | DT_END_ELLIPSIS | DT_NOPREFIX);
+						};
+					};
 				};
 			};
+			// draw scrollbar
+			if (cScrollBar.enabled) {
+				brw.scrollbar && brw.scrollbar.draw(gr);
+			};
 
-			// draw header
-			if (ppt.showHeaderBar) {
-				var boxText = this.rows.length + " playlist" + (this.rows.length > 1 ? "s  " : "  ");
+		} else { // no playlist, manager panel is empty
 
-				// draw background part above playlist (headerbar)
-				if (fb.IsPlaying && g_wallpaperImg && ppt.showwallpaper) {
+			// draw scrollbar
+			if (cScrollBar.enabled) {
+				brw.scrollbar && brw.scrollbar.draw(gr);
+			};
+		};
+
+		// draw header
+		if (ppt.showHeaderBar) {
+			var boxText = this.rows.length + " playlist" + (this.rows.length > 1 ? "s  " : "  ");
+
+			// draw background part above playlist (headerbar)
+			if (fb.IsPlaying && g_wallpaperImg && ppt.showwallpaper) {
+				gr.GdiDrawBitmap(g_wallpaperImg, 0, 0, ww, brw.y - 1, 0, 0, g_wallpaperImg.Width, brw.y - 1);
+				gr.FillSolidRect(0, 0, ww, brw.y - 1, g_color_normal_bg & RGBA(255, 255, 255, ppt.wallpaperalpha));
+			} else {
+				if (g_wallpaperImg && ppt.showwallpaper) {
 					gr.GdiDrawBitmap(g_wallpaperImg, 0, 0, ww, brw.y - 1, 0, 0, g_wallpaperImg.Width, brw.y - 1);
 					gr.FillSolidRect(0, 0, ww, brw.y - 1, g_color_normal_bg & RGBA(255, 255, 255, ppt.wallpaperalpha));
 				} else {
-					if (g_wallpaperImg && ppt.showwallpaper) {
-						gr.GdiDrawBitmap(g_wallpaperImg, 0, 0, ww, brw.y - 1, 0, 0, g_wallpaperImg.Width, brw.y - 1);
-						gr.FillSolidRect(0, 0, ww, brw.y - 1, g_color_normal_bg & RGBA(255, 255, 255, ppt.wallpaperalpha));
-					} else {
-						gr.FillSolidRect(0, 0, ww, brw.y - 1, g_color_normal_bg);
-					};
-				};
-				gr.FillSolidRect(this.x, 0, this.w + (cScrollBar.enabled ? cScrollBar.width : 0), ppt.headerBarHeight - 1, g_color_normal_bg & 0x20ffffff);
-				gr.FillSolidRect(this.x, ppt.headerBarHeight - 2, this.w + (cScrollBar.enabled ? cScrollBar.width : 0), 1, g_color_normal_txt & 0x22ffffff);
-
-				var tx = cFilterBox.x + cFilterBox.w + Math.round(22 * g_zoom_percent / 100) + 5;
-				var tw = this.w - tx + (cScrollBar.enabled ? cScrollBar.width : 0);
-				try {
-					gr.GdiDrawText(boxText, g_font_box, blendColors(g_color_normal_txt, g_color_normal_bg, 0.3), tx, 0, tw, ppt.headerBarHeight - 1, DT_RIGHT | DT_VCENTER | DT_CALCRECT | DT_NOPREFIX | DT_END_ELLIPSIS);
-				} catch (e) {
-					console.log(">> debug: cScrollBar.width=" + cScrollBar.width + " /boxText=" + boxText + " /ppt.headerBarHeight=" + ppt.headerBarHeight + " /g_fsize=" + g_fsize);
+					gr.FillSolidRect(0, 0, ww, brw.y - 1, g_color_normal_bg);
 				};
 			};
+			gr.FillSolidRect(this.x, 0, this.w + (cScrollBar.enabled ? cScrollBar.width : 0), ppt.headerBarHeight - 1, g_color_normal_bg & 0x20ffffff);
+			gr.FillSolidRect(this.x, ppt.headerBarHeight - 2, this.w + (cScrollBar.enabled ? cScrollBar.width : 0), 1, g_color_normal_txt & 0x22ffffff);
+
+			var tx = cFilterBox.x + cFilterBox.w + Math.round(22 * g_zoom_percent / 100) + 5;
+			var tw = this.w - tx + (cScrollBar.enabled ? cScrollBar.width : 0);
+			try {
+				gr.GdiDrawText(boxText, g_font_box, blendColors(g_color_normal_txt, g_color_normal_bg, 0.3), tx, 0, tw, ppt.headerBarHeight - 1, DT_RIGHT | DT_VCENTER | DT_CALCRECT | DT_NOPREFIX | DT_END_ELLIPSIS);
+			} catch (e) {
+				console.log(">> debug: cScrollBar.width=" + cScrollBar.width + " /boxText=" + boxText + " /ppt.headerBarHeight=" + ppt.headerBarHeight + " /g_fsize=" + g_fsize);
+			};
+		};
 	};
 
 	this._isHover = function (x, y) {
@@ -1106,251 +1106,251 @@ oBrowser = function (name) {
 		};
 
 		switch (event) {
-		case "down":
-			this.down = true;
-			if (!cTouch.down && !timers.mouseDown && this.ishover && this.activeRow > -1 && Math.abs(scroll - scroll_) < 2) {
-				this.selectedRow = this.activeRow;
-				if (this.activeRow == this.inputboxID) {
-					this.inputbox.check("down", x, y);
+			case "down":
+				this.down = true;
+				if (!cTouch.down && !timers.mouseDown && this.ishover && this.activeRow > -1 && Math.abs(scroll - scroll_) < 2) {
+					this.selectedRow = this.activeRow;
+					if (this.activeRow == this.inputboxID) {
+						this.inputbox.check("down", x, y);
+					} else {
+						if (this.inputboxID > -1)
+							this.inputboxID = -1;
+						//if(this.selectedRow == this.rows[this.activeRow].idx) {
+						if (!this.up) {
+							// set dragged item to reorder list
+							cPlaylistManager.drag_clicked = true;
+							cPlaylistManager.drag_x = x;
+							cPlaylistManager.drag_y = y;
+							cPlaylistManager.drag_source_id = this.selectedRow;
+						};
+						//};
+					};
+					this.repaint();
 				} else {
 					if (this.inputboxID > -1)
 						this.inputboxID = -1;
-					//if(this.selectedRow == this.rows[this.activeRow].idx) {
-					if (!this.up) {
-						// set dragged item to reorder list
-						cPlaylistManager.drag_clicked = true;
-						cPlaylistManager.drag_x = x;
-						cPlaylistManager.drag_y = y;
-						cPlaylistManager.drag_source_id = this.selectedRow;
+					// scrollbar
+					if (cScrollBar.enabled && cScrollBar.visible) {
+						this.scrollbar && this.scrollbar.on_mouse(event, x, y);
 					};
-					//};
 				};
-				this.repaint();
-			} else {
-				if (this.inputboxID > -1)
-					this.inputboxID = -1;
-				// scrollbar
-				if (cScrollBar.enabled && cScrollBar.visible) {
-					this.scrollbar && this.scrollbar.on_mouse(event, x, y);
-				};
-			};
-			this.up = false;
-			break;
-		case "up":
-			this.up = true;
-			if (this.down) {
-				// scrollbar
-				if (cScrollBar.enabled && cScrollBar.visible) {
-					brw.scrollbar && brw.scrollbar.on_mouse(event, x, y);
-				};
+				this.up = false;
+				break;
+			case "up":
+				this.up = true;
+				if (this.down) {
+					// scrollbar
+					if (cScrollBar.enabled && cScrollBar.visible) {
+						brw.scrollbar && brw.scrollbar.on_mouse(event, x, y);
+					};
 
-				if (this.inputboxID >= 0) {
-					this.inputbox.check("up", x, y);
-				} else {
-					// drop playlist switch
-					if (cPlaylistManager.drag_target_id > -1) {
-						if (cPlaylistManager.drag_target_id != cPlaylistManager.drag_source_id) {
-							cPlaylistManager.drag_droped = true
+					if (this.inputboxID >= 0) {
+						this.inputbox.check("up", x, y);
+					} else {
+						// drop playlist switch
+						if (cPlaylistManager.drag_target_id > -1) {
+							if (cPlaylistManager.drag_target_id != cPlaylistManager.drag_source_id) {
+								cPlaylistManager.drag_droped = true
 								if (cPlaylistManager.drag_target_id < cPlaylistManager.drag_source_id) {
 									plman.MovePlaylist(this.rows[cPlaylistManager.drag_source_id].idx, this.rows[cPlaylistManager.drag_target_id].idx);
 								} else if (cPlaylistManager.drag_target_id > cPlaylistManager.drag_source_id) {
-								plman.MovePlaylist(this.rows[cPlaylistManager.drag_source_id].idx, this.rows[cPlaylistManager.drag_target_id].idx);
+									plman.MovePlaylist(this.rows[cPlaylistManager.drag_source_id].idx, this.rows[cPlaylistManager.drag_target_id].idx);
+								};
 							};
+							this.selectedRow = cPlaylistManager.drag_target_id;
 						};
-						this.selectedRow = cPlaylistManager.drag_target_id;
+					};
+
+					if (timers.movePlaylist) {
+						timers.movePlaylist && window.ClearInterval(timers.movePlaylist);
+						timers.movePlaylist = false;
 					};
 				};
 
-				if (timers.movePlaylist) {
-					timers.movePlaylist && window.ClearInterval(timers.movePlaylist);
-					timers.movePlaylist = false;
-				};
-			};
+				this.down = false;
 
-			this.down = false;
+				if (cPlaylistManager.drag_moved)
+					window.SetCursor(IDC_ARROW);
 
-			if (cPlaylistManager.drag_moved)
-				window.SetCursor(IDC_ARROW);
-
-			cPlaylistManager.drag_clicked = false;
-			cPlaylistManager.drag_moved = false;
-			cPlaylistManager.drag_source_id = -1;
-			cPlaylistManager.drag_target_id = -1;
-			cPlaylistManager.drag_x = -1;
-			cPlaylistManager.drag_y = -1;
-			break;
-		case "dblclk":
-			if (this.ishover && this.activeRow > -1 && Math.abs(scroll - scroll_) < 2) {
-				if (plman.ActivePlaylist != this.rows[this.activeRow].idx) {
-					if (this.inputboxID > -1)
-						this.inputboxID = -1;
-					this.repaint();
-					plman.ActivePlaylist = this.rows[this.activeRow].idx;
-					cPlaylistManager.playlist_switch_pending = true;
-					window.SetCursor(IDC_WAIT);
-				};
-			} else {
-				// scrollbar
-				if (cScrollBar.enabled && cScrollBar.visible) {
-					brw.scrollbar && brw.scrollbar.on_mouse(event, x, y);
-				};
-			};
-			break;
-		case "move":
-			this.up = false;
-			if (this.inputboxID >= 0) {
-				this.inputbox.check("move", x, y);
-			} else {
-				if (cPlaylistManager.drag_clicked) {
-					cPlaylistManager.drag_moved = true;
-				};
-				if (cPlaylistManager.drag_moved) {
-					if (this.activeRow > -1) {
-						if (timers.movePlaylist) {
-							timers.movePlaylist && window.ClearInterval(timers.movePlaylist);
-							timers.movePlaylist = false;
-						};
-						if (this.activeRow != cPlaylistManager.drag_source_id) {
-							if (this.activeRow != cPlaylistManager.drag_source_id) {
-								cPlaylistManager.drag_target_id = this.activeRow;
-							};
-						} else if (y > this.rows[this.rowsCount - 1].y + ppt.rowHeight && y < this.rows[this.rowsCount - 1].y + ppt.rowHeight * 2) {
-							cPlaylistManager.drag_target_id = this.rowsCount;
-						} else {
-							cPlaylistManager.drag_target_id = -1;
-						};
-					} else {
-						if (y < this.y) {
-							if (!timers.movePlaylist) {
-								timers.movePlaylist = window.SetInterval(function () {
-										scroll -= ppt.rowHeight;
-										scroll = check_scroll(scroll);
-										cPlaylistManager.drag_target_id = cPlaylistManager.drag_target_id > 0 ? cPlaylistManager.drag_target_id - 1 : 0;
-									}, 100);
-							}
-						} else if (y > this.y + this.h) {
-							if (!timers.movePlaylist) {
-								timers.movePlaylist = window.SetInterval(function () {
-										scroll += ppt.rowHeight;
-										scroll = check_scroll(scroll);
-										cPlaylistManager.drag_target_id = cPlaylistManager.drag_target_id < this.rowsCount - 1 ? cPlaylistManager.drag_target_id + 1 : this.rowsCount - 1;
-									}, 100);
-							}
-						};
-					};
-					brw.repaint();
-				};
-			};
-
-			// scrollbar
-			if (cScrollBar.enabled && cScrollBar.visible) {
-				brw.scrollbar && brw.scrollbar.on_mouse(event, x, y);
-			};
-			break;
-		case "right":
-			if (this.inputboxID >= 0) {
-				this.inputbox.check("bidon", x, y);
-				if (!this.inputbox.hover) {
-					this.inputboxID = -1;
-					this.on_mouse("right", x, y);
-				} else {
-					this.inputbox.check("right", x, y);
-				};
-			} else {
-				if (this.ishover) {
-					if (this.activeRow > -1 && Math.abs(scroll - scroll_) < 2) {
-						if (!utils.IsKeyPressed(VK_SHIFT)) {
-							this.repaint();
-							this.selectedRow = this.activeRow;
-							//plman.ActivePlaylist = this.rows[this.activeRow].idx;
-							if (!timers.rightClick) {
-								timers.rightClick = window.SetTimeout(function () {
-										brw.context_menu(m_x, m_y, brw.selectedRow);
-										timers.rightClick && window.ClearTimeout(timers.rightClick);
-										timers.rightClick = false;
-									}, 50);
-							};
-						};
+				cPlaylistManager.drag_clicked = false;
+				cPlaylistManager.drag_moved = false;
+				cPlaylistManager.drag_source_id = -1;
+				cPlaylistManager.drag_target_id = -1;
+				cPlaylistManager.drag_x = -1;
+				cPlaylistManager.drag_y = -1;
+				break;
+			case "dblclk":
+				if (this.ishover && this.activeRow > -1 && Math.abs(scroll - scroll_) < 2) {
+					if (plman.ActivePlaylist != this.rows[this.activeRow].idx) {
+						if (this.inputboxID > -1)
+							this.inputboxID = -1;
 						this.repaint();
-					} else {
-						this.context_menu(x, y, this.activeRow);
+						plman.ActivePlaylist = this.rows[this.activeRow].idx;
+						cPlaylistManager.playlist_switch_pending = true;
+						window.SetCursor(IDC_WAIT);
 					};
 				} else {
 					// scrollbar
 					if (cScrollBar.enabled && cScrollBar.visible) {
 						brw.scrollbar && brw.scrollbar.on_mouse(event, x, y);
 					};
-					// settings menu
-					if (!g_filterbox.inputbox.hover) {
-						this.settings_context_menu(x, y);
+				};
+				break;
+			case "move":
+				this.up = false;
+				if (this.inputboxID >= 0) {
+					this.inputbox.check("move", x, y);
+				} else {
+					if (cPlaylistManager.drag_clicked) {
+						cPlaylistManager.drag_moved = true;
+					};
+					if (cPlaylistManager.drag_moved) {
+						if (this.activeRow > -1) {
+							if (timers.movePlaylist) {
+								timers.movePlaylist && window.ClearInterval(timers.movePlaylist);
+								timers.movePlaylist = false;
+							};
+							if (this.activeRow != cPlaylistManager.drag_source_id) {
+								if (this.activeRow != cPlaylistManager.drag_source_id) {
+									cPlaylistManager.drag_target_id = this.activeRow;
+								};
+							} else if (y > this.rows[this.rowsCount - 1].y + ppt.rowHeight && y < this.rows[this.rowsCount - 1].y + ppt.rowHeight * 2) {
+								cPlaylistManager.drag_target_id = this.rowsCount;
+							} else {
+								cPlaylistManager.drag_target_id = -1;
+							};
+						} else {
+							if (y < this.y) {
+								if (!timers.movePlaylist) {
+									timers.movePlaylist = window.SetInterval(function () {
+										scroll -= ppt.rowHeight;
+										scroll = check_scroll(scroll);
+										cPlaylistManager.drag_target_id = cPlaylistManager.drag_target_id > 0 ? cPlaylistManager.drag_target_id - 1 : 0;
+									}, 100);
+								}
+							} else if (y > this.y + this.h) {
+								if (!timers.movePlaylist) {
+									timers.movePlaylist = window.SetInterval(function () {
+										scroll += ppt.rowHeight;
+										scroll = check_scroll(scroll);
+										cPlaylistManager.drag_target_id = cPlaylistManager.drag_target_id < this.rowsCount - 1 ? cPlaylistManager.drag_target_id + 1 : this.rowsCount - 1;
+									}, 100);
+								}
+							};
+						};
+						brw.repaint();
 					};
 				};
-			};
-			break;
-		case "wheel":
 
-			break;
-		case "leave":
-			// scrollbar
-			if (cScrollBar.enabled && cScrollBar.visible) {
-				this.scrollbar && this.scrollbar.on_mouse(event, 0, 0);
-			};
-			break;
-		case "drag_over":
-			if (this.rows.length > 0 && this.activeRow > -1) {
-				g_dragndrop_targetPlaylistId = this.activeRow;
-			}
-			break;
+				// scrollbar
+				if (cScrollBar.enabled && cScrollBar.visible) {
+					brw.scrollbar && brw.scrollbar.on_mouse(event, x, y);
+				};
+				break;
+			case "right":
+				if (this.inputboxID >= 0) {
+					this.inputbox.check("bidon", x, y);
+					if (!this.inputbox.hover) {
+						this.inputboxID = -1;
+						this.on_mouse("right", x, y);
+					} else {
+						this.inputbox.check("right", x, y);
+					};
+				} else {
+					if (this.ishover) {
+						if (this.activeRow > -1 && Math.abs(scroll - scroll_) < 2) {
+							if (!utils.IsKeyPressed(VK_SHIFT)) {
+								this.repaint();
+								this.selectedRow = this.activeRow;
+								//plman.ActivePlaylist = this.rows[this.activeRow].idx;
+								if (!timers.rightClick) {
+									timers.rightClick = window.SetTimeout(function () {
+										brw.context_menu(m_x, m_y, brw.selectedRow);
+										timers.rightClick && window.ClearTimeout(timers.rightClick);
+										timers.rightClick = false;
+									}, 50);
+								};
+							};
+							this.repaint();
+						} else {
+							this.context_menu(x, y, this.activeRow);
+						};
+					} else {
+						// scrollbar
+						if (cScrollBar.enabled && cScrollBar.visible) {
+							brw.scrollbar && brw.scrollbar.on_mouse(event, x, y);
+						};
+						// settings menu
+						if (!g_filterbox.inputbox.hover) {
+							this.settings_context_menu(x, y);
+						};
+					};
+				};
+				break;
+			case "wheel":
+
+				break;
+			case "leave":
+				// scrollbar
+				if (cScrollBar.enabled && cScrollBar.visible) {
+					this.scrollbar && this.scrollbar.on_mouse(event, 0, 0);
+				};
+				break;
+			case "drag_over":
+				if (this.rows.length > 0 && this.activeRow > -1) {
+					g_dragndrop_targetPlaylistId = this.activeRow;
+				}
+				break;
 		};
 	};
 
 	this.g_time = window.SetInterval(function () {
-			if (!window.IsVisible) {
-				need_repaint = true;
-				return;
-			};
+		if (!window.IsVisible) {
+			need_repaint = true;
+			return;
+		};
 
-			if (!g_first_populate_launched) {
-				g_first_populate_launched = true;
-				brw.launch_populate();
-			};
+		if (!g_first_populate_launched) {
+			g_first_populate_launched = true;
+			brw.launch_populate();
+		};
 
-			// get hover row index (mouse cursor hover)
-			if (m_y > brw.y && m_y < brw.y + brw.h) {
-				brw.activeRow = Math.ceil((m_y + scroll_ - brw.y) / ppt.rowHeight - 1);
-				if (brw.activeRow >= brw.rows.length)
-					brw.activeRow = -1;
-			} else {
+		// get hover row index (mouse cursor hover)
+		if (m_y > brw.y && m_y < brw.y + brw.h) {
+			brw.activeRow = Math.ceil((m_y + scroll_ - brw.y) / ppt.rowHeight - 1);
+			if (brw.activeRow >= brw.rows.length)
 				brw.activeRow = -1;
+		} else {
+			brw.activeRow = -1;
+		};
+
+		scroll = check_scroll(scroll);
+		if (Math.abs(scroll - scroll_) >= 1) {
+			scroll_ += (scroll - scroll_) / ppt.scrollSmoothness;
+			need_repaint = true;
+			isScrolling = true;
+			//
+			if (scroll_prev != scroll)
+				brw.scrollbar.updateScrollbar();
+		} else {
+			if (isScrolling) {
+				if (scroll_ < 1)
+					scroll_ = 0;
+				isScrolling = false;
+				need_repaint = true;
 			};
+		};
 
-			scroll = check_scroll(scroll);
-			if (Math.abs(scroll - scroll_) >= 1) {
-				scroll_ += (scroll - scroll_) / ppt.scrollSmoothness;
-				need_repaint  = true;
-				isScrolling = true;
-				//
-				if (scroll_prev != scroll)
-					brw.scrollbar.updateScrollbar();
-			} else {
-				if (isScrolling) {
-					if (scroll_ < 1)
-						scroll_ = 0;
-					isScrolling = false;
-					need_repaint  = true;
-				};
-			};
+		if (need_repaint) {
+			if (brw.rows.length > 0)
+				brw.getlimits();
+			need_repaint = false;
+			window.Repaint();
+		};
 
-			if (need_repaint) {
-				if (brw.rows.length > 0)
-					brw.getlimits();
-				need_repaint = false;
-				window.Repaint();
-			};
+		scroll_prev = scroll;
 
-			scroll_prev = scroll;
-
-		}, ppt.refreshRate);
+	}, ppt.refreshRate);
 
 	this.context_menu = function (x, y, id) {
 		var MF_SEPARATOR = 0x00000800;
@@ -1360,9 +1360,9 @@ oBrowser = function (name) {
 		var _autoplaylist = window.CreatePopupMenu();
 		var idx;
 		var total_area,
-		visible_area;
+			visible_area;
 		var bout,
-		z;
+			z;
 		var add_mode = (id == null || id < 0);
 		var total = plman.PlaylistCount;
 
@@ -1408,174 +1408,174 @@ oBrowser = function (name) {
 		idx = _menu.TrackPopupMenu(x, y);
 
 		switch (true) {
-		case (idx == 100):
-			plman.CreatePlaylist(total, "");
-			plman.MovePlaylist(total, pl_idx);
-			plman.ActivePlaylist = pl_idx;
-			// set rename it
-			var rh = ppt.rowHeight - 10;
-			var tw = this.w - rh - 10;
-			this.inputbox = new oInputbox(tw, rh, plman.GetPlaylistName(pl_idx), "", g_color_normal_txt, g_color_normal_bg, RGB(0, 0, 0), g_color_selected_bg & 0xd0ffffff, "renamePlaylist()", "brw");
-			this.inputbox.setSize(tw, rh, g_fsize); // set font_size
-			this.inputboxID = id;
-			// activate inputbox for edit
-			this.inputbox.on_focus(true);
-			this.inputbox.edit = true;
-			this.inputbox.Cpos = this.inputbox.text.length;
-			this.inputbox.anchor = this.inputbox.Cpos;
-			this.inputbox.SelBegin = this.inputbox.Cpos;
-			this.inputbox.SelEnd = this.inputbox.Cpos;
-			if (!cInputbox.timer_cursor) {
-				this.inputbox.resetCursorTimer();
-			};
-			this.inputbox.dblclk = true;
-			this.inputbox.SelBegin = 0;
-			this.inputbox.SelEnd = this.inputbox.text.length;
-			this.inputbox.text_selected = this.inputbox.text;
-			this.inputbox.select = true;
-			this.repaint();
-			break;
-		case (idx == 101):
-			var total = plman.PlaylistCount;
-			plman.CreateAutoPlaylist(total, "", "enter your query here", "", 0);
-			plman.MovePlaylist(total, pl_idx);
-			plman.ActivePlaylist = pl_idx;
-			plman.ShowAutoPlaylistUI(pl_idx);
-			// set rename it
-			var rh = ppt.rowHeight - 10;
-			var tw = this.w - rh - 10;
-			this.inputbox = new oInputbox(tw, rh, plman.GetPlaylistName(pl_idx), "", g_color_normal_txt, g_color_normal_bg, RGB(0, 0, 0), g_color_selected_bg & 0xd0ffffff, "renamePlaylist()", "brw");
-			this.inputbox.setSize(tw, rh, g_fsize); // set font_size
-			this.inputboxID = id;
-			// activate inputbox for edit
-			this.inputbox.on_focus(true);
-			this.inputbox.edit = true;
-			this.inputbox.Cpos = this.inputbox.text.length;
-			this.inputbox.anchor = this.inputbox.Cpos;
-			this.inputbox.SelBegin = this.inputbox.Cpos;
-			this.inputbox.SelEnd = this.inputbox.Cpos;
-			if (!cInputbox.timer_cursor) {
-				this.inputbox.resetCursorTimer();
-			};
-			this.inputbox.dblclk = true;
-			this.inputbox.SelBegin = 0;
-			this.inputbox.SelEnd = this.inputbox.text.length;
-			this.inputbox.text_selected = this.inputbox.text;
-			this.inputbox.select = true;
-			this.repaint();
-			break;
-		case (idx == 2):
-			fb.LoadPlaylist();
-			break;
-		case (idx == 3):
-			// set rename it
-			var rh = ppt.rowHeight - 10;
-			var tw = this.w - rh - 10;
-			this.inputbox = new oInputbox(tw, rh, plman.GetPlaylistName(pl_idx), "", g_color_normal_txt, g_color_normal_bg, RGB(0, 0, 0), g_color_selected_bg & 0xd0ffffff, "renamePlaylist()", "brw");
-			this.inputbox.setSize(tw, rh, g_fsize); // set font_size
-			this.inputboxID = id;
-			// activate inputbox for edit
-			this.inputbox.on_focus(true);
-			this.inputbox.edit = true;
-			this.inputbox.Cpos = this.inputbox.text.length;
-			this.inputbox.anchor = this.inputbox.Cpos;
-			this.inputbox.SelBegin = this.inputbox.Cpos;
-			this.inputbox.SelEnd = this.inputbox.Cpos;
-			if (!cInputbox.timer_cursor) {
-				this.inputbox.resetCursorTimer();
-			};
-			this.inputbox.dblclk = true;
-			this.inputbox.SelBegin = 0;
-			this.inputbox.SelEnd = this.inputbox.text.length;
-			this.inputbox.text_selected = this.inputbox.text;
-			this.inputbox.select = true;
-			this.repaint();
-			break;
-		case (idx == 5):
-			plman.DuplicatePlaylist(pl_idx, "Copy of " + plman.GetPlaylistName(pl_idx));
-			plman.ActivePlaylist = pl_idx + 1;
-			break;
-		case (idx == 6):
-			plman.ShowAutoPlaylistUI(pl_idx);
-			break;
-		case (idx == 7):
-			plman.DuplicatePlaylist(pl_idx, plman.GetPlaylistName(pl_idx));
-			plman.RemovePlaylist(pl_idx);
-			plman.ActivePlaylist = pl_idx;
-			break;
-		case (idx == 8):
-			plman.RemovePlaylistSwitch(pl_idx);
-			break;
-		case (idx == 200):
-			var total = plman.PlaylistCount;
-			//p.playlistManager.inputboxID = -1;
-			plman.CreateAutoPlaylist(total, "Media Library", "ALL", "%album artist% | $if(%album%,%date%,'9999') | %album% | %discnumber% | %tracknumber% | %title%", 0);
-			plman.MovePlaylist(total, pl_idx);
-			plman.ActivePlaylist = pl_idx;
-			break;
-		case (idx == 205):
-			var total = plman.PlaylistCount;
-			//p.playlistManager.inputboxID = -1;
-			plman.CreateAutoPlaylist(total, "Tracks never played", "%play_counter% MISSING", "%album artist% | $if(%album%,%date%,'9999') | %album% | %discnumber% | %tracknumber% | %title%", 0);
-			plman.MovePlaylist(total, pl_idx);
-			plman.ActivePlaylist = pl_idx;
-			break;
-		case (idx == 206):
-			var total = plman.PlaylistCount;
-			//p.playlistManager.inputboxID = -1;
-			plman.CreateAutoPlaylist(total, "Tracks played in the last 5 days", "%last_played% DURING LAST 5 DAYS", "%last_played%", 0);
-			plman.MovePlaylist(total, pl_idx);
-			plman.ActivePlaylist = pl_idx;
-			break;
-		case (idx == 210):
-			var total = plman.PlaylistCount;
-			//p.playlistManager.inputboxID = -1;
-			plman.CreateAutoPlaylist(total, "Tracks unrated", "%rating% MISSING", "%album artist% | $if(%album%,%date%,'9999') | %album% | %discnumber% | %tracknumber% | %title%", 0);
-			plman.MovePlaylist(total, pl_idx);
-			plman.ActivePlaylist = pl_idx;
-			break;
-		case (idx == 211):
-			var total = plman.PlaylistCount;
-			//brw.inputboxID = -1;
-			plman.CreateAutoPlaylist(total, "Tracks rated 1", "%rating% IS 1", "%album artist% | $if(%album%,%date%,'9999') | %album% | %discnumber% | %tracknumber% | %title%", 0);
-			plman.MovePlaylist(total, pl_idx);
-			plman.ActivePlaylist = pl_idx;
-			break;
-		case (idx == 212):
-			var total = plman.PlaylistCount;
-			//p.playlistManager.inputboxID = -1;
-			plman.CreateAutoPlaylist(total, "Tracks rated 2", "%rating% IS 2", "%album artist% | $if(%album%,%date%,'9999') | %album% | %discnumber% | %tracknumber% | %title%", 0);
-			plman.MovePlaylist(total, pl_idx);
-			plman.ActivePlaylist = pl_idx;
-			break;
-		case (idx == 213):
-			var total = plman.PlaylistCount;
-			//p.playlistManager.inputboxID = -1;
-			plman.CreateAutoPlaylist(total, "Tracks rated 3", "%rating% IS 3", "%album artist% | $if(%album%,%date%,'9999') | %album% | %discnumber% | %tracknumber% | %title%", 0);
-			plman.MovePlaylist(total, pl_idx);
-			plman.ActivePlaylist = pl_idx;
-			break;
-		case (idx == 214):
-			var total = plman.PlaylistCount;
-			//p.playlistManager.inputboxID = -1;
-			plman.CreateAutoPlaylist(total, "Tracks rated 4", "%rating% IS 4", "%album artist% | $if(%album%,%date%,'9999') | %album% | %discnumber% | %tracknumber% | %title%", 0);
-			plman.MovePlaylist(total, pl_idx);
-			plman.ActivePlaylist = pl_idx;
-			break;
-		case (idx == 215):
-			var total = plman.PlaylistCount;
-			//p.playlistManager.inputboxID = -1;
-			plman.CreateAutoPlaylist(total, "Tracks rated 5", "%rating% IS 5", "%album artist% | $if(%album%,%date%,'9999') | %album% | %discnumber% | %tracknumber% | %title%", 0);
-			plman.MovePlaylist(total, pl_idx);
-			plman.ActivePlaylist = pl_idx;
-			break;
-		case (idx == 250):
-			var total = plman.PlaylistCount;
-			//p.playlistManager.inputboxID = -1;
-			plman.CreateAutoPlaylist(total, "Loved Tracks", "%mood% GREATER 0", "%album artist% | $if(%album%,%date%,'9999') | %album% | %discnumber% | %tracknumber% | %title%", 0);
-			plman.MovePlaylist(total, pl_idx);
-			plman.ActivePlaylist = pl_idx;
-			break;
+			case (idx == 100):
+				plman.CreatePlaylist(total, "");
+				plman.MovePlaylist(total, pl_idx);
+				plman.ActivePlaylist = pl_idx;
+				// set rename it
+				var rh = ppt.rowHeight - 10;
+				var tw = this.w - rh - 10;
+				this.inputbox = new oInputbox(tw, rh, plman.GetPlaylistName(pl_idx), "", g_color_normal_txt, g_color_normal_bg, RGB(0, 0, 0), g_color_selected_bg & 0xd0ffffff, "renamePlaylist()", "brw");
+				this.inputbox.setSize(tw, rh, g_fsize); // set font_size
+				this.inputboxID = id;
+				// activate inputbox for edit
+				this.inputbox.on_focus(true);
+				this.inputbox.edit = true;
+				this.inputbox.Cpos = this.inputbox.text.length;
+				this.inputbox.anchor = this.inputbox.Cpos;
+				this.inputbox.SelBegin = this.inputbox.Cpos;
+				this.inputbox.SelEnd = this.inputbox.Cpos;
+				if (!cInputbox.timer_cursor) {
+					this.inputbox.resetCursorTimer();
+				};
+				this.inputbox.dblclk = true;
+				this.inputbox.SelBegin = 0;
+				this.inputbox.SelEnd = this.inputbox.text.length;
+				this.inputbox.text_selected = this.inputbox.text;
+				this.inputbox.select = true;
+				this.repaint();
+				break;
+			case (idx == 101):
+				var total = plman.PlaylistCount;
+				plman.CreateAutoPlaylist(total, "", "enter your query here", "", 0);
+				plman.MovePlaylist(total, pl_idx);
+				plman.ActivePlaylist = pl_idx;
+				plman.ShowAutoPlaylistUI(pl_idx);
+				// set rename it
+				var rh = ppt.rowHeight - 10;
+				var tw = this.w - rh - 10;
+				this.inputbox = new oInputbox(tw, rh, plman.GetPlaylistName(pl_idx), "", g_color_normal_txt, g_color_normal_bg, RGB(0, 0, 0), g_color_selected_bg & 0xd0ffffff, "renamePlaylist()", "brw");
+				this.inputbox.setSize(tw, rh, g_fsize); // set font_size
+				this.inputboxID = id;
+				// activate inputbox for edit
+				this.inputbox.on_focus(true);
+				this.inputbox.edit = true;
+				this.inputbox.Cpos = this.inputbox.text.length;
+				this.inputbox.anchor = this.inputbox.Cpos;
+				this.inputbox.SelBegin = this.inputbox.Cpos;
+				this.inputbox.SelEnd = this.inputbox.Cpos;
+				if (!cInputbox.timer_cursor) {
+					this.inputbox.resetCursorTimer();
+				};
+				this.inputbox.dblclk = true;
+				this.inputbox.SelBegin = 0;
+				this.inputbox.SelEnd = this.inputbox.text.length;
+				this.inputbox.text_selected = this.inputbox.text;
+				this.inputbox.select = true;
+				this.repaint();
+				break;
+			case (idx == 2):
+				fb.LoadPlaylist();
+				break;
+			case (idx == 3):
+				// set rename it
+				var rh = ppt.rowHeight - 10;
+				var tw = this.w - rh - 10;
+				this.inputbox = new oInputbox(tw, rh, plman.GetPlaylistName(pl_idx), "", g_color_normal_txt, g_color_normal_bg, RGB(0, 0, 0), g_color_selected_bg & 0xd0ffffff, "renamePlaylist()", "brw");
+				this.inputbox.setSize(tw, rh, g_fsize); // set font_size
+				this.inputboxID = id;
+				// activate inputbox for edit
+				this.inputbox.on_focus(true);
+				this.inputbox.edit = true;
+				this.inputbox.Cpos = this.inputbox.text.length;
+				this.inputbox.anchor = this.inputbox.Cpos;
+				this.inputbox.SelBegin = this.inputbox.Cpos;
+				this.inputbox.SelEnd = this.inputbox.Cpos;
+				if (!cInputbox.timer_cursor) {
+					this.inputbox.resetCursorTimer();
+				};
+				this.inputbox.dblclk = true;
+				this.inputbox.SelBegin = 0;
+				this.inputbox.SelEnd = this.inputbox.text.length;
+				this.inputbox.text_selected = this.inputbox.text;
+				this.inputbox.select = true;
+				this.repaint();
+				break;
+			case (idx == 5):
+				plman.DuplicatePlaylist(pl_idx, "Copy of " + plman.GetPlaylistName(pl_idx));
+				plman.ActivePlaylist = pl_idx + 1;
+				break;
+			case (idx == 6):
+				plman.ShowAutoPlaylistUI(pl_idx);
+				break;
+			case (idx == 7):
+				plman.DuplicatePlaylist(pl_idx, plman.GetPlaylistName(pl_idx));
+				plman.RemovePlaylist(pl_idx);
+				plman.ActivePlaylist = pl_idx;
+				break;
+			case (idx == 8):
+				plman.RemovePlaylistSwitch(pl_idx);
+				break;
+			case (idx == 200):
+				var total = plman.PlaylistCount;
+				//p.playlistManager.inputboxID = -1;
+				plman.CreateAutoPlaylist(total, "Media Library", "ALL", "%album artist% | $if(%album%,%date%,'9999') | %album% | %discnumber% | %tracknumber% | %title%", 0);
+				plman.MovePlaylist(total, pl_idx);
+				plman.ActivePlaylist = pl_idx;
+				break;
+			case (idx == 205):
+				var total = plman.PlaylistCount;
+				//p.playlistManager.inputboxID = -1;
+				plman.CreateAutoPlaylist(total, "Tracks never played", "%play_counter% MISSING", "%album artist% | $if(%album%,%date%,'9999') | %album% | %discnumber% | %tracknumber% | %title%", 0);
+				plman.MovePlaylist(total, pl_idx);
+				plman.ActivePlaylist = pl_idx;
+				break;
+			case (idx == 206):
+				var total = plman.PlaylistCount;
+				//p.playlistManager.inputboxID = -1;
+				plman.CreateAutoPlaylist(total, "Tracks played in the last 5 days", "%last_played% DURING LAST 5 DAYS", "%last_played%", 0);
+				plman.MovePlaylist(total, pl_idx);
+				plman.ActivePlaylist = pl_idx;
+				break;
+			case (idx == 210):
+				var total = plman.PlaylistCount;
+				//p.playlistManager.inputboxID = -1;
+				plman.CreateAutoPlaylist(total, "Tracks unrated", "%rating% MISSING", "%album artist% | $if(%album%,%date%,'9999') | %album% | %discnumber% | %tracknumber% | %title%", 0);
+				plman.MovePlaylist(total, pl_idx);
+				plman.ActivePlaylist = pl_idx;
+				break;
+			case (idx == 211):
+				var total = plman.PlaylistCount;
+				//brw.inputboxID = -1;
+				plman.CreateAutoPlaylist(total, "Tracks rated 1", "%rating% IS 1", "%album artist% | $if(%album%,%date%,'9999') | %album% | %discnumber% | %tracknumber% | %title%", 0);
+				plman.MovePlaylist(total, pl_idx);
+				plman.ActivePlaylist = pl_idx;
+				break;
+			case (idx == 212):
+				var total = plman.PlaylistCount;
+				//p.playlistManager.inputboxID = -1;
+				plman.CreateAutoPlaylist(total, "Tracks rated 2", "%rating% IS 2", "%album artist% | $if(%album%,%date%,'9999') | %album% | %discnumber% | %tracknumber% | %title%", 0);
+				plman.MovePlaylist(total, pl_idx);
+				plman.ActivePlaylist = pl_idx;
+				break;
+			case (idx == 213):
+				var total = plman.PlaylistCount;
+				//p.playlistManager.inputboxID = -1;
+				plman.CreateAutoPlaylist(total, "Tracks rated 3", "%rating% IS 3", "%album artist% | $if(%album%,%date%,'9999') | %album% | %discnumber% | %tracknumber% | %title%", 0);
+				plman.MovePlaylist(total, pl_idx);
+				plman.ActivePlaylist = pl_idx;
+				break;
+			case (idx == 214):
+				var total = plman.PlaylistCount;
+				//p.playlistManager.inputboxID = -1;
+				plman.CreateAutoPlaylist(total, "Tracks rated 4", "%rating% IS 4", "%album artist% | $if(%album%,%date%,'9999') | %album% | %discnumber% | %tracknumber% | %title%", 0);
+				plman.MovePlaylist(total, pl_idx);
+				plman.ActivePlaylist = pl_idx;
+				break;
+			case (idx == 215):
+				var total = plman.PlaylistCount;
+				//p.playlistManager.inputboxID = -1;
+				plman.CreateAutoPlaylist(total, "Tracks rated 5", "%rating% IS 5", "%album artist% | $if(%album%,%date%,'9999') | %album% | %discnumber% | %tracknumber% | %title%", 0);
+				plman.MovePlaylist(total, pl_idx);
+				plman.ActivePlaylist = pl_idx;
+				break;
+			case (idx == 250):
+				var total = plman.PlaylistCount;
+				//p.playlistManager.inputboxID = -1;
+				plman.CreateAutoPlaylist(total, "Loved Tracks", "%mood% GREATER 0", "%album artist% | $if(%album%,%date%,'9999') | %album% | %discnumber% | %tracknumber% | %title%", 0);
+				plman.MovePlaylist(total, pl_idx);
+				plman.ActivePlaylist = pl_idx;
+				break;
 		};
 		brw.repaint();
 		return true;
@@ -1609,37 +1609,37 @@ oBrowser = function (name) {
 		idx = _menu.TrackPopupMenu(x, y);
 
 		switch (true) {
-		case (idx == 200):
-			ppt.showwallpaper = !ppt.showwallpaper;
-			window.SetProperty("_DISPLAY: Show Wallpaper", ppt.showwallpaper);
-			g_wallpaperImg = setWallpaperImg();
-			brw.repaint();
-			break;
-		case (idx == 210):
-		case (idx == 211):
-			ppt.wallpapermode = idx - 210;
-			window.SetProperty("_SYSTEM: Wallpaper Mode", ppt.wallpapermode);
-			g_wallpaperImg = setWallpaperImg();
-			brw.repaint();
-			break;
-		case (idx == 220):
-			ppt.wallpaperblurred = !ppt.wallpaperblurred;
-			window.SetProperty("_DISPLAY: Wallpaper Blurred", ppt.wallpaperblurred);
-			g_wallpaperImg = setWallpaperImg();
-			brw.repaint();
-			break;
-		case (idx == 910):
-			ppt.showHeaderBar = !ppt.showHeaderBar;
-			window.SetProperty("_DISPLAY: Show Top Bar", ppt.showHeaderBar);
-			get_metrics();
-			brw.repaint();
-			break;
-		case (idx == 991):
-			window.ShowProperties();
-			break;
-		case (idx == 992):
-			window.ShowConfigure();
-			break;
+			case (idx == 200):
+				ppt.showwallpaper = !ppt.showwallpaper;
+				window.SetProperty("_DISPLAY: Show Wallpaper", ppt.showwallpaper);
+				g_wallpaperImg = setWallpaperImg();
+				brw.repaint();
+				break;
+			case (idx == 210):
+			case (idx == 211):
+				ppt.wallpapermode = idx - 210;
+				window.SetProperty("_SYSTEM: Wallpaper Mode", ppt.wallpapermode);
+				g_wallpaperImg = setWallpaperImg();
+				brw.repaint();
+				break;
+			case (idx == 220):
+				ppt.wallpaperblurred = !ppt.wallpaperblurred;
+				window.SetProperty("_DISPLAY: Wallpaper Blurred", ppt.wallpaperblurred);
+				g_wallpaperImg = setWallpaperImg();
+				brw.repaint();
+				break;
+			case (idx == 910):
+				ppt.showHeaderBar = !ppt.showHeaderBar;
+				window.SetProperty("_DISPLAY: Show Top Bar", ppt.showHeaderBar);
+				get_metrics();
+				brw.repaint();
+				break;
+			case (idx == 991):
+				window.ShowProperties();
+				break;
+			case (idx == 992):
+				window.ShowConfigure();
+				break;
 		};
 		return true;
 	};
@@ -1803,14 +1803,14 @@ function on_mouse_lbtn_down(x, y) {
 					cTouch.t1 = fb.CreateProfiler("t1");
 				};
 				timers.mouseDown = window.SetTimeout(function () {
-						window.ClearTimeout(timers.mouseDown);
-						timers.mouseDown = false;
-						if (Math.abs(cTouch.y_start - m_y) > 015) {
-							cTouch.down = true;
-						} else {
-							brw.on_mouse("down", x, y);
-						};
-					}, 50);
+					window.ClearTimeout(timers.mouseDown);
+					timers.mouseDown = false;
+					if (Math.abs(cTouch.y_start - m_y) > 015) {
+						cTouch.down = true;
+					} else {
+						brw.on_mouse("down", x, y);
+					};
+				}, 50);
 			};
 		} else {
 			brw.on_mouse("down", x, y);
@@ -1856,15 +1856,15 @@ function on_mouse_lbtn_up(x, y) {
 			if (cTouch.timer)
 				window.ClearInterval(cTouch.timer);
 			cTouch.timer = window.SetInterval(function () {
-					scroll += cTouch.delta * cTouch.multiplier;
-					scroll = check_scroll(scroll);
-					cTouch.multiplier = cTouch.multiplier - 1;
-					cTouch.delta = cTouch.delta - (cTouch.delta / 10);
-					if (cTouch.multiplier < 1) {
-						window.ClearInterval(cTouch.timer);
-						cTouch.timer = false;
-					};
-				}, 75);
+				scroll += cTouch.delta * cTouch.multiplier;
+				scroll = check_scroll(scroll);
+				cTouch.multiplier = cTouch.multiplier - 1;
+				cTouch.delta = cTouch.delta - (cTouch.delta / 10);
+				if (cTouch.multiplier < 1) {
+					window.ClearInterval(cTouch.timer);
+					cTouch.timer = false;
+				};
+			}, 75);
 		};
 	};
 };
@@ -1941,14 +1941,14 @@ function on_mouse_wheel(step) {
 			};
 			if (previous != ppt.extra_font_size) {
 				timers.mouseWheel = window.SetTimeout(function () {
-						window.SetProperty("_SYSTEM: Extra font size value", ppt.extra_font_size);
-						get_font();
-						get_metrics();
-						get_images();
-						brw.repaint();
-						timers.mouseWheel && window.ClearTimeout(timers.mouseWheel);
-						timers.mouseWheel = false;
-					}, 100);
+					window.SetProperty("_SYSTEM: Extra font size value", ppt.extra_font_size);
+					get_font();
+					get_metrics();
+					get_images();
+					brw.repaint();
+					timers.mouseWheel && window.ClearTimeout(timers.mouseWheel);
+					timers.mouseWheel = false;
+				}, 100);
 			};
 		};
 	} else {
@@ -1978,7 +1978,7 @@ function get_metrics() {
 	};
 	var _defaultRowHeight = ppt.defaultRowHeight;
 	ppt.rowHeight = Math.round(_defaultRowHeight * g_zoom_percent / 100);
-	cScrollBar.width = Math.floor(cScrollBar.defaultWidth * g_zoom_percent / 100);
+	//cScrollBar.width = Math.floor(cScrollBar.defaultWidth * g_zoom_percent / 100);
 	cScrollBar.minCursorHeight = Math.round(cScrollBar.defaultMinCursorHeight * g_zoom_percent / 100);
 
 	cFilterBox.w = Math.floor(cFilterBox.default_w * g_zoom_percent / 100);
@@ -2184,7 +2184,7 @@ function on_script_unload() {
 
 //=================================================// Keyboard Callbacks
 function on_key_up(vkey) {
-	if (cSettings.visible) {} else {
+	if (cSettings.visible) { } else {
 		// inputBox
 		if (ppt.showFilterBox && g_filterbox.inputbox.visible) {
 			g_filterbox.on_key("up", vkey);
@@ -2206,17 +2206,17 @@ function on_key_up(vkey) {
 function on_key_down(vkey) {
 	var mask = GetKeyboardMask();
 
-	if (cSettings.visible) {} else {
+	if (cSettings.visible) { } else {
 		if (brw.inputboxID >= 0) {
 			if (mask == KMask.none) {
 				switch (vkey) {
-				case VK_ESCAPE:
-				case 222:
-					brw.inputboxID = -1;
-					brw.repaint();
-					break;
-				default:
-					brw.inputbox.on_key_down(vkey);
+					case VK_ESCAPE:
+					case 222:
+						brw.inputboxID = -1;
+						brw.repaint();
+						break;
+					default:
+						brw.inputbox.on_key_down(vkey);
 				};
 			};
 
@@ -2231,155 +2231,155 @@ function on_key_down(vkey) {
 
 			if (mask == KMask.none) {
 				switch (vkey) {
-				case VK_F2:
-					// set rename it
-					var rowId = brw.selectedRow;
-					if (rowId > -1) {
-						var rh = ppt.rowHeight - 10;
-						var tw = brw.w - rh - 10;
-						brw.inputbox = new oInputbox(tw, rh, plman.GetPlaylistName(brw.rows[rowId].idx), "", g_color_normal_txt, g_color_normal_bg, RGB(0, 0, 0), g_color_selected_bg & 0xd0ffffff, "renamePlaylist()", "brw");
-						brw.inputbox.setSize(tw, rh, g_fsize); // set font_size
-						brw.inputboxID = rowId;
-						// activate inputbox for edit
-						brw.inputbox.on_focus(true);
-						brw.inputbox.edit = true;
-						brw.inputbox.Cpos = brw.inputbox.text.length;
-						brw.inputbox.anchor = brw.inputbox.Cpos;
-						brw.inputbox.SelBegin = brw.inputbox.Cpos;
-						brw.inputbox.SelEnd = brw.inputbox.Cpos;
-						if (!cInputbox.timer_cursor) {
-							brw.inputbox.resetCursorTimer();
+					case VK_F2:
+						// set rename it
+						var rowId = brw.selectedRow;
+						if (rowId > -1) {
+							var rh = ppt.rowHeight - 10;
+							var tw = brw.w - rh - 10;
+							brw.inputbox = new oInputbox(tw, rh, plman.GetPlaylistName(brw.rows[rowId].idx), "", g_color_normal_txt, g_color_normal_bg, RGB(0, 0, 0), g_color_selected_bg & 0xd0ffffff, "renamePlaylist()", "brw");
+							brw.inputbox.setSize(tw, rh, g_fsize); // set font_size
+							brw.inputboxID = rowId;
+							// activate inputbox for edit
+							brw.inputbox.on_focus(true);
+							brw.inputbox.edit = true;
+							brw.inputbox.Cpos = brw.inputbox.text.length;
+							brw.inputbox.anchor = brw.inputbox.Cpos;
+							brw.inputbox.SelBegin = brw.inputbox.Cpos;
+							brw.inputbox.SelEnd = brw.inputbox.Cpos;
+							if (!cInputbox.timer_cursor) {
+								brw.inputbox.resetCursorTimer();
+							};
+							brw.inputbox.dblclk = true;
+							brw.inputbox.SelBegin = 0;
+							brw.inputbox.SelEnd = brw.inputbox.text.length;
+							brw.inputbox.text_selected = brw.inputbox.text;
+							brw.inputbox.select = true;
+							brw.repaint();
 						};
-						brw.inputbox.dblclk = true;
-						brw.inputbox.SelBegin = 0;
-						brw.inputbox.SelEnd = brw.inputbox.text.length;
-						brw.inputbox.text_selected = brw.inputbox.text;
-						brw.inputbox.select = true;
+						break;
+					case VK_F3:
+						brw.showActivePlaylist();
+						break;
+					case VK_F5:
 						brw.repaint();
-					};
-					break;
-				case VK_F3:
-					brw.showActivePlaylist();
-					break;
-				case VK_F5:
-					brw.repaint();
-					break;
-				case VK_F6:
+						break;
+					case VK_F6:
 
-					break;
-				case VK_TAB:
-					break;
-				case VK_BACK:
-					break;
-				case VK_ESCAPE:
-				case 222:
-					brw.inputboxID = -1;
-					break;
-				case VK_UP:
-					if (brw.rowsCount > 0) {
-						if (g_filterbox.inputbox && g_filterbox.inputbox.edit)
-							return;
-						var rowId = brw.selectedRow;
-						if (rowId > 0) {
+						break;
+					case VK_TAB:
+						break;
+					case VK_BACK:
+						break;
+					case VK_ESCAPE:
+					case 222:
+						brw.inputboxID = -1;
+						break;
+					case VK_UP:
+						if (brw.rowsCount > 0) {
+							if (g_filterbox.inputbox && g_filterbox.inputbox.edit)
+								return;
+							var rowId = brw.selectedRow;
+							if (rowId > 0) {
+								if (brw.inputboxID > -1)
+									brw.inputboxID = -1;
+								brw.repaint();
+								brw.selectedRow--;
+								if (brw.selectedRow < 0)
+									brw.selectedRow = 0;
+								brw.showSelectedPlaylist();
+								brw.repaint();
+							};
+						};
+						break;
+					case VK_DOWN:
+						if (brw.rowsCount > 0) {
+							if (g_filterbox.inputbox && g_filterbox.inputbox.edit)
+								return;
+							var rowId = brw.selectedRow;
+							if (rowId < brw.rowsCount - 1) {
+								if (brw.inputboxID > -1)
+									brw.inputboxID = -1;
+								brw.repaint();
+								brw.selectedRow++;
+								if (brw.selectedRow > brw.rowsCount - 1)
+									brw.selectedRow = brw.rowsCount - 1;
+								brw.showSelectedPlaylist();
+								brw.repaint();
+							};
+						};
+						break;
+					case VK_PGUP:
+						break;
+					case VK_PGDN:
+						break;
+					case VK_RETURN:
+						if (brw.rowsCount > 0) {
+							if (g_filterbox.inputbox && g_filterbox.inputbox.edit)
+								return;
+							brw.repaint();
+							plman.ActivePlaylist = brw.selectedRow;
+							cPlaylistManager.playlist_switch_pending = true;
+							window.SetCursor(IDC_WAIT);
+						};
+						break;
+					case VK_END:
+						if (brw.rowsCount > 0) {
+							if (g_filterbox.inputbox && g_filterbox.inputbox.edit)
+								return;
 							if (brw.inputboxID > -1)
 								brw.inputboxID = -1;
 							brw.repaint();
-							brw.selectedRow--;
-							if (brw.selectedRow < 0)
-								brw.selectedRow = 0;
+							brw.selectedRow = brw.rowsCount - 1;
 							brw.showSelectedPlaylist();
-							brw.repaint();
 						};
-					};
-					break;
-				case VK_DOWN:
-					if (brw.rowsCount > 0) {
-						if (g_filterbox.inputbox && g_filterbox.inputbox.edit)
-							return;
-						var rowId = brw.selectedRow;
-						if (rowId < brw.rowsCount - 1) {
+						break;
+					case VK_HOME:
+						if (brw.rowsCount > 0) {
+							if (g_filterbox.inputbox && g_filterbox.inputbox.edit)
+								return;
 							if (brw.inputboxID > -1)
 								brw.inputboxID = -1;
 							brw.repaint();
-							brw.selectedRow++;
-							if (brw.selectedRow > brw.rowsCount - 1)
-								brw.selectedRow = brw.rowsCount - 1;
+							brw.selectedRow = 0;
 							brw.showSelectedPlaylist();
-							brw.repaint();
 						};
-					};
-					break;
-				case VK_PGUP:
-					break;
-				case VK_PGDN:
-					break;
-				case VK_RETURN:
-					if (brw.rowsCount > 0) {
-						if (g_filterbox.inputbox && g_filterbox.inputbox.edit)
-							return;
-						brw.repaint();
-						plman.ActivePlaylist = brw.selectedRow;
-						cPlaylistManager.playlist_switch_pending = true;
-						window.SetCursor(IDC_WAIT);
-					};
-					break;
-				case VK_END:
-					if (brw.rowsCount > 0) {
-						if (g_filterbox.inputbox && g_filterbox.inputbox.edit)
-							return;
-						if (brw.inputboxID > -1)
-							brw.inputboxID = -1;
-						brw.repaint();
-						brw.selectedRow = brw.rowsCount - 1;
-						brw.showSelectedPlaylist();
-					};
-					break;
-				case VK_HOME:
-					if (brw.rowsCount > 0) {
-						if (g_filterbox.inputbox && g_filterbox.inputbox.edit)
-							return;
-						if (brw.inputboxID > -1)
-							brw.inputboxID = -1;
-						brw.repaint();
-						brw.selectedRow = 0;
-						brw.showSelectedPlaylist();
-					};
-					break;
-				case VK_DELETE:
-					plman.RemovePlaylistSwitch(brw.selectedRow);
-					break;
+						break;
+					case VK_DELETE:
+						plman.RemovePlaylistSwitch(brw.selectedRow);
+						break;
 				};
 			} else {
 				switch (mask) {
-				case KMask.shift:
-					switch (vkey) {
-					case VK_SHIFT: // SHIFT key alone
+					case KMask.shift:
+						switch (vkey) {
+							case VK_SHIFT: // SHIFT key alone
+								break;
+							case VK_UP: // SHIFT + KEY UP
+								break;
+							case VK_DOWN: // SHIFT + KEY DOWN
+								break;
+						};
 						break;
-					case VK_UP: // SHIFT + KEY UP
-						break;
-					case VK_DOWN: // SHIFT + KEY DOWN
-						break;
-					};
-					break;
-				case KMask.ctrl:
-					if (vkey == 66) { // CTRL+B
-						cScrollBar.enabled = !cScrollBar.enabled;
-						window.SetProperty("_DISPLAY: Show Scrollbar", cScrollBar.enabled);
-						get_metrics();
-						brw.repaint();
-					};
-					if (vkey == 84) { // CTRL+T
-						ppt.showHeaderBar = !ppt.showHeaderBar;
-						window.SetProperty("_DISPLAY: Show Top Bar", ppt.showHeaderBar);
-						get_metrics();
-						brw.repaint();
-					};
-					if (vkey == 48 || vkey == 96) { // CTRL + 0
-						var previous = ppt.extra_font_size;
-						if (!timers.mouseWheel) {
-							ppt.extra_font_size = 0;
-							if (previous != ppt.extra_font_size) {
-								timers.mouseWheel = window.SetTimeout(function () {
+					case KMask.ctrl:
+						if (vkey == 66) { // CTRL+B
+							cScrollBar.enabled = !cScrollBar.enabled;
+							window.SetProperty("_DISPLAY: Show Scrollbar", cScrollBar.enabled);
+							get_metrics();
+							brw.repaint();
+						};
+						if (vkey == 84) { // CTRL+T
+							ppt.showHeaderBar = !ppt.showHeaderBar;
+							window.SetProperty("_DISPLAY: Show Top Bar", ppt.showHeaderBar);
+							get_metrics();
+							brw.repaint();
+						};
+						if (vkey == 48 || vkey == 96) { // CTRL + 0
+							var previous = ppt.extra_font_size;
+							if (!timers.mouseWheel) {
+								ppt.extra_font_size = 0;
+								if (previous != ppt.extra_font_size) {
+									timers.mouseWheel = window.SetTimeout(function () {
 										window.SetProperty("_SYSTEM: Extra font size value", ppt.extra_font_size);
 										get_font();
 										get_metrics();
@@ -2388,12 +2388,12 @@ function on_key_down(vkey) {
 										timers.mouseWheel && window.ClearTimeout(timers.mouseWheel);
 										timers.mouseWheel = false;
 									}, 100);
+								};
 							};
 						};
-					};
-					break;
-				case KMask.alt:
-					break;
+						break;
+					case KMask.alt:
+						break;
 				};
 			};
 		};
@@ -2416,14 +2416,14 @@ function on_char(code) {
 //=================================================// Playback Callbacks
 function on_playback_stop(reason) {
 	switch (reason) {
-	case 0: // user stop
-	case 1: // eof (e.g. end of playlist)
-		// update wallpaper
-		g_wallpaperImg = setWallpaperImg();
-		brw.repaint();
-		break;
-	case 2: // starting_another (only called on user action, i.e. click on next button)
-		break;
+		case 0: // user stop
+		case 1: // eof (e.g. end of playlist)
+			// update wallpaper
+			g_wallpaperImg = setWallpaperImg();
+			brw.repaint();
+			break;
+		case 2: // starting_another (only called on user action, i.e. click on next button)
+			break;
 	};
 };
 
@@ -2433,9 +2433,9 @@ function on_playback_new_track(metadb) {
 	brw.repaint();
 };
 
-function on_playback_starting(cmd, is_paused) {};
+function on_playback_starting(cmd, is_paused) { };
 
-function on_playback_time(time) {};
+function on_playback_time(time) { };
 
 //=================================================// Playlist Callbacks
 function on_playlists_changed() {
