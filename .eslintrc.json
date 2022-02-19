@@ -11,6 +11,15 @@
     "rules": {
         // "no-invalid-this": 2,
         "no-extra-semi": "error",
-        "no-extra-boolean-cast": "error"
+        "no-extra-boolean-cast": "error",
+        "no-undef": "error"
+    },
+    "globals": {
+        "gdi": "readonly",
+        "plman": "readonly",
+        "window": "readonly",
+        "include": "readonly",
+        "utils": "readonly",
+        "on_paint": "writable"
     }
 }

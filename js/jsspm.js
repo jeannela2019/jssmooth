@@ -1805,7 +1805,7 @@ function on_mouse_lbtn_down(x, y) {
 				timers.mouseDown = window.SetTimeout(function () {
 					window.ClearTimeout(timers.mouseDown);
 					timers.mouseDown = false;
-					if (Math.abs(cTouch.y_start - m_y) > 015) {
+					if (Math.abs(cTouch.y_start - m_y) > 13) {
 						cTouch.down = true;
 					} else {
 						brw.on_mouse("down", x, y);
@@ -1837,7 +1837,7 @@ function on_mouse_lbtn_up(x, y) {
 	if (timers.mouseDown) {
 		window.ClearTimeout(timers.mouseDown);
 		timers.mouseDown = false;
-		if (Math.abs(cTouch.y_start - m_y) <= 030) {
+		if (Math.abs(cTouch.y_start - m_y) <= 24) {
 			brw.on_mouse("down", x, y);
 		}
 	}
@@ -1848,9 +1848,9 @@ function on_mouse_lbtn_up(x, y) {
 		cTouch.y_end = y;
 		cTouch.scroll_delta = scroll - scroll_;
 		//cTouch.y_delta = cTouch.y_start - cTouch.y_end;
-		if (Math.abs(cTouch.scroll_delta) > 030) {
+		if (Math.abs(cTouch.scroll_delta) > 24) {
 			cTouch.multiplier = ((1000 - cTouch.t1.Time) / 20);
-			cTouch.delta = Math.round((cTouch.scroll_delta) / 030);
+			cTouch.delta = Math.round((cTouch.scroll_delta) / 24);
 			if (cTouch.multiplier < 1)
 				cTouch.multiplier = 1;
 			if (cTouch.timer)
@@ -1907,7 +1907,7 @@ function on_mouse_move(x, y) {
 		if (x < brw.w) {
 			scroll -= cTouch.y_move;
 			cTouch.scroll_delta = scroll - scroll_;
-			if (Math.abs(cTouch.scroll_delta) < 030)
+			if (Math.abs(cTouch.scroll_delta) < 24)
 				cTouch.y_start = cTouch.y_current;
 			cTouch.y_prev = cTouch.y_current;
 		}

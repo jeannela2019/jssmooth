@@ -2289,7 +2289,7 @@ oBrowser = function (name) {
 				brw.tt_h = 60;
 				gr.FillRoundRect(brw.tt_x, brw.tt_y, brw.tt_w, brw.tt_h, 5, 5, RGBA(0, 0, 0, 150));
 				gr.DrawRoundRect(brw.tt_x, brw.tt_y, brw.tt_w, brw.tt_h, 5, 5, 1.0, RGBA(0, 0, 0, 100));
-				gr.DrawRoundRect(brw.tt_x + 1, brw.tt_y + 1, brw.tt_w - 2, brw.tt_h - 2, 4, 4, 1.0, RGBA(255, 255, 255, 050));
+				gr.DrawRoundRect(brw.tt_x + 1, brw.tt_y + 1, brw.tt_w - 2, brw.tt_h - 2, 4, 4, 1.0, RGBA(255, 255, 255, 40));
 				try {
 					gr.GdiDrawText(cList.search_string, cList.incsearch_font_big, RGB(0, 0, 0), brw.tt_x + 1, brw.tt_y + 1, brw.tt_w, brw.tt_h, DT_CENTER | DT_NOPREFIX | DT_CALCRECT | DT_VCENTER);
 					gr.GdiDrawText(cList.search_string, cList.incsearch_font_big, cList.inc_search_noresult ? RGB(255, 70, 70) : RGB(250, 250, 250), brw.tt_x, brw.tt_y, brw.tt_w, brw.tt_h, DT_CENTER | DT_NOPREFIX | DT_CALCRECT | DT_VCENTER);
@@ -3013,7 +3013,7 @@ function on_mouse_lbtn_down(x, y) {
 				timers.mouseDown = window.SetTimeout(function () {
 						window.ClearTimeout(timers.mouseDown);
 						timers.mouseDown = false;
-						if (Math.abs(cTouch.y_start - m_y) > 015) {
+					if (Math.abs(cTouch.y_start - m_y) > 13) {
 							cTouch.down = true;
 						} else {
 							brw.on_mouse("down", x, y);
@@ -3049,7 +3049,7 @@ function on_mouse_lbtn_up(x, y) {
 	if (timers.mouseDown) {
 		window.ClearTimeout(timers.mouseDown);
 		timers.mouseDown = false;
-		if (Math.abs(cTouch.y_start - m_y) <= 030) {
+		if (Math.abs(cTouch.y_start - m_y) <= 24) {
 			brw.on_mouse("down", x, y);
 		}
 	}
@@ -3059,9 +3059,9 @@ function on_mouse_lbtn_up(x, y) {
 		cTouch.down = false;
 		cTouch.y_end = y;
 		cTouch.scroll_delta = scroll - scroll_;
-		if (Math.abs(cTouch.scroll_delta) > 015) {
+		if (Math.abs(cTouch.scroll_delta) > 13) {
 			cTouch.multiplier = ((1000 - cTouch.t1.Time) / 20);
-			cTouch.delta = Math.round((cTouch.scroll_delta) / 015);
+			cTouch.delta = Math.round((cTouch.scroll_delta) / 13);
 			if (cTouch.multiplier < 1)
 				cTouch.multiplier = 1;
 			if (cTouch.timer)
@@ -3122,7 +3122,7 @@ function on_mouse_move(x, y) {
 			if (x < brw.w) {
 				scroll -= cTouch.y_move;
 				cTouch.scroll_delta = scroll - scroll_;
-				if (Math.abs(cTouch.scroll_delta) < 030)
+				if (Math.abs(cTouch.scroll_delta) < 24)
 					cTouch.y_start = cTouch.y_current;
 				cTouch.y_prev = cTouch.y_current;
 			}
