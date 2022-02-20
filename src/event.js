@@ -18,7 +18,11 @@ export class Emitter {
     return this._event
   }
 
-  fire(event) {
+	/**
+	 * 
+	 * @param  {...any} event callback function arguments 
+	 */
+	fire(...event) {
     if (this._listeners) {
       if (!this._deliveryQueue) {
         this._deliveryQueue = [];
@@ -30,9 +34,9 @@ export class Emitter {
         const [listener, event] = this._deliveryQueue.shift();
         try {
           if (typeof listener === 'function') {
-            listener.call(undefined, event);
+						listener.call(undefined, event[0], event[1], event[2], event[3]);
           } else {
-            listener.call(listener[1], event);
+						listener.call(listener[1], event[0], event[1], event[2], event[3]);
           }
         } catch (e) {
           // unexpected error!
@@ -49,7 +53,6 @@ export class Emitter {
     }
   }
 }
-
 
 const fbEvents = {}
 const globalVar = Function("return this")();
