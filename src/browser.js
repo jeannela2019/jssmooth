@@ -1,8 +1,27 @@
+import { button, ButtonStates } from "./common";
+import { fso, CACHE_FOLDER } from "./common";
+import { DT_LEFT, DT_RIGHT, DT_CALCRECT, DT_VCENTER, DT_CENTER, DT_TOP, DT_END_ELLIPSIS, DT_NOPREFIX } from "./common";
+import { VK_CONTROL, VK_SHIFT, VK_BACK, VK_DELETE, VK_ESCAPE, VK_UP, VK_DOWN, VK_PGDN, VK_PGUP, VK_END, VK_HOME, } from "./common";
+import { MF_STRING, MF_GRAYED, MF_DISABLED } from "./common";
+import { IDC_ARROW, IDC_HELP } from "./common";
+import { DLGC_WANTALLKEYS } from "./common";
+import { COLOR_WINDOW, COLOR_HIGHLIGHT, COLOR_BTNFACE, COLOR_BTNTEXT } from "./common";
+import { TrackType, FontTypeCUI, FontTypeDUI, ColorTypeCUI, ColorTypeDUI } from "./common";
+import { get_system_scrollbar_width, load_image_from_cache, process_cachekey, process_string, match, resize, on_load } from "./common";
+import { GetKeyboardMask, KMask, VK_F3, VK_F5 } from "./common";
+import { RGBA, RGB, blendColors, DrawPolyStar, drawImage } from "./common";
 import { oInputbox } from "./inputbox";
+import { cc_stringformat } from "./common"
+import { draw_blurred_image } from "./common";
+import { FILE_ATTRIBUTE_DIRECTORY } from "./common";
 
 const globalThis_ = Function("return this")();
 const smoothPath = `${fb.ProfilePath}packages\\jssmooth\\`;
 const imagePath = smoothPath + "images\\"
+
+let g_fname, g_fsize, g_fstyle, g_font_bold;
+let g_font_box;
+let g_focus_id;
 
 var need_repaint = false;
 
@@ -161,6 +180,46 @@ const timers = {
   avoidPlaylistSwitch: false
 };
 
+
+function setWallpaperImg() {
+  if (!fb.IsPlaying || !ppt.showwallpaper) return null;
+
+  var tmp = null
+
+  if (ppt.wallpapermode == 0) {
+    tmp = utils.GetAlbumArtV2(fb.GetNowPlaying(), 0);
+  } else {
+    var arr = utils.Glob(fb.TitleFormat(ppt.wallpaperpath).Eval());
+    if (arr.length) {
+      tmp = gdi.Image(arr[0]);
+    }
+  }
+
+  if (tmp) {
+    return FormatWallpaper(tmp);
+  }
+  return tmp;
+}
+
+function FormatWallpaper(img) {
+  if (!img || !ww || !wh)
+    return img;
+
+  var tmp_img = gdi.CreateImage(ww, wh);
+  var gp = tmp_img.GetGraphics();
+  gp.SetInterpolationMode(7);
+  drawImage(gp, img, 0, 0, ww, wh, 1);
+  tmp_img.ReleaseGraphics(gp);
+
+  // blur it!
+  if (ppt.wallpaperblurred) {
+    var blur_factor = ppt.wallpaperblurvalue; // [1-90]
+    tmp_img = draw_blurred_image(tmp_img, 0, 0, tmp_img.Width, tmp_img.Height, 0, 0, tmp_img.Width, tmp_img.Height, blur_factor, 0x00ffffff);
+  }
+
+  return tmp_img.CreateRawBitmap();
+}
+
 /*
 ===================================================================================================
 Images cache
@@ -173,7 +232,7 @@ function reset_cover_timers() {
   }
 }
 
-function on_load_image_done(tid, image) {
+globalThis_["on_load_image_done"] = function on_load_image_done(tid, image) {
   var tot = brw.groups.length;
   for (var k = 0; k < tot; k++) {
     if (brw.groups[k].metadb) {
@@ -202,7 +261,7 @@ function on_load_image_done(tid, image) {
   }
 }
 
-function on_get_album_art_done(metadb, art_id, image, image_path) {
+globalThis_["on_get_album_art_done"] = function on_get_album_art_done(metadb, art_id, image, image_path) {
   var tot = brw.groups.length;
   for (var i = 0; i < tot; i++) {
     if (brw.groups[i].metadb && brw.groups[i].metadb.Compare(metadb)) {
@@ -467,11 +526,13 @@ const oPlaylistManager = function (name) {
       var cx = this.x - this.offset;
       var ch = cPlaylistManager.rowHeight;
       var cw = this.w;
+      let cy, cy_;
       var bg_margin_top = 2;
       var bg_margin_left = 6;
       var txt_margin = 10;
       var bg_color = RGB(0, 0, 0);
       var txt_color = RGB(255, 255, 255);
+      let tw;
 
       // scrollbar metrics
       if (this.rowTotal > this.totalRows) {
@@ -510,6 +571,7 @@ const oPlaylistManager = function (name) {
 
         // ** item text **
         // playlist total items
+        let t;
         if (cPlaylistManager.showTotalItems) {
           t = plman.PlaylistItemCount(this.playlists[i].idx);
           tw = gr.CalcTextWidth(t + "  ", g_font);
@@ -1022,7 +1084,7 @@ const oScrollbar = function (themed) {
     }
     this.downImage_down.ReleaseGraphics(gb);
 
-    for (i = 1; i < this.buttons.length; i++) {
+    for (let i = 1; i < this.buttons.length; i++) {
       switch (i) {
         case this.buttonType.cursor:
           this.buttons[this.buttonType.cursor] = new button(this.cursorImage_normal, this.cursorImage_hover, this.cursorImage_down);
@@ -1339,14 +1401,14 @@ const oScrollbar = function (themed) {
         cScrollBar.timerCounter = -1;
 
         this.cursorCheck(event, x, y);
-        for (var i = 1; i < 3; i++) {
+        for (let i = 1; i < 3; i++) {
           this.buttons[i].checkstate(event, x, y);
         }
         this.buttonClick = false;
         break;
       case "move":
         this.cursorCheck(event, x, y);
-        for (var i = 1; i < 3; i++) {
+        for (let i = 1; i < 3; i++) {
           this.buttons[i].checkstate(event, x, y);
         }
         break;
@@ -2591,7 +2653,8 @@ const oBrowser = function (name) {
 
     var pl_count = plman.PlaylistCount;
     if (pl_count > 1) {
-      _child02.AppendMenuItem(MF_SEPARATOR, 0, "");
+      // _child02.AppendMenuItem(MF_SEPARATOR, 0, "");
+      _child02.AppendMenuSeparator();
     }
     for (var i = 0; i < pl_count; i++) {
       if (i != this.playlist && !plman.IsAutoPlaylist(i)) {
@@ -2882,7 +2945,7 @@ var g_font_wingdings2_found = utils.CheckFont("wingdings 2");
 //
 var ww = 0, wh = 0;
 var g_metadb = null;
-clipboard = {
+const clipboard = {
   selection: null
 };
 
@@ -2917,6 +2980,7 @@ var g_start_ = 0, g_end_ = 0;
 var g_wallpaperImg = null;
 
 var g_rightClickedIndex = -1;
+var brw, pman;
 
 function on_init() {
   window.DlgCode = DLGC_WANTALLKEYS;
@@ -3484,7 +3548,7 @@ globalThis_["on_key_up"] = function on_key_up(vkey) {
   brw.repaint();
 }
 
-function on_key_down(vkey) {
+globalThis_["on_key_down"] = function on_key_down(vkey) {
   var mask = GetKeyboardMask();
 
   if (cSettings.visible) { } else {
@@ -3622,7 +3686,7 @@ function on_key_down(vkey) {
   }
 }
 
-function on_char(code) {
+globalThis_["on_char"] = function on_char(code) {
 
   // inputBox
   if (ppt.showHeaderBar && cFilterBox.enabled && g_filterbox.inputbox.visible) {
@@ -3657,7 +3721,7 @@ function on_char(code) {
 }
 
 //=================================================// Playback Callbacks
-function on_playback_stop(reason) {
+globalThis_["on_playback_stop"] = function on_playback_stop(reason) {
   g_seconds = 0;
   g_time_remaining = null;
   g_metadb = null;
@@ -3674,7 +3738,7 @@ function on_playback_stop(reason) {
   }
 }
 
-function on_playback_new_track(metadb) {
+globalThis_["on_playback_new_track"] = function on_playback_new_track(metadb) {
   g_metadb = metadb;
   g_wallpaperImg = setWallpaperImg();
   brw.repaint();
@@ -3682,26 +3746,26 @@ function on_playback_new_track(metadb) {
 
 function on_playback_starting(cmd, is_paused) { }
 
-function on_playback_time(time) {
+globalThis_["on_playback_time"] = function on_playback_time(time) {
   g_seconds = time;
   g_time_remaining = ppt.tf_time_remaining.Eval(true);
 }
 
 //=================================================// Library Callbacks
-function on_library_items_added() {
+globalThis_["on_library_items_added"] = function on_library_items_added() {
   brw.populate(false);
 }
 
-function on_library_items_removed() {
+globalThis_["on_library_items_removed"] = function on_library_items_removed() {
   brw.populate(false);
 }
 
-function on_library_items_changed() {
+globalThis_["on_library_items_changed"] = function on_library_items_changed() {
   brw.populate(false);
 }
 
 //=================================================// Playlist Callbacks
-function on_playlists_changed() {
+globalThis_["on_playlists_changed"] = function on_playlists_changed() {
 
   //g_avoid_on_playlist_switch = true;
   if (g_active_playlist != plman.ActivePlaylist) {
@@ -3712,7 +3776,7 @@ function on_playlists_changed() {
   pman.populate(false, false);
 }
 
-function on_playlist_switch() {
+globalThis_["on_playlist_switch"] = function on_playlist_switch() {
 
   if (g_avoid_on_playlist_switch_callbacks_on_sendItemToPlaylist) {
     if (timers.avoidPlaylistSwitch)
@@ -3735,7 +3799,7 @@ function on_playlist_switch() {
   pman.populate(false, false);
 }
 
-function on_playlist_items_added(playlist_idx) {
+globalThis_["on_playlist_items_added"] = function on_playlist_items_added(playlist_idx) {
 
   if (g_avoid_on_playlist_switch_callbacks_on_sendItemToPlaylist)
     return;
@@ -3749,7 +3813,7 @@ function on_playlist_items_added(playlist_idx) {
   }
 }
 
-function on_playlist_items_removed(playlist_idx, new_count) {
+globalThis_["on_playlist_items_removed"] = function on_playlist_items_removed(playlist_idx, new_count) {
 
   if (g_avoid_on_playlist_items_removed)
     return;
@@ -3764,7 +3828,7 @@ function on_playlist_items_removed(playlist_idx, new_count) {
   }
 }
 
-function on_playlist_items_reordered(playlist_idx) {
+globalThis_["on_playlist_items_reordered"] = function on_playlist_items_reordered(playlist_idx) {
   if (ppt.sourceMode == 1) {
     if (playlist_idx == g_active_playlist) {
       brw.populate(true);
@@ -3772,7 +3836,7 @@ function on_playlist_items_reordered(playlist_idx) {
   }
 }
 
-function on_item_focus_change(playlist_idx, from, to) {
+globalThis_["on_item_focus_change"] = function on_item_focus_change(playlist_idx, from, to) {
 
   if (g_avoid_on_item_focus_change) {
     g_avoid_on_item_focus_change = false;
@@ -3794,7 +3858,7 @@ function on_item_focus_change(playlist_idx, from, to) {
 
 }
 
-function on_metadb_changed() {
+globalThis_["on_metadb_changed"] = function on_metadb_changed() {
   // rebuild list
   if (ppt.sourceMode == 1) {
     if (filter_text.length > 0) {
@@ -3805,11 +3869,11 @@ function on_metadb_changed() {
   }
 }
 
-function on_item_selection_change() {
+globalThis_["on_item_selection_change"] = function on_item_selection_change() {
   brw.repaint();
 }
 
-function on_playlist_items_selection_change() {
+globalThis_["on_playlist_items_selection_change"] = function on_playlist_items_selection_change() {
   brw.repaint();
 }
 
@@ -3844,7 +3908,7 @@ function g_sendResponse() {
   brw.populate(true);
 }
 
-function on_notify_data(name, info) {
+globalThis_["on_notify_data"] = function on_notify_data(name, info) {
   switch (name) {
     case "JSSmoothPlaylist->JSSmoothBrowser:avoid_on_playlist_switch_callbacks_on_sendItemToPlaylist":
       g_avoid_on_playlist_switch_callbacks_on_sendItemToPlaylist = true;
@@ -3876,6 +3940,31 @@ function save_image_to_cache(metadb, albumIndex) {
   if (path_) {
     resize(path_, crc);
   }
+}
+
+
+function check_cache(metadb, albumIndex) {
+  //var crc = ppt.tf_crc.EvalWithMetadb(metadb);
+  var crc = brw.groups[albumIndex].cachekey;
+  if (fso.FileExists(CACHE_FOLDER + crc)) {
+    return crc;
+  }
+  return null;
+}
+
+
+function getpath_(temp) {
+  var img_path = "",
+    path_;
+  for (var iii in cover_img) {
+    path_ = utils.Glob(temp + cover_img[iii], FILE_ATTRIBUTE_DIRECTORY, 0xffffffff);
+    for (var j in path_) {
+      if (path_[j].toLowerCase().indexOf(".jpg") > -1 || path_[j].toLowerCase().indexOf(".png") > -1 || path_[j].toLowerCase().indexOf(".gif") > -1) {
+        return path_[j];
+      }
+    }
+  }
+  return null;
 }
 
 on_load();

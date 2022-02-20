@@ -1,6 +1,8 @@
-var fso = new ActiveXObject("Scripting.FileSystemObject");
+/// <reference path="../typings/fsmp.d.ts" />
 
-function drawImage(gr, img, src_x, src_y, src_w, src_h, auto_fill, border, alpha) {
+export var fso = new ActiveXObject("Scripting.FileSystemObject");
+
+export function drawImage(gr, img, src_x, src_y, src_w, src_h, auto_fill, border, alpha) {
 	if (!img || !src_w || !src_h) {
 		return;
 	}
@@ -37,123 +39,123 @@ function drawImage(gr, img, src_x, src_y, src_w, src_h, auto_fill, border, alpha
 	}
 }
 
-var CACHE_FOLDER = fb.ProfilePath + "smp_smooth_cache\\";
+export var CACHE_FOLDER = fb.ProfilePath + "smp_smooth_cache\\";
 
 // *****************************************************************************************************************************************
 // Common functions & flags by Br3tt aka Falstaff (c)2013-2015
 // *****************************************************************************************************************************************
 
 //=================================================// General declarations
-SM_CXVSCROLL = 2;
-SM_CYHSCROLL = 3;
+export const SM_CXVSCROLL = 2;
+export const SM_CYHSCROLL = 3;
 
-DLGC_WANTARROWS = 0x0001; /* Control wants arrow keys         */
-DLGC_WANTTAB = 0x0002; /* Control wants tab keys           */
-DLGC_WANTALLKEYS = 0x0004; /* Control wants all keys           */
-DLGC_WANTMESSAGE = 0x0004; /* Pass message to control          */
-DLGC_HASSETSEL = 0x0008; /* Understands EM_SETSEL message    */
-DLGC_DEFPUSHBUTTON = 0x0010; /* Default pushbutton               */
-DLGC_UNDEFPUSHBUTTON = 0x0020; /* Non-default pushbutton           */
-DLGC_RADIOBUTTON = 0x0040; /* Radio button                     */
-DLGC_WANTCHARS = 0x0080; /* Want WM_CHAR messages            */
-DLGC_STATIC = 0x0100; /* Static item: don't include       */
-DLGC_BUTTON = 0x2000; /* Button item: can be checked      */
+export const DLGC_WANTARROWS = 0x0001; /* Control wants arrow keys         */
+export const DLGC_WANTTAB = 0x0002; /* Control wants tab keys           */
+export const DLGC_WANTALLKEYS = 0x0004; /* Control wants all keys           */
+export const DLGC_WANTMESSAGE = 0x0004; /* Pass message to control          */
+export const DLGC_HASSETSEL = 0x0008; /* Understands EM_SETSEL message    */
+export const DLGC_DEFPUSHBUTTON = 0x0010; /* Default pushbutton               */
+export const DLGC_UNDEFPUSHBUTTON = 0x0020; /* Non-default pushbutton           */
+export const DLGC_RADIOBUTTON = 0x0040; /* Radio button                     */
+export const DLGC_WANTCHARS = 0x0080; /* Want WM_CHAR messages            */
+export const DLGC_STATIC = 0x0100; /* Static item: don't include       */
+export const DLGC_BUTTON = 0x2000; /* Button item: can be checked      */
 
 // Used in utils.Glob()
 // For more information, see: http://msdn.microsoft.com/en-us/library/ee332330%28VS.85%29.aspx
-FILE_ATTRIBUTE_READONLY = 0x00000001;
-FILE_ATTRIBUTE_HIDDEN = 0x00000002;
-FILE_ATTRIBUTE_SYSTEM = 0x00000004;
-FILE_ATTRIBUTE_DIRECTORY = 0x00000010;
-FILE_ATTRIBUTE_ARCHIVE = 0x00000020;
+export const FILE_ATTRIBUTE_READONLY = 0x00000001;
+export const FILE_ATTRIBUTE_HIDDEN = 0x00000002;
+export const FILE_ATTRIBUTE_SYSTEM = 0x00000004;
+export const FILE_ATTRIBUTE_DIRECTORY = 0x00000010;
+export const FILE_ATTRIBUTE_ARCHIVE = 0x00000020;
 //FILE_ATTRIBUTE_DEVICE            = 0x00000040; // do not use
-FILE_ATTRIBUTE_NORMAL = 0x00000080;
-FILE_ATTRIBUTE_TEMPORARY = 0x00000100;
-FILE_ATTRIBUTE_SPARSE_FILE = 0x00000200;
-FILE_ATTRIBUTE_REPARSE_POINT = 0x00000400;
-FILE_ATTRIBUTE_COMPRESSED = 0x00000800;
-FILE_ATTRIBUTE_OFFLINE = 0x00001000;
-FILE_ATTRIBUTE_NOT_CONTENT_INDEXED = 0x00002000;
-FILE_ATTRIBUTE_ENCRYPTED = 0x00004000;
+export const FILE_ATTRIBUTE_NORMAL = 0x00000080;
+export const FILE_ATTRIBUTE_TEMPORARY = 0x00000100;
+export const FILE_ATTRIBUTE_SPARSE_FILE = 0x00000200;
+export const FILE_ATTRIBUTE_REPARSE_POINT = 0x00000400;
+export const FILE_ATTRIBUTE_COMPRESSED = 0x00000800;
+export const FILE_ATTRIBUTE_OFFLINE = 0x00001000;
+export const FILE_ATTRIBUTE_NOT_CONTENT_INDEXED = 0x00002000;
+export const FILE_ATTRIBUTE_ENCRYPTED = 0x00004000;
 //FILE_ATTRIBUTE_VIRTUAL           = 0x00010000; // do not use
 
 // }}
 // Use with MenuManager()
 // {{
-MF_STRING = 0x00000000;
-MF_SEPARATOR = 0x00000800;
-MF_GRAYED = 0x00000001;
-MF_DISABLED = 0x00000002;
-MF_POPUP = 0x00000010;
+export const MF_STRING = 0x00000000;
+export const MF_SEPARATOR = 0x00000800;
+export const MF_GRAYED = 0x00000001;
+export const MF_DISABLED = 0x00000002;
+export const MF_POPUP = 0x00000010;
 // }}
 // Used in get_colors()
 // {{
-COLOR_WINDOW = 5;
-COLOR_HIGHLIGHT = 13;
-COLOR_BTNFACE = 15;
-COLOR_BTNTEXT = 18;
+export const COLOR_WINDOW = 5;
+export const COLOR_HIGHLIGHT = 13;
+export const COLOR_BTNFACE = 15;
+export const COLOR_BTNTEXT = 18;
 // }}
 // Used in window.SetCursor()
 // {{
-IDC_ARROW = 32512;
-IDC_IBEAM = 32513;
-IDC_WAIT = 32514;
-IDC_CROSS = 32515;
-IDC_UPARROW = 32516;
-IDC_SIZE = 32640;
-IDC_ICON = 32641;
-IDC_SIZENWSE = 32642;
-IDC_SIZENESW = 32643;
-IDC_SIZEWE = 32644;
-IDC_SIZENS = 32645;
-IDC_SIZEALL = 32646;
-IDC_NO = 32648;
-IDC_APPSTARTING = 32650;
-IDC_HAND = 32649;
-IDC_HELP = 32651;
+export const IDC_ARROW = 32512;
+export const IDC_IBEAM = 32513;
+export const IDC_WAIT = 32514;
+export const IDC_CROSS = 32515;
+export const IDC_UPARROW = 32516;
+export const IDC_SIZE = 32640;
+export const IDC_ICON = 32641;
+export const IDC_SIZENWSE = 32642;
+export const IDC_SIZENESW = 32643;
+export const IDC_SIZEWE = 32644;
+export const IDC_SIZENS = 32645;
+export const IDC_SIZEALL = 32646;
+export const IDC_NO = 32648;
+export const IDC_APPSTARTING = 32650;
+export const IDC_HAND = 32649;
+export const IDC_HELP = 32651;
 // }}
 // Use with GdiDrawText()
 // {{
-var DT_LEFT = 0x00000000;
-var DT_RIGHT = 0x00000002;
-var DT_TOP = 0x00000000;
-var DT_BOTTOM = 0x00000008;
-var DT_CENTER = 0x00000001;
-var DT_VCENTER = 0x00000004;
-var DT_WORDBREAK = 0x00000010;
-var DT_SINGLELINE = 0x00000020;
-var DT_CALCRECT = 0x00000400;
-var DT_NOPREFIX = 0x00000800;
-var DT_EDITCONTROL = 0x00002000;
-var DT_END_ELLIPSIS = 0x00008000;
+export var DT_LEFT = 0x00000000;
+export var DT_RIGHT = 0x00000002;
+export var DT_TOP = 0x00000000;
+export var DT_BOTTOM = 0x00000008;
+export var DT_CENTER = 0x00000001;
+export var DT_VCENTER = 0x00000004;
+export var DT_WORDBREAK = 0x00000010;
+export var DT_SINGLELINE = 0x00000020;
+export var DT_CALCRECT = 0x00000400;
+export var DT_NOPREFIX = 0x00000800;
+export var DT_EDITCONTROL = 0x00002000;
+export var DT_END_ELLIPSIS = 0x00008000;
 // }}
 // Keyboard Flags & Tools
 // {{
-var VK_F1 = 0x70;
-var VK_F2 = 0x71;
-var VK_F3 = 0x72;
-var VK_F4 = 0x73;
-var VK_F5 = 0x74;
-var VK_F6 = 0x75;
-var VK_BACK = 0x08;
-var VK_TAB = 0x09;
-var VK_RETURN = 0x0D;
-var VK_SHIFT = 0x10;
-var VK_CONTROL = 0x11;
-var VK_ALT = 0x12;
-var VK_ESCAPE = 0x1B;
-var VK_PGUP = 0x21;
-var VK_PGDN = 0x22;
-var VK_END = 0x23;
-var VK_HOME = 0x24;
-var VK_LEFT = 0x25;
-var VK_UP = 0x26;
-var VK_RIGHT = 0x27;
-var VK_DOWN = 0x28;
-var VK_INSERT = 0x2D;
-var VK_DELETE = 0x2E;
-var VK_SPACEBAR = 0x20;
-var KMask = {
+export var VK_F1 = 0x70;
+export var VK_F2 = 0x71;
+export var VK_F3 = 0x72;
+export var VK_F4 = 0x73;
+export var VK_F5 = 0x74;
+export var VK_F6 = 0x75;
+export var VK_BACK = 0x08;
+export var VK_TAB = 0x09;
+export var VK_RETURN = 0x0D;
+export var VK_SHIFT = 0x10;
+export var VK_CONTROL = 0x11;
+export var VK_ALT = 0x12;
+export var VK_ESCAPE = 0x1B;
+export var VK_PGUP = 0x21;
+export var VK_PGDN = 0x22;
+export var VK_END = 0x23;
+export var VK_HOME = 0x24;
+export var VK_LEFT = 0x25;
+export var VK_UP = 0x26;
+export var VK_RIGHT = 0x27;
+export var VK_DOWN = 0x28;
+export var VK_INSERT = 0x2D;
+export var VK_DELETE = 0x2E;
+export var VK_SPACEBAR = 0x20;
+export var KMask = {
 	none: 0,
 	ctrl: 1,
 	shift: 2,
@@ -163,7 +165,7 @@ var KMask = {
 	alt: 6
 };
 
-function GetKeyboardMask() {
+export function GetKeyboardMask() {
 	var c = utils.IsKeyPressed(VK_CONTROL) ? true : false;
 	var a = utils.IsKeyPressed(VK_ALT) ? true : false;
 	var s = utils.IsKeyPressed(VK_SHIFT) ? true : false;
@@ -185,7 +187,7 @@ function GetKeyboardMask() {
 // }}
 // {{
 // Used in window.GetColorCUI()
-ColorTypeCUI = {
+export const ColorTypeCUI = {
 	text: 0,
 	selection_text: 1,
 	inactive_selection_text: 2,
@@ -195,19 +197,19 @@ ColorTypeCUI = {
 	active_item_frame: 6
 };
 // Used in window.GetFontCUI()
-FontTypeCUI = {
+export const FontTypeCUI = {
 	items: 0,
 	labels: 1
 };
 // Used in window.GetColorDUI()
-ColorTypeDUI = {
+export const ColorTypeDUI = {
 	text: 0,
 	background: 1,
 	highlight: 2,
 	selection: 3
 };
 // Used in window.GetFontDUI()
-FontTypeDUI = {
+export const FontTypeDUI = {
 	defaults: 0,
 	tabs: 1,
 	lists: 2,
@@ -218,7 +220,7 @@ FontTypeDUI = {
 //}}
 // {{
 // Used in gr.DrawString()
-function StringFormat() {
+export function StringFormat() {
 	var h_align = 0,
 		v_align = 0,
 		trimming = 0,
@@ -236,24 +238,24 @@ function StringFormat() {
 	}
 	return ((h_align << 28) | (v_align << 24) | (trimming << 20) | flags);
 }
-StringAlignment = {
+export const StringAlignment = {
 	Near: 0,
 	Centre: 1,
 	Far: 2
 };
-var lt_stringformat = StringFormat(StringAlignment.Near, StringAlignment.Near);
-var ct_stringformat = StringFormat(StringAlignment.Centre, StringAlignment.Near);
-var rt_stringformat = StringFormat(StringAlignment.Far, StringAlignment.Near);
-var lc_stringformat = StringFormat(StringAlignment.Near, StringAlignment.Centre);
-var cc_stringformat = StringFormat(StringAlignment.Centre, StringAlignment.Centre);
-var rc_stringformat = StringFormat(StringAlignment.Far, StringAlignment.Centre);
-var lb_stringformat = StringFormat(StringAlignment.Near, StringAlignment.Far);
-var cb_stringformat = StringFormat(StringAlignment.Centre, StringAlignment.Far);
-var rb_stringformat = StringFormat(StringAlignment.Far, StringAlignment.Far);
+export var lt_stringformat = StringFormat(StringAlignment.Near, StringAlignment.Near);
+export var ct_stringformat = StringFormat(StringAlignment.Centre, StringAlignment.Near);
+export var rt_stringformat = StringFormat(StringAlignment.Far, StringAlignment.Near);
+export var lc_stringformat = StringFormat(StringAlignment.Near, StringAlignment.Centre);
+export var cc_stringformat = StringFormat(StringAlignment.Centre, StringAlignment.Centre);
+export var rc_stringformat = StringFormat(StringAlignment.Far, StringAlignment.Centre);
+export var lb_stringformat = StringFormat(StringAlignment.Near, StringAlignment.Far);
+export var cb_stringformat = StringFormat(StringAlignment.Centre, StringAlignment.Far);
+export var rb_stringformat = StringFormat(StringAlignment.Far, StringAlignment.Far);
 //}}
 // {{
 // Used in utils.GetAlbumArt()
-AlbumArtId = {
+export const AlbumArtId = {
 	front: 0,
 	back: 1,
 	disc: 2,
@@ -263,36 +265,36 @@ AlbumArtId = {
 //}}
 // {{
 // Used everywhere!
-function RGB(r, g, b) {
+export function RGB(r, g, b) {
 	return (0xff000000 | (r << 16) | (g << 8) | (b));
 }
-function RGBA(r, g, b, a) {
+export function RGBA(r, g, b, a) {
 	return ((a << 24) | (r << 16) | (g << 8) | (b));
 }
-function getAlpha(color) {
+export function getAlpha(color) {
 	return ((color >> 24) & 0xff);
 }
 
-function getRed(color) {
+export function getRed(color) {
 	return ((color >> 16) & 0xff);
 }
 
-function getGreen(color) {
+export function getGreen(color) {
 	return ((color >> 8) & 0xff);
 }
 
-function getBlue(color) {
+export function getBlue(color) {
 	return (color & 0xff);
 }
 
-function negative(colour) {
+export function negative(colour) {
 	var R = getRed(colour);
 	var G = getGreen(colour);
 	var B = getBlue(colour);
 	return RGB(Math.abs(R - 255), Math.abs(G - 255), Math.abs(B - 255));
 }
 
-function toRGB(d) { // convert back to RGB values
+export function toRGB(d) { // convert back to RGB values
 	var d = d - 0xff000000;
 	var r = d >> 16;
 	var g = d >> 8 & 0xFF;
@@ -300,7 +302,7 @@ function toRGB(d) { // convert back to RGB values
 	return [r, g, b];
 }
 
-function blendColors(c1, c2, factor) {
+export function blendColors(c1, c2, factor) {
 	// When factor is 0, result is 100% color1, when factor is 1, result is 100% color2.
 	var c1 = toRGB(c1);
 	var c2 = toRGB(c2);
@@ -310,7 +312,7 @@ function blendColors(c1, c2, factor) {
 	return (0xff000000 | (r << 16) | (g << 8) | (b));
 }
 
-function draw_glass_reflect(w, h) {
+export function draw_glass_reflect(w, h) {
 	// Mask for glass effect
 	var Mask_img = gdi.CreateImage(w, h);
 	var gb = Mask_img.GetGraphics();
@@ -330,7 +332,7 @@ function draw_glass_reflect(w, h) {
 	return glass_img;
 }
 
-function drawBlurbox(w, h, bgcolor, boxcolor, radius, iteration) {
+export function drawBlurbox(w, h, bgcolor, boxcolor, radius, iteration) {
 	// Create a image which background is true transparent
 	var g_blurbox = gdi.CreateImage(w + 40, h + 40);
 	// Get graphics interface like "gr" in on_paint
@@ -347,7 +349,7 @@ function drawBlurbox(w, h, bgcolor, boxcolor, radius, iteration) {
 	return g_blurbox_main;
 }
 
-function num(strg, nb) {
+export function num(strg, nb) {
 	if (!strg) return "";
 	var i;
 	var str = strg.toString();
@@ -360,7 +362,7 @@ function num(strg, nb) {
 	return str.toString();
 }
 //Time formatting secondes -> 0:00
-function TimeFromSeconds(t) {
+export function TimeFromSeconds(t) {
 	var zpad = function (n) {
 		var str = n.toString();
 		return (str.length < 2) ? "0" + str : str;
@@ -374,7 +376,7 @@ function TimeFromSeconds(t) {
 		return h.toString() + ":" + zpad(m) + ":" + zpad(s);
 	return m.toString() + ":" + zpad(s);
 }
-function TrackType(trkpath) {
+export function TrackType(trkpath) {
 	var taggable;
 	var type;
 	switch (trkpath) {
@@ -408,13 +410,13 @@ function TrackType(trkpath) {
 	}
 	return type;
 }
-function replaceAll(str, search, repl) {
+export function replaceAll(str, search, repl) {
 	while (str.indexOf(search) != -1) {
 		str = str.replace(search, repl);
 	}
 	return str;
 }
-function removeAccents(str) {
+export function removeAccents(str) {
 	/*
 	var norm = new Array('À','Á','Â','Ã','Ä','Å','Æ','Ç','È','É','Ê','Ë',
 	'Ì','Í','Î','Ï', 'Ð','Ñ','Ò','Ó','Ô','Õ','Ö','Ø','Ù','Ú','Û','Ü','Ý',
@@ -431,12 +433,12 @@ function removeAccents(str) {
 //}}
 
 //=================================================// Button object
-ButtonStates = {
+export const ButtonStates = {
 	normal: 0,
 	hover: 1,
 	down: 2
 };
-button = function (normal, hover, down) {
+export const button = function (normal, hover, down) {
 	this.img = Array(normal, hover, down);
 	this.w = this.img[0].Width;
 	this.h = this.img[0].Height;
@@ -493,7 +495,7 @@ button = function (normal, hover, down) {
 };
 
 //=================================================// Tools (general)
-function decode_colour(opt_colour, resultype) {
+export function decode_colour(opt_colour, resultype) {
 	var XYZ_colour = {
 		RGBcolour: 0,
 		H: 0,
@@ -536,7 +538,7 @@ function decode_colour(opt_colour, resultype) {
 	}
 }
 
-function HSL2RGB(zH, zS, zL, result) {
+export function HSL2RGB(zH, zS, zL, result) {
 	var L = zL / 100;
 	var S = zS / 100;
 	var H = zH / 100;
@@ -576,7 +578,7 @@ function HSL2RGB(zH, zS, zL, result) {
 	}
 }
 
-function Hue2RGB(v1, v2, vH) {
+export function Hue2RGB(v1, v2, vH) {
 	if (vH < 0)
 		vH += 1;
 	if (vH > 1)
@@ -590,7 +592,7 @@ function Hue2RGB(v1, v2, vH) {
 	return (v1);
 }
 
-function RGB2HSL(RGB_colour) {
+export function RGB2HSL(RGB_colour) {
 	var R = (getRed(RGB_colour) / 255);
 	var G = (getGreen(RGB_colour) / 255);
 	var B = (getBlue(RGB_colour) / 255);
@@ -601,24 +603,24 @@ function RGB2HSL(RGB_colour) {
 		L: 0
 	};
 
-	var_Min = Math.min(R, G, B); //Min. value of RGB
-	var_Max = Math.max(R, G, B); //Max. value of RGB
-	del_Max = var_Max - var_Min; //Delta RGB value
+	var var_Min = Math.min(R, G, B); //Min. value of RGB
+	var var_Max = Math.max(R, G, B); //Max. value of RGB
+	var del_Max = var_Max - var_Min; //Delta RGB value
 
-	L = (var_Max + var_Min) / 2;
+	var L = (var_Max + var_Min) / 2;
 
 	if (del_Max == 0) { //This is a gray, no chroma...
-		H = 0; //HSL results from 0 to 1
-		S = 0;
+		var H = 0; //HSL results from 0 to 1
+		var S = 0;
 	} else { //Chromatic data...
 		if (L < 0.5)
 			S = del_Max / (var_Max + var_Min);
 		else
 			S = del_Max / (2 - var_Max - var_Min);
 
-		del_R = (((var_Max - R) / 6) + (del_Max / 2)) / del_Max;
-		del_G = (((var_Max - G) / 6) + (del_Max / 2)) / del_Max;
-		del_B = (((var_Max - B) / 6) + (del_Max / 2)) / del_Max;
+		var del_R = (((var_Max - R) / 6) + (del_Max / 2)) / del_Max;
+		var del_G = (((var_Max - G) / 6) + (del_Max / 2)) / del_Max;
+		var del_B = (((var_Max - B) / 6) + (del_Max / 2)) / del_Max;
 
 		if (R == var_Max)
 			H = del_B - del_G;
@@ -639,7 +641,7 @@ function RGB2HSL(RGB_colour) {
 	return HSL_colour;
 }
 
-function DrawColoredText(gr, text, font, default_color, x, y, w, h, alignment, force_default_color) {
+export function DrawColoredText(gr, text, font, default_color, x, y, w, h, alignment, force_default_color) {
 	var txt = "",
 		color = default_color,
 		lg = 0,
@@ -700,7 +702,7 @@ function DrawColoredText(gr, text, font, default_color, x, y, w, h, alignment, f
 	}
 }
 
-function DrawPolyStar(gr, x, y, out_radius, in_radius, points, line_thickness, line_color, fill_color, angle, opacity) {
+export function DrawPolyStar(gr, x, y, out_radius, in_radius, points, line_thickness, line_color, fill_color, angle, opacity) {
 	// ---------------------
 	// code by ExtremeHunter
 	// ---------------------
@@ -710,6 +712,7 @@ function DrawPolyStar(gr, x, y, out_radius, in_radius, points, line_thickness, l
 
 	//---> Create points
 	var point_arr = [];
+	let r;
 	for (var i = 0; i != points; i++) {
 		i % 2 ? r = Math.round((out_radius - line_thickness * 4) / 2) / in_radius : r = Math.round((out_radius - line_thickness * 4) / 2);
 		var x_point = Math.floor(r * Math.cos(Math.PI * i / points * 2 - Math.PI / 2));
@@ -731,16 +734,16 @@ function DrawPolyStar(gr, x, y, out_radius, in_radius, points, line_thickness, l
 	gr.DrawImage(img, x, y, out_radius, out_radius, 0, 0, out_radius, out_radius, angle, opacity);
 }
 
-function zoom(value, factor) {
+export function zoom(value, factor) {
 	return Math.ceil(value * factor / 100);
 }
 
-function get_system_scrollbar_width() {
+export function get_system_scrollbar_width() {
 	var tmp = utils.GetSystemMetrics(SM_CXVSCROLL);
 	return tmp;
 }
 
-function get_system_scrollbar_height() {
+export function get_system_scrollbar_height() {
 	var tmp = utils.GetSystemMetrics(SM_CYHSCROLL);
 	return tmp;
 }
@@ -754,7 +757,7 @@ String.prototype.repeat = function (num) {
 	return new Array(g + 1).join(this);
 };
 
-function cloneObject(obj) {
+export function cloneObject(obj) {
 	var clone = {};
 	for (var i in obj) {
 		if (typeof (obj[i]) == "object" && obj[i] != null)
@@ -765,7 +768,7 @@ function cloneObject(obj) {
 	return clone;
 }
 
-function compareObject(o1, o2) {
+export function compareObject(o1, o2) {
 	for (var p in o1) {
 		if (o1[p] != o2[p]) {
 			return false;
@@ -779,7 +782,7 @@ function compareObject(o1, o2) {
 	return true;
 }
 
-function getTimestamp() {
+export function getTimestamp() {
 	var d,
 		s1,
 		s2,
@@ -801,7 +804,7 @@ function getTimestamp() {
 	return timestamp;
 }
 
-function Utf8Encode(string) {
+export function Utf8Encode(string) {
 	string = string.replace(/\r\n/g, "\n");
 	var utftext = "";
 	for (var n = 0; n < string.length; n++) {
@@ -820,7 +823,7 @@ function Utf8Encode(string) {
 	return utftext;
 }
 
-function crc32(str) {
+export function crc32(str) {
 	//  discuss at: http://phpjs.org/functions/crc32/
 	// original by: Webtoolkit.info (http://www.webtoolkit.info/)
 	// improved by: T0bsn
@@ -848,45 +851,45 @@ function crc32(str) {
 
 // --- UIHacks
 
-MainMenuState = {
+export const MainMenuState = {
 	Show: 0,
 	Hide: 1,
 	Auto: 2
 };
 
-FrameStyle = {
+export const FrameStyle = {
 	Default: 0,
 	SmallCaption: 1,
 	NoCaption: 2,
 	NoBorder: 3
 };
 
-MoveStyle = {
+export const MoveStyle = {
 	Default: 0,
 	Middle: 1,
 	Left: 2,
 	Both: 3
 };
 
-AeroEffect = {
+export const AeroEffect = {
 	Default: 0,
 	Disabled: 1,
 	GlassFrame: 2,
 	SheetOfGlass: 3
 };
 
-WindowState = {
+export const WindowState = {
 	Normal: 0,
 	Minimized: 1,
 	Maximized: 2
 };
 
-function on_load() {
+export function on_load() {
 	if (!fso.FolderExists(CACHE_FOLDER))
 		fso.CreateFolder(CACHE_FOLDER);
 }
 
-function resize(source, crc) {
+export function resize(source, crc) {
 	var img = gdi.Image(source);
 	if (!img) {
 		return;
@@ -898,30 +901,9 @@ function resize(source, crc) {
 	img.SaveAs(CACHE_FOLDER + crc, "image/jpeg");
 }
 
-function getpath_(temp) {
-	var img_path = "",
-		path_;
-	for (var iii in cover_img) {
-		path_ = utils.Glob(temp + cover_img[iii], exc_mask = FILE_ATTRIBUTE_DIRECTORY, inc_mask = 0xffffffff);
-		for (var j in path_) {
-			if (path_[j].toLowerCase().indexOf(".jpg") > -1 || path_[j].toLowerCase().indexOf(".png") > -1 || path_[j].toLowerCase().indexOf(".gif") > -1) {
-				return path_[j];
-			}
-		}
-	}
-	return null;
-}
 
-function check_cache(metadb, albumIndex) {
-	//var crc = ppt.tf_crc.EvalWithMetadb(metadb);
-	var crc = brw.groups[albumIndex].cachekey;
-	if (fso.FileExists(CACHE_FOLDER + crc)) {
-		return crc;
-	}
-	return null;
-}
 
-function load_image_from_cache(metadb, crc) {
+export function load_image_from_cache(metadb, crc) {
 	if (fso.FileExists(CACHE_FOLDER + crc)) { // image in folder cache
 		var tdi = gdi.LoadImageAsync(window.ID, CACHE_FOLDER + crc);
 		return tdi;
@@ -930,7 +912,7 @@ function load_image_from_cache(metadb, crc) {
 	}
 }
 
-function process_cachekey(str) {
+export function process_cachekey(str) {
 	var str_return = "";
 	str = str.toLowerCase();
 	var len = str.length;
@@ -945,46 +927,8 @@ function process_cachekey(str) {
 }
 
 // ===================================================== // Wallpaper
-function setWallpaperImg() {
-	if (!fb.IsPlaying || !ppt.showwallpaper) return null;
 
-	var tmp = null
-
-	if (ppt.wallpapermode == 0) {
-		tmp = utils.GetAlbumArtV2(fb.GetNowPlaying(), 0);
-	} else {
-		var arr = utils.Glob(fb.TitleFormat(ppt.wallpaperpath).Eval());
-		if (arr.length) {
-			tmp = gdi.Image(arr[0]);
-		}
-	}
-
-	if (tmp) {
-		return FormatWallpaper(tmp);
-	}
-	return tmp;
-}
-
-function FormatWallpaper(img) {
-	if (!img || !ww || !wh)
-		return img;
-
-	var tmp_img = gdi.CreateImage(ww, wh);
-	var gp = tmp_img.GetGraphics();
-	gp.SetInterpolationMode(7);
-	drawImage(gp, img, 0, 0, ww, wh, 1);
-	tmp_img.ReleaseGraphics(gp);
-
-	// blur it!
-	if (ppt.wallpaperblurred) {
-		var blur_factor = ppt.wallpaperblurvalue; // [1-90]
-		tmp_img = draw_blurred_image(tmp_img, 0, 0, tmp_img.Width, tmp_img.Height, 0, 0, tmp_img.Width, tmp_img.Height, blur_factor, 0x00ffffff);
-	}
-
-	return tmp_img.CreateRawBitmap();
-}
-
-function draw_blurred_image(image, ix, iy, iw, ih, bx, by, bw, bh, blur_value, overlay_color) {
+export function draw_blurred_image(image, ix, iy, iw, ih, bx, by, bw, bh, blur_value, overlay_color) {
 	var blurValue = blur_value;
 	try {
 		var imgA = image.Resize(iw * blurValue / 100, ih * blurValue / 100, 2);
@@ -1025,7 +969,7 @@ function draw_blurred_image(image, ix, iy, iw, ih, bx, by, bw, bh, blur_value, o
 }
 
 //=================================================// Custom functions
-function match(input, str) {
+export function match(input, str) {
 	var temp = "";
 	input = input.toLowerCase();
 	for (var j in str) {
@@ -1035,8 +979,9 @@ function match(input, str) {
 	return true;
 }
 
-function process_string(str) {
-	str_ = [];
+export function process_string(str) {
+	const str_ = [];
+	let temp;
 	str = str.toLowerCase();
 	while (str != (temp = str.replace("  ", " ")))
 		str = temp;

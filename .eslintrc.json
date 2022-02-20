@@ -12,14 +12,20 @@
         // "no-invalid-this": 2,
         "no-extra-semi": "error",
         "no-extra-boolean-cast": "error",
-        "no-undef": "error"
+        "no-undef": "error",
+        "no-unexpected-multiline": "error"
+        // "no-duplicate-imports": "error",
+        // "no-redeclare": "error"
     },
     "globals": {
         "gdi": "readonly",
         "plman": "readonly",
         "window": "readonly",
-        "include": "readonly",
+        "fb": "readonly",
         "utils": "readonly",
-        "on_paint": "writable"
-    }
+        "include": "readonly",
+        "ActiveXObject": "readonly",
+        "FbMetadbHandleList": "readonly"
+    },
+    "ignorePatterns": "js/*"
 }

@@ -1,6 +1,11 @@
 // *****************************************************************************************************************************************
 // INPUT BOX by Br3tt aka Falstaff (c)2013-2015
 // *****************************************************************************************************************************************
+import { DT_LEFT, DT_CALCRECT, DT_VCENTER, DT_SINGLELINE, DT_NOPREFIX, DT_END_ELLIPSIS } from "./common"
+import { MF_STRING, MF_GRAYED, MF_DISABLED } from "./common";
+import { VK_SHIFT, VK_RETURN, VK_BACK, VK_DELETE, VK_ESCAPE, VK_HOME, VK_END, VK_LEFT, VK_RIGHT } from "./common"
+import { IDC_IBEAM, IDC_ARROW } from "./common"
+import { blendColors, GetKeyboardMask, KMask } from "./common";
 
 export const cInputbox = {
 	temp_gr: gdi.CreateImage(1, 1).GetGraphics(),

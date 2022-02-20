@@ -4,7 +4,8 @@
   "description": "",
   "main": "import.js",
   "scripts": {
-    "build": "esbuild ./src/main.js --bundle --outfile=./dist/jssplaylist.js"
+    "build": "esbuild ./src/browser.js --bundle --platform=node  --outfile=./dist/jsbrowser.js",
+    "jssp": "esbuild ./src/playlist.js --bundle --platform=node --outfile=./dist/jsplaylist.js"
   },
   "author": "",
   "license": "ISC",
@@ -13,5 +14,6 @@
     "esbuild": "^0.14.23",
     "eslint": "^8.9.0",
     "typescript": "^4.5.5"
-  }
+  },
+  "types": "typings/fsmp.d.ts"
 }
