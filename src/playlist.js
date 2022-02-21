@@ -8,7 +8,7 @@ import { IDC_ARROW, IDC_HELP, IDC_HAND } from "./common";
 import { DLGC_WANTALLKEYS } from "./common";
 import { COLOR_WINDOW, COLOR_HIGHLIGHT, COLOR_BTNFACE, COLOR_BTNTEXT } from "./common";
 import { TrackType, FontTypeCUI, FontTypeDUI, ColorTypeCUI, ColorTypeDUI } from "./common";
-import { get_system_scrollbar_width, load_image_from_cache, process_cachekey, process_string, match, resize, on_load } from "./common";
+import { get_system_scrollbar_width, process_cachekey, process_string, match, resize, on_load } from "./common";
 import { GetKeyboardMask, KMask, VK_F3, VK_F5 } from "./common";
 import { RGBA, RGB, blendColors, DrawPolyStar } from "./common";
 import { oInputbox } from "./inputbox";
@@ -291,19 +291,27 @@ registerCallback("on_get_album_art_done", function on_get_album_art_done(metadb,
 })
 
 //=================================================// Cover Tools
+function load_image_from_cache2(folder, crc) {
+	if (fso.FileExists(folder + crc)) { // image in folder cache
+		var tdi = gdi.LoadImageAsync(window.ID, folder + crc);
+		return tdi;
+	} else {
+		return -1;
+	}
+}
+
 const image_cache = function () {
 	this._cachelist = {};
 	this.hit = function (metadb, albumIndex) {
 		var img = this._cachelist[brw.groups[albumIndex].cachekey];
 		if (typeof (img) == "undefined" || img == null) { // if image not in cache, we load it asynchronously
-			//if(!isScrolling  && !cScrollBar.timerID) { // and when no scrolling
-			brw.groups[albumIndex].crc = check_cache(metadb, albumIndex);
+			brw.groups[albumIndex].crc = check_cache2(brw.groups[albumIndex].cachekey);
 			if (brw.groups[albumIndex].crc && brw.groups[albumIndex].load_requested == 0) {
 				// load img from cache
 				if (!timers.coverLoad) {
 					timers.coverLoad = window.SetTimeout(function () {
 						try {
-							brw.groups[albumIndex].tid = load_image_from_cache(metadb, brw.groups[albumIndex].crc);
+							brw.groups[albumIndex].tid = load_image_from_cache2(CACHE_FOLDER, brw.groups[albumIndex].crc);
 							brw.groups[albumIndex].load_requested = 1;
 						} catch (e) { }
 						timers.coverLoad && window.ClearTimeout(timers.coverLoad);
@@ -389,6 +397,7 @@ const image_cache = function () {
 		return img;
 	};
 };
+
 var g_image_cache = new image_cache;
 
 function FormatCover(image, w, h) {
@@ -396,16 +405,9 @@ function FormatCover(image, w, h) {
 	return image.Resize(w, h, 2);
 }
 
-
-function check_cache(metadb, albumIndex) {
-	//var crc = ppt.tf_crc.EvalWithMetadb(metadb);
-	var crc = brw.groups[albumIndex].cachekey;
-	if (fso.FileExists(CACHE_FOLDER + crc)) {
-		return crc;
-	}
-	return null;
+function check_cache2(cachekey) {
+	return fso.FileExists(CACHE_FOLDER + cachekey) ? cachekey : null;
 }
-
 
 function getpath_(temp) {
 	var img_path = "",
@@ -1476,7 +1478,6 @@ const oGroup = function (index, start, handle, groupkey) {
 		}
 	};
 
-	//this.totalPreviousRows = 0
 };
 
 const oBrowser = function (name) {

@@ -5,7 +5,6 @@ export class Emitter {
         if (!this._listeners) {
           this._listeners = [];
         }
-        const firstListener = this._listeners.length === 0;
         const index = this._listeners.push(!thisArgs ? listener : [listener, thisArgs]);
         const result = () => {
           if (!this._disposed) {
@@ -20,23 +19,23 @@ export class Emitter {
 
 	/**
 	 * 
-	 * @param  {...any} event callback function arguments 
+	 * @param  {...any} cbArgs callback function arguments 
 	 */
-	fire(...event) {
+  fire(...cbArgs) {
     if (this._listeners) {
       if (!this._deliveryQueue) {
         this._deliveryQueue = [];
       }
       for (let i = 0; i < this._listeners.length; i++) {
-        this._deliveryQueue.push([this._listeners[i], event])
+        this._deliveryQueue.push([this._listeners[i], cbArgs])
       }
       while (this._deliveryQueue.length > 0) {
-        const [listener, event] = this._deliveryQueue.shift();
+        const [listener, args] = this._deliveryQueue.shift();
         try {
           if (typeof listener === 'function') {
-						listener.call(undefined, event[0], event[1], event[2], event[3]);
+            listener.call(undefined, args[0], args[1], args[2], args[3]);
           } else {
-						listener.call(listener[1], event[0], event[1], event[2], event[3]);
+            listener.call(listener[1], args[0], args[1], args[2], args[3]);
           }
         } catch (e) {
           // unexpected error!
