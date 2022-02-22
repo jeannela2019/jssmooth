@@ -4,7 +4,7 @@
   "description": "",
   "main": "import.js",
   "scripts": {
-    "build": "esbuild ./src/browser.js --bundle --platform=node  --outfile=./dist/jsbrowser.js",
+    "jssb": "esbuild ./src/browser.js --bundle --platform=node  --outfile=./dist/jsbrowser.js",
     "jssp": "esbuild ./src/playlist.js --bundle --platform=node --outfile=./dist/jsplaylist.js"
   },
   "author": "",

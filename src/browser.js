@@ -1,5 +1,5 @@
 import { button, ButtonStates } from "./common";
-import { fso, CACHE_FOLDER } from "./common";
+import { fso } from "./common";
 import { DT_LEFT, DT_RIGHT, DT_CALCRECT, DT_VCENTER, DT_CENTER, DT_TOP, DT_END_ELLIPSIS, DT_NOPREFIX } from "./common";
 import { VK_CONTROL, VK_SHIFT, VK_BACK, VK_DELETE, VK_ESCAPE, VK_UP, VK_DOWN, VK_PGDN, VK_PGUP, VK_END, VK_HOME, } from "./common";
 import { MF_STRING, MF_GRAYED, MF_DISABLED } from "./common";
@@ -7,22 +7,20 @@ import { IDC_ARROW, IDC_HELP } from "./common";
 import { DLGC_WANTALLKEYS } from "./common";
 import { COLOR_WINDOW, COLOR_HIGHLIGHT, COLOR_BTNFACE, COLOR_BTNTEXT } from "./common";
 import { TrackType, FontTypeCUI, FontTypeDUI, ColorTypeCUI, ColorTypeDUI } from "./common";
-import { get_system_scrollbar_width, load_image_from_cache, process_cachekey, process_string, match, resize, on_load } from "./common";
+import { get_system_scrollbar_width, process_string, match } from "./common";
 import { GetKeyboardMask, KMask, VK_F3, VK_F5 } from "./common";
 import { RGBA, RGB, blendColors, DrawPolyStar, drawImage } from "./common";
 import { oInputbox } from "./inputbox";
 import { cc_stringformat } from "./common"
 import { draw_blurred_image } from "./common";
 import { FILE_ATTRIBUTE_DIRECTORY } from "./common";
+import { registerCallback } from "./event";
 
-const globalThis_ = Function("return this")();
 const smoothPath = `${fb.ProfilePath}packages\\jssmooth\\`;
-const imagePath = smoothPath + "images\\"
-
+const imagePath = smoothPath + "images\\";
 let g_fname, g_fsize, g_fstyle, g_font_bold;
 let g_font_box;
 let g_focus_id;
-
 var need_repaint = false;
 
 const images = {
@@ -34,12 +32,29 @@ const images = {
   stream: null
 };
 
+const TagMode = {
+	Album: 1,
+	Artist: 2,
+	Genre: 3
+}
+
+const SourceMode = {
+	Library: 0,
+	Playlist: 1
+}
+
+const PanelMode = {
+	Text: 0,
+	StampsText: 1,
+	LinesText: 2
+}
+
 const ppt = {
   autoFill: window.GetProperty("_DISPLAY: Auto-fill", true),
   followFocusChange: window.GetProperty("_PROPERTY: Follow focus change", true), // only in source mode = Playlist
-  sourceMode: window.GetProperty("_PROPERTY: Source Mode", 0), // 0 = Library, 1 = Playlist
-  tagMode: window.GetProperty("_PROPERTY: Tag Mode", 1), // 1 = album, 2 = artist, 3 = genre
-  panelMode: window.GetProperty("_PROPERTY: Display Mode", 1), // 0 = text, 1 = stamps + text, 2 = lines + text, 3 = stamps no text
+	sourceMode: window.GetProperty("_PROPERTY: Source Mode", SourceMode.Library), // 0 = Library, 1 = Playlist
+	tagMode: window.GetProperty("_PROPERTY: Tag Mode", TagMode.Album), // 1 = album, 2 = artist, 3 = genre
+	panelMode: window.GetProperty("_PROPERTY: Display Mode", PanelMode.Text), // 0 = text, 1 = stamps + text, 2 = lines + text, 3 = stamps no text
   albumsTFsorting: window.GetProperty("Sort Order - ALBUM", "%album artist% | %date% | %album% | %discnumber% | %tracknumber% | %title%"),
   artistsTFsorting: window.GetProperty("Sort Order - ARTIST", "$meta(artist,0) | %date% | %album% | %discnumber% | %tracknumber% | %title%"),
   genresTFsorting: window.GetProperty("Sort Order - GENRE", "$meta(genre,0) | %album artist% | %date% | %album% | %discnumber% | %tracknumber% | %title%"),
@@ -232,7 +247,7 @@ function reset_cover_timers() {
   }
 }
 
-globalThis_["on_load_image_done"] = function on_load_image_done(tid, image) {
+registerCallback("on_load_image_done", function on_load_image_done(tid, image) {
   var tot = brw.groups.length;
   for (var k = 0; k < tot; k++) {
     if (brw.groups[k].metadb) {
@@ -259,9 +274,9 @@ globalThis_["on_load_image_done"] = function on_load_image_done(tid, image) {
       }
     }
   }
-}
+})
 
-globalThis_["on_get_album_art_done"] = function on_get_album_art_done(metadb, art_id, image, image_path) {
+registerCallback("on_get_album_art_done", function on_get_album_art_done(metadb, art_id, image, image_path) {
   var tot = brw.groups.length;
   for (var i = 0; i < tot; i++) {
     if (brw.groups[i].metadb && brw.groups[i].metadb.Compare(metadb)) {
@@ -278,6 +293,99 @@ globalThis_["on_get_album_art_done"] = function on_get_album_art_done(metadb, ar
       break;
     }
   }
+})
+
+// ======================
+// Cache related helpers 
+
+var CACHE_FOLDER = fb.ProfilePath + "smp_smooth_cache\\";
+
+function on_load() {
+	if (!fso.FolderExists(CACHE_FOLDER))
+		fso.CreateFolder(CACHE_FOLDER);
+}
+
+function resize(source, crc) {
+	var img = gdi.Image(source);
+	if (!img) {
+		return;
+	}
+	var s = Math.min(200 / img.Width, 200 / img.Height);
+	var w = Math.floor(img.Width * s);
+	var h = Math.floor(img.Height * s);
+	img = img.Resize(w, h, 2);
+	img.SaveAs(CACHE_FOLDER + crc, "image/jpeg");
+}
+
+function load_image_from_cache(metadb, crc) {
+	if (fso.FileExists(CACHE_FOLDER + crc)) { // image in folder cache
+		var tdi = gdi.LoadImageAsync(window.ID, CACHE_FOLDER + crc);
+		return tdi;
+	} else {
+		return -1;
+	}
+}
+
+function process_cachekey(str) {
+	var str_return = "";
+	str = str.toLowerCase();
+	var len = str.length;
+	for (var i = 0; i < len; i++) {
+		var charcode = str.charCodeAt(i);
+		if (charcode > 96 && charcode < 123)
+			str_return += str.charAt(i);
+		if (charcode > 47 && charcode < 58)
+			str_return += str.charAt(i);
+	}
+	return str_return;
+}
+
+function save_image_to_cache(metadb, albumIndex) {
+	var crc = brw.groups[albumIndex].cachekey;
+	if (fso.FileExists(CACHE_FOLDER + crc))
+		return;
+
+	switch (ppt.tagMode) {
+		case 1:
+			var path = ppt.tf_path.EvalWithMetadb(metadb);
+			var path_ = getpath_(path);
+			break;
+		case 2:
+			var path_ = ppt.tf_path_artist.EvalWithMetadb(metadb);
+			break;
+		case 3:
+			var path_ = ppt.tf_path_genre.EvalWithMetadb(metadb);
+			break;
+	}
+
+	if (path_) {
+		resize(path_, crc);
+	}
+}
+
+
+function check_cache(metadb, albumIndex) {
+	//var crc = ppt.tf_crc.EvalWithMetadb(metadb);
+	var crc = brw.groups[albumIndex].cachekey;
+	if (fso.FileExists(CACHE_FOLDER + crc)) {
+		return crc;
+	}
+	return null;
+}
+
+
+function getpath_(temp) {
+	var img_path = "",
+		path_;
+	for (var iii in cover_img) {
+		path_ = utils.Glob(temp + cover_img[iii], FILE_ATTRIBUTE_DIRECTORY, 0xffffffff);
+		for (var j in path_) {
+			if (path_[j].toLowerCase().indexOf(".jpg") > -1 || path_[j].toLowerCase().indexOf(".png") > -1 || path_[j].toLowerCase().indexOf(".gif") > -1) {
+				return path_[j];
+			}
+		}
+	}
+	return null;
 }
 
 //=================================================// Cover Tools
@@ -342,9 +450,11 @@ const image_cache = function () {
     }
     return img;
   };
+
   this.reset = function (key) {
     this._cachelist[key] = null;
   };
+
   this.getit = function (metadb, albumId, image) {
     var cw = cover.max_w;
     var ch = cw;
@@ -398,6 +508,7 @@ const image_cache = function () {
     return img;
   };
 };
+
 var g_image_cache = new image_cache;
 
 function FormatCover(image, w, h) {
@@ -2998,10 +3109,13 @@ function on_init() {
   g_filterbox.inputbox.visible = true;
 
 }
+
+
+on_load();
 on_init();
 
 // START
-globalThis_["on_size"] = function on_size() {
+registerCallback("on_size", function on_size() {
   window.DlgCode = DLGC_WANTALLKEYS;
 
   ww = window.Width;
@@ -3018,9 +3132,9 @@ globalThis_["on_size"] = function on_size() {
   }
 
   //get_images();
-}
+})
 
-globalThis_["on_paint"] = function on_paint(gr) {
+registerCallback("on_paint", function on_paint(gr) {
   if (ww < 10 || wh < 10)
     return;
 
@@ -3054,9 +3168,9 @@ globalThis_["on_paint"] = function on_paint(gr) {
     }
   }
 
-}
+})
 
-globalThis_["on_mouse_lbtn_down"] = function on_mouse_lbtn_down(x, y) {
+registerCallback("on_mouse_lbtn_down", function on_mouse_lbtn_down(x, y) {
   // stop inertia
   if (cTouch.timer) {
     window.ClearInterval(cTouch.timer);
@@ -3100,9 +3214,9 @@ globalThis_["on_mouse_lbtn_down"] = function on_mouse_lbtn_down(x, y) {
   if (ppt.showHeaderBar && cFilterBox.enabled && g_filterbox.inputbox.visible) {
     g_filterbox.on_mouse("lbtn_down", x, y);
   }
-}
+})
 
-globalThis_["on_mouse_lbtn_up"] = function on_mouse_lbtn_up(x, y) {
+registerCallback("on_mouse_lbtn_up", function on_mouse_lbtn_up(x, y) {
 
   // inputBox
   if (ppt.showHeaderBar && cFilterBox.enabled && g_filterbox.inputbox.visible) {
@@ -3147,9 +3261,9 @@ globalThis_["on_mouse_lbtn_up"] = function on_mouse_lbtn_up(x, y) {
       }, 75);
     }
   }
-}
+})
 
-globalThis_["on_mouse_lbtn_dblclk"] = function on_mouse_lbtn_dblclk(x, y, mask) {
+registerCallback("on_mouse_lbtn_dblclk", function on_mouse_lbtn_dblclk(x, y, mask) {
   if (y >= brw.y) {
     brw.on_mouse("dblclk", x, y);
   } else if (x > brw.x && x < brw.x + brw.w) {
@@ -3157,9 +3271,9 @@ globalThis_["on_mouse_lbtn_dblclk"] = function on_mouse_lbtn_dblclk(x, y, mask) 
   } else {
     brw.on_mouse("dblclk", x, y);
   }
-}
+})
 
-globalThis_["on_mouse_rbtn_up"] = function on_mouse_rbtn_up(x, y) {
+registerCallback("on_mouse_rbtn_up", function on_mouse_rbtn_up(x, y) {
   if (ppt.showHeaderBar && cFilterBox.enabled && g_filterbox.inputbox.visible) {
     g_filterbox.on_mouse("rbtn_up", x, y);
   }
@@ -3170,9 +3284,9 @@ globalThis_["on_mouse_rbtn_up"] = function on_mouse_rbtn_up(x, y) {
 
   brw.on_mouse("right", x, y);
   return true;
-}
+})
 
-globalThis_["on_mouse_move"] = function on_mouse_move(x, y) {
+registerCallback("on_mouse_move", function on_mouse_move(x, y) {
 
   if (m_x == x && m_y == y)
     return;
@@ -3202,9 +3316,9 @@ globalThis_["on_mouse_move"] = function on_mouse_move(x, y) {
 
   m_x = x;
   m_y = y;
-}
+})
 
-globalThis_["on_mouse_wheel"] = function on_mouse_wheel(step) {
+registerCallback("on_mouse_wheel", function on_mouse_wheel(step) {
   if (cTouch.timer) {
     window.ClearInterval(cTouch.timer);
     cTouch.timer = false;
@@ -3303,9 +3417,9 @@ globalThis_["on_mouse_wheel"] = function on_mouse_wheel(step) {
       }
     }
   }
-}
+})
 
-globalThis_["on_mouse_leave"] = function on_mouse_leave() {
+registerCallback("on_mouse_leave", function on_mouse_leave() {
   // inputBox
   if (ppt.showHeaderBar && cFilterBox.enabled && g_filterbox.inputbox.visible) {
     g_filterbox.on_mouse("leave", 0, 0);
@@ -3315,7 +3429,7 @@ globalThis_["on_mouse_leave"] = function on_mouse_leave() {
   if (pman.state == 1) {
     pman.on_mouse("leave", 0, 0);
   }
-}
+})
 
 //=================================================// Metrics & Fonts & Colors & Images
 function get_metrics() {
@@ -3503,15 +3617,17 @@ function get_colors() {
   }
 }
 
-globalThis_["on_font_changed"] =
+registerCallback(
+	"on_font_changed",
   function on_font_changed() {
     get_font();
     get_metrics();
     brw.repaint();
-  }
+	});
 
 
-globalThis_["on_colours_changed"] =
+registerCallback(
+	"on_colours_changed",
   function on_colours_changed() {
     get_colors();
     get_images();
@@ -3520,15 +3636,15 @@ globalThis_["on_colours_changed"] =
     g_filterbox.getImages();
     g_filterbox.reset_colors();
     brw.repaint();
-  }
+	})
 
-globalThis_["on_script_unload"] = function on_script_unload() {
+registerCallback("on_script_unload", function on_script_unload() {
   brw.g_time && window.ClearInterval(brw.g_time);
   brw.g_time = false;
-}
+})
 
 //=================================================// Keyboard Callbacks
-globalThis_["on_key_up"] = function on_key_up(vkey) {
+registerCallback("on_key_up", function on_key_up(vkey) {
   if (cSettings.visible) { } else {
     // inputBox
     if (ppt.showHeaderBar && cFilterBox.enabled && g_filterbox.inputbox.visible) {
@@ -3546,9 +3662,9 @@ globalThis_["on_key_up"] = function on_key_up(vkey) {
     }
   }
   brw.repaint();
-}
+})
 
-globalThis_["on_key_down"] = function on_key_down(vkey) {
+registerCallback("on_key_down", function on_key_down(vkey) {
   var mask = GetKeyboardMask();
 
   if (cSettings.visible) { } else {
@@ -3684,9 +3800,9 @@ globalThis_["on_key_down"] = function on_key_down(vkey) {
     }
 
   }
-}
+})
 
-globalThis_["on_char"] = function on_char(code) {
+registerCallback("on_char", function on_char(code) {
 
   // inputBox
   if (ppt.showHeaderBar && cFilterBox.enabled && g_filterbox.inputbox.visible) {
@@ -3718,10 +3834,10 @@ globalThis_["on_char"] = function on_char(code) {
       }
     }
   }
-}
+})
 
 //=================================================// Playback Callbacks
-globalThis_["on_playback_stop"] = function on_playback_stop(reason) {
+registerCallback("on_playback_stop", function on_playback_stop(reason) {
   g_seconds = 0;
   g_time_remaining = null;
   g_metadb = null;
@@ -3736,36 +3852,36 @@ globalThis_["on_playback_stop"] = function on_playback_stop(reason) {
     case 2: // starting_another (only called on user action, i.e. click on next button)
       break;
   }
-}
+})
 
-globalThis_["on_playback_new_track"] = function on_playback_new_track(metadb) {
+registerCallback("on_playback_new_track", function on_playback_new_track(metadb) {
   g_metadb = metadb;
   g_wallpaperImg = setWallpaperImg();
   brw.repaint();
-}
+})
 
 function on_playback_starting(cmd, is_paused) { }
 
-globalThis_["on_playback_time"] = function on_playback_time(time) {
+registerCallback("on_playback_time", function on_playback_time(time) {
   g_seconds = time;
   g_time_remaining = ppt.tf_time_remaining.Eval(true);
-}
+})
 
 //=================================================// Library Callbacks
-globalThis_["on_library_items_added"] = function on_library_items_added() {
+registerCallback("on_library_items_added", function on_library_items_added() {
   brw.populate(false);
-}
+})
 
-globalThis_["on_library_items_removed"] = function on_library_items_removed() {
+registerCallback("on_library_items_removed", function on_library_items_removed() {
   brw.populate(false);
-}
+})
 
-globalThis_["on_library_items_changed"] = function on_library_items_changed() {
+registerCallback("on_library_items_changed", function on_library_items_changed() {
   brw.populate(false);
-}
+})
 
 //=================================================// Playlist Callbacks
-globalThis_["on_playlists_changed"] = function on_playlists_changed() {
+registerCallback("on_playlists_changed", function on_playlists_changed() {
 
   //g_avoid_on_playlist_switch = true;
   if (g_active_playlist != plman.ActivePlaylist) {
@@ -3774,9 +3890,9 @@ globalThis_["on_playlists_changed"] = function on_playlists_changed() {
 
   // refresh playlists list
   pman.populate(false, false);
-}
+})
 
-globalThis_["on_playlist_switch"] = function on_playlist_switch() {
+registerCallback("on_playlist_switch", function on_playlist_switch() {
 
   if (g_avoid_on_playlist_switch_callbacks_on_sendItemToPlaylist) {
     if (timers.avoidPlaylistSwitch)
@@ -3797,9 +3913,9 @@ globalThis_["on_playlist_switch"] = function on_playlist_switch() {
 
   // refresh playlists list
   pman.populate(false, false);
-}
+})
 
-globalThis_["on_playlist_items_added"] = function on_playlist_items_added(playlist_idx) {
+registerCallback("on_playlist_items_added", function on_playlist_items_added(playlist_idx) {
 
   if (g_avoid_on_playlist_switch_callbacks_on_sendItemToPlaylist)
     return;
@@ -3811,9 +3927,9 @@ globalThis_["on_playlist_items_added"] = function on_playlist_items_added(playli
       brw.populate(false);
     }
   }
-}
+})
 
-globalThis_["on_playlist_items_removed"] = function on_playlist_items_removed(playlist_idx, new_count) {
+registerCallback("on_playlist_items_removed", function on_playlist_items_removed(playlist_idx, new_count) {
 
   if (g_avoid_on_playlist_items_removed)
     return;
@@ -3826,17 +3942,17 @@ globalThis_["on_playlist_items_removed"] = function on_playlist_items_removed(pl
       brw.populate(true);
     }
   }
-}
+})
 
-globalThis_["on_playlist_items_reordered"] = function on_playlist_items_reordered(playlist_idx) {
+registerCallback("on_playlist_items_reordered", function on_playlist_items_reordered(playlist_idx) {
   if (ppt.sourceMode == 1) {
     if (playlist_idx == g_active_playlist) {
       brw.populate(true);
     }
   }
-}
+})
 
-globalThis_["on_item_focus_change"] = function on_item_focus_change(playlist_idx, from, to) {
+registerCallback("on_item_focus_change", function on_item_focus_change(playlist_idx, from, to) {
 
   if (g_avoid_on_item_focus_change) {
     g_avoid_on_item_focus_change = false;
@@ -3856,9 +3972,9 @@ globalThis_["on_item_focus_change"] = function on_item_focus_change(playlist_idx
     }
   }
 
-}
+})
 
-globalThis_["on_metadb_changed"] = function on_metadb_changed() {
+registerCallback("on_metadb_changed", function on_metadb_changed() {
   // rebuild list
   if (ppt.sourceMode == 1) {
     if (filter_text.length > 0) {
@@ -3867,21 +3983,21 @@ globalThis_["on_metadb_changed"] = function on_metadb_changed() {
       brw.populate(false);
     }
   }
-}
+})
 
-globalThis_["on_item_selection_change"] = function on_item_selection_change() {
+registerCallback("on_item_selection_change", function on_item_selection_change() {
   brw.repaint();
-}
+})
 
-globalThis_["on_playlist_items_selection_change"] = function on_playlist_items_selection_change() {
+registerCallback("on_playlist_items_selection_change", function on_playlist_items_selection_change() {
   brw.repaint();
-}
+})
 
-function on_focus(is_focused) {
+registerCallback("on_focus", function on_focus(is_focused) {
   if (!is_focused) {
     brw.repaint();
   }
-}
+})
 
 function check_scroll(scroll___) {
   if (scroll___ < 0)
@@ -3908,7 +4024,7 @@ function g_sendResponse() {
   brw.populate(true);
 }
 
-globalThis_["on_notify_data"] = function on_notify_data(name, info) {
+registerCallback("on_notify_data", function on_notify_data(name, info) {
   switch (name) {
     case "JSSmoothPlaylist->JSSmoothBrowser:avoid_on_playlist_switch_callbacks_on_sendItemToPlaylist":
       g_avoid_on_playlist_switch_callbacks_on_sendItemToPlaylist = true;
@@ -3917,57 +4033,9 @@ globalThis_["on_notify_data"] = function on_notify_data(name, info) {
       brw.showItemFromItemHandle(info);
       break;
   }
-}
-
-function save_image_to_cache(metadb, albumIndex) {
-  var crc = brw.groups[albumIndex].cachekey;
-  if (fso.FileExists(CACHE_FOLDER + crc))
-    return;
-
-  switch (ppt.tagMode) {
-    case 1:
-      var path = ppt.tf_path.EvalWithMetadb(metadb);
-      var path_ = getpath_(path);
-      break;
-    case 2:
-      var path_ = ppt.tf_path_artist.EvalWithMetadb(metadb);
-      break;
-    case 3:
-      var path_ = ppt.tf_path_genre.EvalWithMetadb(metadb);
-      break;
-  }
-
-  if (path_) {
-    resize(path_, crc);
-  }
-}
+})
 
 
-function check_cache(metadb, albumIndex) {
-  //var crc = ppt.tf_crc.EvalWithMetadb(metadb);
-  var crc = brw.groups[albumIndex].cachekey;
-  if (fso.FileExists(CACHE_FOLDER + crc)) {
-    return crc;
-  }
-  return null;
-}
-
-
-function getpath_(temp) {
-  var img_path = "",
-    path_;
-  for (var iii in cover_img) {
-    path_ = utils.Glob(temp + cover_img[iii], FILE_ATTRIBUTE_DIRECTORY, 0xffffffff);
-    for (var j in path_) {
-      if (path_[j].toLowerCase().indexOf(".jpg") > -1 || path_[j].toLowerCase().indexOf(".png") > -1 || path_[j].toLowerCase().indexOf(".gif") > -1) {
-        return path_[j];
-      }
-    }
-  }
-  return null;
-}
-
-on_load();
 
 
 /*
