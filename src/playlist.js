@@ -1658,17 +1658,9 @@ const oBrowser = function (name) {
 
 	this.showFocusedItem = function () {
 		g_focus_row = this.getOffsetFocusItem(g_focus_id);
-		//if(g_focus_row < scroll / ppt.rowHeight || g_focus_row > scroll / ppt.rowHeight + this.totalRowsVis) {
 		scroll = (g_focus_row - Math.floor(this.totalRowsVis / 2)) * ppt.rowHeight;
 		scroll = check_scroll(scroll);
-		/*
-		if(!ppt.enableFullScrollEffectOnFocusChange) {
-		scroll_ = scroll + ppt.rowHeight * 5 * (g_focus_id_prev <= g_focus_id ? -1 : 1);
-		scroll_ = check_scroll(scroll_);
-		};
-		*/
 		this.scrollbar.updateScrollbar();
-		//};
 	};
 
 	this.selectAtoB = function (start_id, end_id) {
@@ -1681,13 +1673,14 @@ const oBrowser = function (name) {
 		plman.ClearPlaylistSelection(g_active_playlist);
 
 		var previous_focus_id = g_focus_id;
+		var deb, fin;
 
 		if (start_id < end_id) {
-			var deb = start_id;
-			var fin = end_id;
+			deb = start_id;
+			fin = end_id;
 		} else {
-			var deb = end_id;
-			var fin = start_id;
+			deb = end_id;
+			fin = start_id;
 		}
 
 		for (var i = deb; i <= fin; i++) {
@@ -1698,11 +1691,12 @@ const oBrowser = function (name) {
 		plman.SetPlaylistFocusItem(g_active_playlist, end_id);
 
 		if (affectedItems.length > 1) {
+			var delta;
 			if (end_id > previous_focus_id) {
-				var delta = end_id - previous_focus_id;
+				delta = end_id - previous_focus_id;
 				this.SHIFT_count += delta;
 			} else {
-				var delta = previous_focus_id - end_id;
+				delta = previous_focus_id - end_id;
 				this.SHIFT_count -= delta;
 			}
 		}
@@ -1743,7 +1737,7 @@ const oBrowser = function (name) {
 						if (this.groups[g_focus_album_id].collapsed) {
 							row_idx = i;
 						} else {
-							var albumTrackId = g_focus_id - this.groups[g_focus_album_id].start;
+							let albumTrackId = g_focus_id - this.groups[g_focus_album_id].start;
 							row_idx = i + this.groupHeaderRowHeight + albumTrackId;
 						}
 						break;
@@ -1755,7 +1749,7 @@ const oBrowser = function (name) {
 				// 2. rech row id
 				for (let i = 0; i < this.rows.length; i++) {
 					if (this.rows[i].type == 0 && this.rows[i].albumId == g_focus_album_id) {
-						var albumTrackId = g_focus_id - this.groups[g_focus_album_id].start;
+						let albumTrackId = g_focus_id - this.groups[g_focus_album_id].start;
 						row_idx = i + albumTrackId;
 						break;
 					}
@@ -1792,10 +1786,11 @@ const oBrowser = function (name) {
 			handle = this.list[i];
 			arr = tf.EvalWithMetadb(handle).split(" ## ");
 			current = arr[0].toLowerCase();
+			var toAdd;
 			if (str_filter.length > 0) {
-				var toAdd = match(arr[0] + " " + arr[1], str_filter);
+				toAdd = match(arr[0] + " " + arr[1], str_filter);
 			} else {
-				var toAdd = true;
+				toAdd = true;
 			}
 			if (toAdd) {
 				if (current != previous) {
@@ -1857,14 +1852,15 @@ const oBrowser = function (name) {
 	};
 
 	this.getlimits = function () {
+		var start_, end_;
 		if (this.rows.length <= this.totalRowsVis) {
-			var start_ = 0;
-			var end_ = this.rows.length - 1;
+			start_ = 0;
+			end_ = this.rows.length - 1;
 		} else {
 			if (scroll_ < 0)
 				scroll_ = scroll;
-			var start_ = Math.round(scroll_ / ppt.rowHeight + 0.4);
-			var end_ = start_ + this.totalRows + (ppt.groupHeaderRowsNumber - 1);
+			start_ = Math.round(scroll_ / ppt.rowHeight + 0.4);
+			end_ = start_ + this.totalRows + (ppt.groupHeaderRowsNumber - 1);
 			// check boundaries
 			start_ = start_ > 0 ? start_ - 1 : start_;
 			if (start_ < 0)
@@ -1949,7 +1945,7 @@ const oBrowser = function (name) {
 			var ah = ppt.rowHeight;
 			var ghrh = this.groupHeaderRowHeight;
 			var g = 0;
-			var coverWidth = cover.max_w;
+			coverWidth = cover.max_w;
 
 			// get Now Playing track
 			if (fb.IsPlaying && plman.PlayingPlaylist == g_active_playlist) {
@@ -2414,7 +2410,7 @@ const oBrowser = function (name) {
 
 	this.dragndrop_check = function (x, y, rowId) {
 		if (this.activeRow > -1 && rowId == this.activeRow) {
-			g_dragndrop_trackId = this.rows[rowId].playlistTrackId;
+			// g_dragndrop_trackId = this.rows[rowId].playlistTrackId;
 		}
 	};
 
@@ -2712,7 +2708,7 @@ const oBrowser = function (name) {
 				}
 				break;
 			case "drag_over":
-				g_dragndrop_bottom = false;
+				//g_dragndrop_bottom = false;
 				if (this.groups.length > 0) {
 					var fin = this.rows.length;
 					for (var i = 0; i < fin; i++) {
@@ -2722,12 +2718,12 @@ const oBrowser = function (name) {
 					var item_height_row = (this.rows[rowId].type == 0 ? 1 : ppt.groupHeaderRowsNumber);
 					var limit = this.rows[rowId].y + (item_height_row * ppt.rowHeight);
 					if (y > limit) {
-						g_dragndrop_bottom = true;
-						g_dragndrop_trackId = this.rows[rowId].playlistTrackId;
+						// g_dragndrop_bottom = true;
+						// g_dragndrop_trackId = this.rows[rowId].playlistTrackId;
 					}
 				} else {
-					g_dragndrop_bottom = true;
-					g_dragndrop_trackId = 0;
+					// g_dragndrop_bottom = true;
+					// g_dragndrop_trackId = 0;
 				}
 				break;
 		}
@@ -2820,7 +2816,6 @@ const oBrowser = function (name) {
 
 		var pl_count = plman.PlaylistCount;
 		if (pl_count > 1) {
-			// _child02.AppendMenuItem(MF_SEPARATOR, 0, "");
 			_child02.AppendMenuSeparator();
 		}
 		for (var i = 0; i < pl_count; i++) {
@@ -2835,7 +2830,6 @@ const oBrowser = function (name) {
 		} else if (ret < 2) {
 			switch (ret) {
 				case 1:
-					//window.ShowProperties();
 					this.settings_context_menu(x, y);
 					break;
 			}
@@ -3166,15 +3160,6 @@ var g_font_rating = null;
 var g_font_mood = null;
 var g_font_guifx_found = utils.CheckFont("guifx v2 transports");
 var g_font_wingdings2_found = utils.CheckFont("wingdings 2");
-
-// drag'n drop from windows system
-var g_dragndrop_status = false;
-var g_dragndrop_x = -1;
-var g_dragndrop_y = -1;
-var g_dragndrop_bottom = false;
-var g_dragndrop_timer = false;
-var g_dragndrop_trackId = -1;
-var g_dragndrop_targetPlaylistId = -1;
 
 //
 var ww = 0, wh = 0;
