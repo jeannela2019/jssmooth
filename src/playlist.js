@@ -24,8 +24,6 @@ const imagePath = smoothPath + "images\\"
 
 let g_fname, g_fsize, g_fstyle, g_font_bold;
 let g_font_box;
-// let g_focus_id;
-let g_group_id_focused;
 var need_repaint = false;
 
 const ppt = {
@@ -79,10 +77,6 @@ const cTouch = {
 	timer: false,
 	multiplier: 0,
 	delta: 0
-};
-
-const cSettings = {
-	visible: false
 };
 
 const cFilterBox = {
@@ -181,21 +175,6 @@ const timers = {
 	showPlaylistManager: false,
 	hidePlaylistManager: false
 };
-
-const dragndrop = {
-	enabled: true,
-	contigus_sel: null,
-	x: 0,
-	y: 0,
-	drag_id: -1,
-	drop_id: -1,
-	timerID: false,
-	drag_in: false,
-	drag_out: false,
-	clicked: false,
-	moved: false
-};
-
 
 function setWallpaperImg() {
 	if (!fb.IsPlaying || !ppt.showwallpaper) return null;
@@ -300,6 +279,20 @@ function load_image_from_cache2(folder, crc) {
 	}
 }
 
+
+function save_image_to_cache(metadb, albumIndex) {
+	var crc = brw.groups[albumIndex].cachekey;
+	if (fso.FileExists(CACHE_FOLDER + crc))
+		return;
+
+	var path = ppt.tf_path.EvalWithMetadb(metadb);
+	var path_ = getpath_(path);
+	if (path_) {
+		resize(path_, crc);
+	}
+}
+
+
 const image_cache = function () {
 	this._cachelist = {};
 	this.hit = function (metadb, albumIndex) {
@@ -329,7 +322,6 @@ const image_cache = function () {
 					}, (!isScrolling && !cScrollBar.timerID ? 5 : 25));
 				}
 			}
-			//};
 		}
 		return img;
 	};
@@ -1473,7 +1465,6 @@ const oGroup = function (index, start, handle, groupkey) {
 		if (this.collapsed) {
 			if (brw.focusedTrackId >= this.start && brw.focusedTrackId < this.start + count) { // focused track is in this group!
 				this.collapsed = false;
-				g_group_id_focused = this.index;
 			}
 		}
 	};
@@ -3776,21 +3767,19 @@ registerCallback("on_script_unload", function on_script_unload() {
 
 //=================================================// Keyboard Callbacks
 registerCallback("on_key_up", function on_key_up(vkey) {
-	if (cSettings.visible) { } else {
-		// inputBox
-		if (ppt.showHeaderBar && ppt.showFilterBox && g_filterbox.inputbox.visible) {
-			g_filterbox.on_key("up", vkey);
-		}
+	// inputBox
+	if (ppt.showHeaderBar && ppt.showFilterBox && g_filterbox.inputbox.visible) {
+		g_filterbox.on_key("up", vkey);
+	}
 
-		// scroll keys up and down RESET (step and timers)
-		brw.keypressed = false;
-		cScrollBar.timerCounter = -1;
-		cScrollBar.timerID && window.ClearTimeout(cScrollBar.timerID);
-		cScrollBar.timerID = false;
-		if (vkey == VK_SHIFT) {
-			brw.SHIFT_start_id = null;
-			brw.SHIFT_count = 0;
-		}
+	// scroll keys up and down RESET (step and timers)
+	brw.keypressed = false;
+	cScrollBar.timerCounter = -1;
+	cScrollBar.timerID && window.ClearTimeout(cScrollBar.timerID);
+	cScrollBar.timerID = false;
+	if (vkey == VK_SHIFT) {
+		brw.SHIFT_start_id = null;
+		brw.SHIFT_count = 0;
 	}
 	brw.repaint();
 })
@@ -4030,270 +4019,266 @@ function vk_pgdn() {
 registerCallback("on_key_down", function on_key_down(vkey) {
 	var mask = GetKeyboardMask();
 
-	if (cSettings.visible) { } else {
-		//if(dragndrop.drag_in) return true;
+	// inputBox
+	if (ppt.showHeaderBar && ppt.showFilterBox && g_filterbox.inputbox.visible) {
+		g_filterbox.on_key("down", vkey);
+	}
 
-		// inputBox
-		if (ppt.showHeaderBar && ppt.showFilterBox && g_filterbox.inputbox.visible) {
-			g_filterbox.on_key("down", vkey);
-		}
+	if (mask == KMask.none) {
+		switch (vkey) {
+			case VK_F2:
 
-		if (mask == KMask.none) {
-			switch (vkey) {
-				case VK_F2:
+				break;
+			case VK_F3:
+				brw.showNowPlaying();
+				break;
+			case VK_F5:
+				// refresh covers
+				g_image_cache = new image_cache;
+				var total = brw.groups.length;
+				for (var i = 0; i < total; i++) {
+					brw.groups[i].tid = -1;
+					brw.groups[i].load_requested = 0;
+					brw.groups[i].save_requested = false;
+					brw.groups[i].cover_img = null;
+					brw.groups[i].cover_type = null;
+				}
+				brw.repaint();
+				break;
+			case VK_F6:
 
-					break;
-				case VK_F3:
-					brw.showNowPlaying();
-					break;
-				case VK_F5:
-					// refresh covers
-					g_image_cache = new image_cache;
-					var total = brw.groups.length;
-					for (var i = 0; i < total; i++) {
-						brw.groups[i].tid = -1;
-						brw.groups[i].load_requested = 0;
-						brw.groups[i].save_requested = false;
-						brw.groups[i].cover_img = null;
-						brw.groups[i].cover_type = null;
-					}
-					brw.repaint();
-					break;
-				case VK_F6:
-
-					break;
-				case VK_TAB:
-					break;
-				case VK_BACK:
-					if (cList.search_string.length > 0) {
-						cList.inc_search_noresult = false;
-						brw.tt_x = ((brw.w) / 2) - (((cList.search_string.length * 13) + (10 * 2)) / 2);
-						brw.tt_y = brw.y + Math.floor((brw.h / 2) - 30);
-						brw.tt_w = ((cList.search_string.length * 13) + (10 * 2));
-						brw.tt_h = 60;
-						cList.search_string = cList.search_string.substring(0, cList.search_string.length - 1);
-						brw.repaint();
-						cList.clear_incsearch_timer && window.ClearTimeout(cList.clear_incsearch_timer);
-						cList.clear_incsearch_timer = false;
-						cList.incsearch_timer && window.ClearTimeout(cList.incsearch_timer);
-						cList.incsearch_timer = window.SetTimeout(function () {
-							brw.incrementalSearch();
-							window.ClearTimeout(cList.incsearch_timer);
-							cList.incsearch_timer = false;
-							cList.inc_search_noresult = false;
-						}, 400);
-					}
-					break;
-				case VK_ESCAPE:
-				case 222:
+				break;
+			case VK_TAB:
+				break;
+			case VK_BACK:
+				if (cList.search_string.length > 0) {
+					cList.inc_search_noresult = false;
 					brw.tt_x = ((brw.w) / 2) - (((cList.search_string.length * 13) + (10 * 2)) / 2);
 					brw.tt_y = brw.y + Math.floor((brw.h / 2) - 30);
 					brw.tt_w = ((cList.search_string.length * 13) + (10 * 2));
 					brw.tt_h = 60;
-					cList.search_string = "";
-					window.RepaintRect(0, brw.tt_y - 2, brw.w, brw.tt_h + 4);
-					break;
-				case VK_UP:
-					if (brw.rowsCount > 0 && !brw.keypressed && !cScrollBar.timerID) {
-						brw.keypressed = true;
-						reset_cover_timers();
+					cList.search_string = cList.search_string.substring(0, cList.search_string.length - 1);
+					brw.repaint();
+					cList.clear_incsearch_timer && window.ClearTimeout(cList.clear_incsearch_timer);
+					cList.clear_incsearch_timer = false;
+					cList.incsearch_timer && window.ClearTimeout(cList.incsearch_timer);
+					cList.incsearch_timer = window.SetTimeout(function () {
+						brw.incrementalSearch();
+						window.ClearTimeout(cList.incsearch_timer);
+						cList.incsearch_timer = false;
+						cList.inc_search_noresult = false;
+					}, 400);
+				}
+				break;
+			case VK_ESCAPE:
+			case 222:
+				brw.tt_x = ((brw.w) / 2) - (((cList.search_string.length * 13) + (10 * 2)) / 2);
+				brw.tt_y = brw.y + Math.floor((brw.h / 2) - 30);
+				brw.tt_w = ((cList.search_string.length * 13) + (10 * 2));
+				brw.tt_h = 60;
+				cList.search_string = "";
+				window.RepaintRect(0, brw.tt_y - 2, brw.w, brw.tt_h + 4);
+				break;
+			case VK_UP:
+				if (brw.rowsCount > 0 && !brw.keypressed && !cScrollBar.timerID) {
+					brw.keypressed = true;
+					reset_cover_timers();
 
-						vk_up();
-						if (!cScrollBar.timerID) {
-							cScrollBar.timerID = window.SetTimeout(function () {
-								window.ClearTimeout(cScrollBar.timerID);
-								cScrollBar.timerID = window.SetInterval(vk_up, 100);
-							}, 400);
-						}
+					vk_up();
+					if (!cScrollBar.timerID) {
+						cScrollBar.timerID = window.SetTimeout(function () {
+							window.ClearTimeout(cScrollBar.timerID);
+							cScrollBar.timerID = window.SetInterval(vk_up, 100);
+						}, 400);
 					}
-					break;
-				case VK_DOWN:
-					if (brw.rowsCount > 0 && !brw.keypressed && !cScrollBar.timerID) {
-						brw.keypressed = true;
-						reset_cover_timers();
+				}
+				break;
+			case VK_DOWN:
+				if (brw.rowsCount > 0 && !brw.keypressed && !cScrollBar.timerID) {
+					brw.keypressed = true;
+					reset_cover_timers();
 
-						vk_down();
-						if (!cScrollBar.timerID) {
-							cScrollBar.timerID = window.SetTimeout(function () {
-								window.ClearTimeout(cScrollBar.timerID);
-								cScrollBar.timerID = window.SetInterval(vk_down, 100);
-							}, 400);
-						}
+					vk_down();
+					if (!cScrollBar.timerID) {
+						cScrollBar.timerID = window.SetTimeout(function () {
+							window.ClearTimeout(cScrollBar.timerID);
+							cScrollBar.timerID = window.SetInterval(vk_down, 100);
+						}, 400);
 					}
-					break;
-				case VK_PGUP:
-					if (brw.rowsCount > 0 && !brw.keypressed && !cScrollBar.timerID) {
-						brw.keypressed = true;
-						reset_cover_timers();
+				}
+				break;
+			case VK_PGUP:
+				if (brw.rowsCount > 0 && !brw.keypressed && !cScrollBar.timerID) {
+					brw.keypressed = true;
+					reset_cover_timers();
 
-						vk_pgup();
-						if (!cScrollBar.timerID) {
-							cScrollBar.timerID = window.SetTimeout(function () {
-								window.ClearTimeout(cScrollBar.timerID);
-								cScrollBar.timerID = window.SetInterval(vk_pgup, 100);
-							}, 400);
-						}
+					vk_pgup();
+					if (!cScrollBar.timerID) {
+						cScrollBar.timerID = window.SetTimeout(function () {
+							window.ClearTimeout(cScrollBar.timerID);
+							cScrollBar.timerID = window.SetInterval(vk_pgup, 100);
+						}, 400);
 					}
-					break;
-				case VK_PGDN:
-					if (brw.rowsCount > 0 && !brw.keypressed && !cScrollBar.timerID) {
-						brw.keypressed = true;
-						reset_cover_timers();
+				}
+				break;
+			case VK_PGDN:
+				if (brw.rowsCount > 0 && !brw.keypressed && !cScrollBar.timerID) {
+					brw.keypressed = true;
+					reset_cover_timers();
 
-						vk_pgdn();
-						if (!cScrollBar.timerID) {
-							cScrollBar.timerID = window.SetTimeout(function () {
-								window.ClearTimeout(cScrollBar.timerID);
-								cScrollBar.timerID = window.SetInterval(vk_pgdn, 100);
-							}, 400);
-						}
+					vk_pgdn();
+					if (!cScrollBar.timerID) {
+						cScrollBar.timerID = window.SetTimeout(function () {
+							window.ClearTimeout(cScrollBar.timerID);
+							cScrollBar.timerID = window.SetInterval(vk_pgdn, 100);
+						}, 400);
 					}
-					break;
-				case VK_RETURN:
-					plman.ExecutePlaylistDefaultAction(g_active_playlist, g_focus_id);
-					break;
-				case VK_END:
-					if (brw.rowsCount > 0) {
-						//var last_1st_group_row = brw.rowsCount - ppt.groupHeaderRowsNumber;
-						//var new_focus_id = brw.rows[last_1st_group_row].playlistTrackId;
+				}
+				break;
+			case VK_RETURN:
+				plman.ExecutePlaylistDefaultAction(g_active_playlist, g_focus_id);
+				break;
+			case VK_END:
+				if (brw.rowsCount > 0) {
+					//var last_1st_group_row = brw.rowsCount - ppt.groupHeaderRowsNumber;
+					//var new_focus_id = brw.rows[last_1st_group_row].playlistTrackId;
 
-						var new_focus_id = brw.rows[brw.rows.length - 1].playlistTrackId;
-						plman.SetPlaylistFocusItem(g_active_playlist, new_focus_id);
-						plman.ClearPlaylistSelection(g_active_playlist);
-						plman.SetPlaylistSelectionSingle(g_active_playlist, new_focus_id, true);
-					}
-					break;
-				case VK_HOME:
-					if (brw.rowsCount > 0) {
-						var new_focus_id = brw.rows[0].playlistTrackId;
-						plman.ClearPlaylistSelection(g_active_playlist);
-						plman.SetPlaylistSelectionSingle(g_active_playlist, new_focus_id, true);
-						plman.SetPlaylistFocusItem(g_active_playlist, new_focus_id);
-					}
-					break;
-				case VK_DELETE:
-					if (!plman.IsAutoPlaylist(g_active_playlist)) {
-						plman.RemovePlaylistSelection(g_active_playlist, false);
-						plman.RemovePlaylistSelection(g_active_playlist, false);
-						plman.SetPlaylistSelectionSingle(g_active_playlist, plman.GetPlaylistFocusItemIndex(g_active_playlist), true);
-					}
-					break;
-			}
-		} else {
-			switch (mask) {
-				case KMask.shift:
-					switch (vkey) {
-						case VK_SHIFT: // SHIFT key alone
-							brw.SHIFT_count = 0;
-							break;
-						case VK_UP: // SHIFT + KEY UP
-							if (brw.SHIFT_count == 0) {
-								if (brw.SHIFT_start_id == null) {
-									brw.SHIFT_start_id = g_focus_id;
-								}
-								plman.ClearPlaylistSelection(g_active_playlist);
-								plman.SetPlaylistSelectionSingle(g_active_playlist, g_focus_id, true);
-								if (g_focus_id > 0) {
-									brw.SHIFT_count--;
-									g_focus_id--;
-									plman.SetPlaylistSelectionSingle(g_active_playlist, g_focus_id, true);
-									plman.SetPlaylistFocusItem(g_active_playlist, g_focus_id);
-								}
-							} else if (brw.SHIFT_count < 0) {
-								if (g_focus_id > 0) {
-									brw.SHIFT_count--;
-									g_focus_id--;
-									plman.SetPlaylistSelectionSingle(g_active_playlist, g_focus_id, true);
-									plman.SetPlaylistFocusItem(g_active_playlist, g_focus_id);
-								}
-							} else {
-								plman.SetPlaylistSelectionSingle(g_active_playlist, g_focus_id, false);
+					var new_focus_id = brw.rows[brw.rows.length - 1].playlistTrackId;
+					plman.SetPlaylistFocusItem(g_active_playlist, new_focus_id);
+					plman.ClearPlaylistSelection(g_active_playlist);
+					plman.SetPlaylistSelectionSingle(g_active_playlist, new_focus_id, true);
+				}
+				break;
+			case VK_HOME:
+				if (brw.rowsCount > 0) {
+					var new_focus_id = brw.rows[0].playlistTrackId;
+					plman.ClearPlaylistSelection(g_active_playlist);
+					plman.SetPlaylistSelectionSingle(g_active_playlist, new_focus_id, true);
+					plman.SetPlaylistFocusItem(g_active_playlist, new_focus_id);
+				}
+				break;
+			case VK_DELETE:
+				if (!plman.IsAutoPlaylist(g_active_playlist)) {
+					plman.RemovePlaylistSelection(g_active_playlist, false);
+					plman.RemovePlaylistSelection(g_active_playlist, false);
+					plman.SetPlaylistSelectionSingle(g_active_playlist, plman.GetPlaylistFocusItemIndex(g_active_playlist), true);
+				}
+				break;
+		}
+	} else {
+		switch (mask) {
+			case KMask.shift:
+				switch (vkey) {
+					case VK_SHIFT: // SHIFT key alone
+						brw.SHIFT_count = 0;
+						break;
+					case VK_UP: // SHIFT + KEY UP
+						if (brw.SHIFT_count == 0) {
+							if (brw.SHIFT_start_id == null) {
+								brw.SHIFT_start_id = g_focus_id;
+							}
+							plman.ClearPlaylistSelection(g_active_playlist);
+							plman.SetPlaylistSelectionSingle(g_active_playlist, g_focus_id, true);
+							if (g_focus_id > 0) {
 								brw.SHIFT_count--;
 								g_focus_id--;
+								plman.SetPlaylistSelectionSingle(g_active_playlist, g_focus_id, true);
 								plman.SetPlaylistFocusItem(g_active_playlist, g_focus_id);
 							}
-							break;
-						case VK_DOWN: // SHIFT + KEY DOWN
-							if (brw.SHIFT_count == 0) {
-								if (brw.SHIFT_start_id == null) {
-									brw.SHIFT_start_id = g_focus_id;
-								}
-								plman.ClearPlaylistSelection(g_active_playlist);
+						} else if (brw.SHIFT_count < 0) {
+							if (g_focus_id > 0) {
+								brw.SHIFT_count--;
+								g_focus_id--;
 								plman.SetPlaylistSelectionSingle(g_active_playlist, g_focus_id, true);
-								if (g_focus_id < brw.list.Count - 1) {
-									brw.SHIFT_count++;
-									g_focus_id++;
-									plman.SetPlaylistSelectionSingle(g_active_playlist, g_focus_id, true);
-									plman.SetPlaylistFocusItem(g_active_playlist, g_focus_id);
-								}
-							} else if (brw.SHIFT_count > 0) {
-								if (g_focus_id < brw.list.Count - 1) {
-									brw.SHIFT_count++;
-									g_focus_id++;
-									plman.SetPlaylistSelectionSingle(g_active_playlist, g_focus_id, true);
-									plman.SetPlaylistFocusItem(g_active_playlist, g_focus_id);
-								}
-							} else {
-								plman.SetPlaylistSelectionSingle(g_active_playlist, g_focus_id, false);
+								plman.SetPlaylistFocusItem(g_active_playlist, g_focus_id);
+							}
+						} else {
+							plman.SetPlaylistSelectionSingle(g_active_playlist, g_focus_id, false);
+							brw.SHIFT_count--;
+							g_focus_id--;
+							plman.SetPlaylistFocusItem(g_active_playlist, g_focus_id);
+						}
+						break;
+					case VK_DOWN: // SHIFT + KEY DOWN
+						if (brw.SHIFT_count == 0) {
+							if (brw.SHIFT_start_id == null) {
+								brw.SHIFT_start_id = g_focus_id;
+							}
+							plman.ClearPlaylistSelection(g_active_playlist);
+							plman.SetPlaylistSelectionSingle(g_active_playlist, g_focus_id, true);
+							if (g_focus_id < brw.list.Count - 1) {
 								brw.SHIFT_count++;
 								g_focus_id++;
+								plman.SetPlaylistSelectionSingle(g_active_playlist, g_focus_id, true);
 								plman.SetPlaylistFocusItem(g_active_playlist, g_focus_id);
 							}
-							break;
-					}
-					break;
-				case KMask.ctrl:
-					if (vkey == 65) { // CTRL+A
-						fb.RunMainMenuCommand("Edit/Select all");
-						brw.metadblist_selection = plman.GetPlaylistSelectedItems(g_active_playlist);
-						brw.repaint();
-					}
-					if (vkey == 66) { // CTRL+B
-						cScrollBar.enabled = !cScrollBar.enabled;
-						window.SetProperty("_DISPLAY: Show Scrollbar", cScrollBar.enabled);
-						get_metrics();
-						brw.repaint();
-					}
-					if (vkey == 84) { // CTRL+T
-						ppt.showHeaderBar = !ppt.showHeaderBar;
-						window.SetProperty("_DISPLAY: Show Top Bar", ppt.showHeaderBar);
-						get_metrics();
-						brw.scrollbar.updateScrollbar();
-						brw.repaint();
-					}
-					if (vkey == 48 || vkey == 96) { // CTRL+0
-						var previous = ppt.extra_font_size;
-						if (!timers.mouseWheel) {
-							ppt.extra_font_size = 0;
-							if (previous != ppt.extra_font_size) {
-								timers.mouseWheel = window.SetTimeout(function () {
-									window.SetProperty("_SYSTEM: Extra font size value", ppt.extra_font_size);
-									get_font();
-									get_metrics();
-									get_images();
-
-									// refresh covers
-									g_image_cache = new image_cache;
-									var total = brw.groups.length;
-									for (var i = 0; i < total; i++) {
-										brw.groups[i].tid = -1;
-										brw.groups[i].load_requested = 0;
-										brw.groups[i].save_requested = false;
-										brw.groups[i].cover_img = null;
-										brw.groups[i].cover_type = null;
-									}
-
-									brw.repaint();
-									timers.mouseWheel && window.ClearTimeout(timers.mouseWheel);
-									timers.mouseWheel = false;
-								}, 100);
+						} else if (brw.SHIFT_count > 0) {
+							if (g_focus_id < brw.list.Count - 1) {
+								brw.SHIFT_count++;
+								g_focus_id++;
+								plman.SetPlaylistSelectionSingle(g_active_playlist, g_focus_id, true);
+								plman.SetPlaylistFocusItem(g_active_playlist, g_focus_id);
 							}
+						} else {
+							plman.SetPlaylistSelectionSingle(g_active_playlist, g_focus_id, false);
+							brw.SHIFT_count++;
+							g_focus_id++;
+							plman.SetPlaylistFocusItem(g_active_playlist, g_focus_id);
+						}
+						break;
+				}
+				break;
+			case KMask.ctrl:
+				if (vkey == 65) { // CTRL+A
+					fb.RunMainMenuCommand("Edit/Select all");
+					brw.metadblist_selection = plman.GetPlaylistSelectedItems(g_active_playlist);
+					brw.repaint();
+				}
+				if (vkey == 66) { // CTRL+B
+					cScrollBar.enabled = !cScrollBar.enabled;
+					window.SetProperty("_DISPLAY: Show Scrollbar", cScrollBar.enabled);
+					get_metrics();
+					brw.repaint();
+				}
+				if (vkey == 84) { // CTRL+T
+					ppt.showHeaderBar = !ppt.showHeaderBar;
+					window.SetProperty("_DISPLAY: Show Top Bar", ppt.showHeaderBar);
+					get_metrics();
+					brw.scrollbar.updateScrollbar();
+					brw.repaint();
+				}
+				if (vkey == 48 || vkey == 96) { // CTRL+0
+					var previous = ppt.extra_font_size;
+					if (!timers.mouseWheel) {
+						ppt.extra_font_size = 0;
+						if (previous != ppt.extra_font_size) {
+							timers.mouseWheel = window.SetTimeout(function () {
+								window.SetProperty("_SYSTEM: Extra font size value", ppt.extra_font_size);
+								get_font();
+								get_metrics();
+								get_images();
+
+								// refresh covers
+								g_image_cache = new image_cache;
+								var total = brw.groups.length;
+								for (var i = 0; i < total; i++) {
+									brw.groups[i].tid = -1;
+									brw.groups[i].load_requested = 0;
+									brw.groups[i].save_requested = false;
+									brw.groups[i].cover_img = null;
+									brw.groups[i].cover_type = null;
+								}
+
+								brw.repaint();
+								timers.mouseWheel && window.ClearTimeout(timers.mouseWheel);
+								timers.mouseWheel = false;
+							}, 100);
 						}
 					}
-					break;
-				case KMask.alt:
-					break;
-			}
+				}
+				break;
+			case KMask.alt:
+				break;
 		}
 	}
 })
@@ -4303,31 +4288,26 @@ registerCallback("on_char", function on_char(code) {
 	if (ppt.showHeaderBar && ppt.showFilterBox && g_filterbox.inputbox.visible) {
 		g_filterbox.on_char(code);
 	}
-
-	if (cSettings.visible) { } else {
-		if (g_filterbox.inputbox.edit) {
-			//g_filterbox.on_char(code);
-		} else {
-			if (brw.list.Count > 0) {
-				brw.tt_x = ((brw.w) / 2) - (((cList.search_string.length * 13) + (10 * 2)) / 2);
-				brw.tt_y = brw.y + Math.floor((brw.h / 2) - 30);
-				brw.tt_w = ((cList.search_string.length * 13) + (10 * 2));
-				brw.tt_h = 60;
-				if (code == 32 && cList.search_string.length == 0)
-					return true; // SPACE Char not allowed on 1st char
-				if (cList.search_string.length <= 20 && brw.tt_w <= brw.w - 20) {
-					if (code > 31) {
-						cList.search_string = cList.search_string + String.fromCharCode(code).toUpperCase();
-						brw.repaint();
-						cList.clear_incsearch_timer && window.ClearTimeout(cList.clear_incsearch_timer);
-						cList.clear_incsearch_timer = false;
-						cList.incsearch_timer && window.ClearTimeout(cList.incsearch_timer);
-						cList.incsearch_timer = window.SetTimeout(function () {
-							brw.incrementalSearch();
-							window.ClearTimeout(cList.incsearch_timer);
-							cList.incsearch_timer = false;
-						}, 400);
-					}
+	else {
+		if (brw.list.Count > 0) {
+			brw.tt_x = ((brw.w) / 2) - (((cList.search_string.length * 13) + (10 * 2)) / 2);
+			brw.tt_y = brw.y + Math.floor((brw.h / 2) - 30);
+			brw.tt_w = ((cList.search_string.length * 13) + (10 * 2));
+			brw.tt_h = 60;
+			if (code == 32 && cList.search_string.length == 0)
+				return true; // SPACE Char not allowed on 1st char
+			if (cList.search_string.length <= 20 && brw.tt_w <= brw.w - 20) {
+				if (code > 31) {
+					cList.search_string = cList.search_string + String.fromCharCode(code).toUpperCase();
+					brw.repaint();
+					cList.clear_incsearch_timer && window.ClearTimeout(cList.clear_incsearch_timer);
+					cList.clear_incsearch_timer = false;
+					cList.incsearch_timer && window.ClearTimeout(cList.incsearch_timer);
+					cList.incsearch_timer = window.SetTimeout(function () {
+						brw.incrementalSearch();
+						window.ClearTimeout(cList.incsearch_timer);
+						cList.incsearch_timer = false;
+					}, 400);
 				}
 			}
 		}
@@ -4377,10 +4357,8 @@ registerCallback("on_playback_time", function on_playback_time(time) {
 	} else if (!g_metadb)
 		g_metadb = fb.GetNowPlaying();
 
-	if (!cSettings.visible) {
-		if (brw.nowplaying_y + ppt.rowHeight > brw.y && brw.nowplaying_y < brw.y + brw.h) {
-			brw.repaint();
-		}
+	if (brw.nowplaying_y + ppt.rowHeight > brw.y && brw.nowplaying_y < brw.y + brw.h) {
+		brw.repaint();
 	}
 })
 
@@ -4605,18 +4583,6 @@ registerCallback("on_notify_data", function on_notify_data(name, info) {
 			break;
 	}
 })
-
-function save_image_to_cache(metadb, albumIndex) {
-	var crc = brw.groups[albumIndex].cachekey;
-	if (fso.FileExists(CACHE_FOLDER + crc))
-		return;
-
-	var path = ppt.tf_path.EvalWithMetadb(metadb);
-	var path_ = getpath_(path);
-	if (path_) {
-		resize(path_, crc);
-	}
-}
 
 
 //=================================================// Drag'n'Drop Callbacks
