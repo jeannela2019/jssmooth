@@ -287,6 +287,22 @@ export function getBlue(color) {
 	return (color & 0xff);
 }
 
+export function formatRGBA(color) {
+	return `rgba(${getRed(color)}, ${getGreen(color)}, ${getBlue(color)}, ${getAlpha(color)})`;
+}
+
+console.log("RGB255, 125, 0", formatRGBA(RGBA(255, 125, 0, 125)));
+
+
+// Convert string like `rgb(a,b,c) or rgba(a,b,c,d) to number.
+export function parseRGB(str) {
+	let rgba = str.match(/^\s*rgba\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/i);
+	if (rgba) {
+		return RGBA(rgba[0], rgba[1], rgba[2], rgba[3]);
+	}
+	return 0;
+}
+
 export function negative(colour) {
 	var R = getRed(colour);
 	var G = getGreen(colour);

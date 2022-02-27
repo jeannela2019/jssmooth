@@ -168,6 +168,14 @@ export class ImageCache {
 }
 
 ImageCache.coverLoad = -1;
+ImageCache.coverDone = -1;
+
+ImageCache.resetTimers = function () {
+	if (ImageCache.coverLoad !== -1) {
+		clearTimeout(ImageCache.coverDone);
+		ImageCache.coverDone = -1;
+	}
+}
 
 // function FormatCover(image, w, h) {
 //   if (!image || w <= 0 || h <= 0) return image;

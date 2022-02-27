@@ -6,9 +6,9 @@ import { VK_F2, VK_F6, VK_TAB, VK_RETURN } from "./common";
 import { MF_STRING, MF_GRAYED, MF_DISABLED } from "./common";
 import { IDC_ARROW, IDC_HELP, IDC_HAND } from "./common";
 import { DLGC_WANTALLKEYS } from "./common";
-import { COLOR_WINDOW, COLOR_HIGHLIGHT, COLOR_BTNFACE, COLOR_BTNTEXT } from "./common";
+// import { COLOR_WINDOW, COLOR_HIGHLIGHT, COLOR_BTNFACE, COLOR_BTNTEXT } from "./common";
 import { TrackType, FontTypeCUI, FontTypeDUI, ColorTypeCUI, ColorTypeDUI } from "./common";
-import { get_system_scrollbar_width, process_cachekey, process_string, match, resize, on_load } from "./common";
+import { process_cachekey, process_string, match, resize, on_load } from "./common";
 import { GetKeyboardMask, KMask, VK_F3, VK_F5 } from "./common";
 import { RGBA, RGB, blendColors, DrawPolyStar } from "./common";
 import { oInputbox } from "./inputbox";
@@ -17,6 +17,10 @@ import { FILE_ATTRIBUTE_DIRECTORY } from "./common";
 import { num } from "./common";
 import { drawImage, draw_blurred_image, draw_glass_reflect } from "./common";
 import { registerCallback } from "./event";
+import { oScrollbar, cScrollBar } from "./scrollbar"
+import { mouse } from "./mouse";
+import { ppt } from "./configure";
+import { globalColors, updateColors } from "./colorscheme";
 
 
 const smoothPath = `${fb.ProfilePath}packages\\jssmooth\\`;
@@ -26,44 +30,7 @@ let g_fname, g_fsize, g_fstyle, g_font_bold;
 let g_font_box;
 var need_repaint = false;
 
-const ppt = {
-	tf_artist: fb.TitleFormat("%artist%"),
-	tf_albumartist: fb.TitleFormat("%album artist%"),
-	tf_groupkey: fb.TitleFormat(window.GetProperty("_PROPERTY: tf_groupkey", "$if2(%album artist%,$if(%length%,'?',%title%)) ^^ $if2(%album%,$if(%length%,'?',%path%)) ^^ %discnumber% ## [%artist%] ^^ %title% ^^ [%genre%] ^^ [%date%]")),
-	tf_track: fb.TitleFormat("%tracknumber% ^^ [%length%] ^^ $if2(%rating%,0) ^^ %mood%"),
-	tf_path: fb.TitleFormat("$directory_path(%path%)\\"),
-	tf_crc: fb.TitleFormat("$crc32(%path%)"),
-	tf_time_remaining: fb.TitleFormat("$if(%length%,-%playback_time_remaining%,'ON AIR')"),
-	defaultRowHeight: window.GetProperty("_PROPERTY: Row Height", 35),
-	doubleRowPixelAdds: 3,
-	rowHeight: window.GetProperty("_PROPERTY: Row Height", 35),
-	rowScrollStep: 3,
-	scrollSmoothness: 2.5,
-	refreshRate: 40,
-	extraRowsNumber: window.GetProperty("_PROPERTY: Number of Extra Rows per Group", 0),
-	minimumRowsNumberPerGroup: window.GetProperty("_PROPERTY: Number minimum of Rows per Group", 0),
-	groupHeaderRowsNumber: window.GetProperty("_PROPERTY: Number of Rows for Group Header", 2),
-	showHeaderBar: window.GetProperty("_DISPLAY: Show Top Bar", true),
-	defaultHeaderBarHeight: 25,
-	headerBarHeight: 25,
-	autocollapse: window.GetProperty("_PROPERTY: Autocollapse groups", false),
-	enableFullScrollEffectOnFocusChange: false,
-	enableCustomColors: window.GetProperty("_PROPERTY: Custom Colors", false),
-	showgroupheaders: window.GetProperty("_DISPLAY: Show Group Headers", true),
-	showwallpaper: window.GetProperty("_DISPLAY: Show Wallpaper", false),
-	wallpaperalpha: 150,
-	wallpaperblurred: window.GetProperty("_DISPLAY: Wallpaper Blurred", true),
-	wallpaperblurvalue: 1.05,
-	wallpapermode: window.GetProperty("_SYSTEM: Wallpaper Mode", 0),
-	wallpaperpath: window.GetProperty("_PROPERTY: Default Wallpaper Path", ".\\user-components\\foo_spider_monkey_panel\\samples\\js-smooth\\images\\default.png"),
-	extra_font_size: window.GetProperty("_SYSTEM: Extra font size value", 0),
-	showFilterBox: window.GetProperty("_PROPERTY: Enable Playlist Filterbox in Top Bar", true),
-	doubleRowText: window.GetProperty("_PROPERTY: Double Row Text Info", true),
-	showArtistAlways: window.GetProperty("_DISPLAY: Show Artist in Track Row", true),
-	showRating: window.GetProperty("_DISPLAY: Show Rating in Track Row", true),
-	showMood: window.GetProperty("_DISPLAY: Show Mood in Track Row", true),
-	enableTouchControl: window.GetProperty("_PROPERTY: Touch control", true)
-};
+
 
 const cTouch = {
 	down: false,
@@ -114,22 +81,6 @@ const cPlaylistManager = {
 	showTotalItems: window.GetProperty("_PROPERTY.PlaylistManager.ShowTotalItems", true)
 };
 
-const cScrollBar = {
-	enabled: window.GetProperty("_DISPLAY: Show Scrollbar", true),
-	visible: true,
-	themed: false,
-	defaultWidth: get_system_scrollbar_width(),
-	width: get_system_scrollbar_width(),
-	ButtonType: {
-		cursor: 0,
-		up: 1,
-		down: 2
-	},
-	defaultMinCursorHeight: 20,
-	minCursorHeight: 20,
-	timerID: false,
-	timerCounter: -1
-};
 
 const cover = {
 	masks: window.GetProperty("_PROPERTY: Cover art masks (used for the cache)", "*front*.*;*cover*.*;*folder*.*;*.*"),
@@ -791,7 +742,7 @@ const oPlaylistManager = function (name) {
 				if (this.scroll > (this.rowTotal - this.totalRows))
 					this.scroll = (this.rowTotal - this.totalRows);
 				if (this.scroll != scroll_prev) {
-					this.on_mouse("move", m_x, m_y);
+					this.on_mouse("move", mouse.x, mouse.y);
 				}
 				break;
 			case "leave":
@@ -957,484 +908,6 @@ const oFilterBox = function () {
 	};
 };
 
-const oScrollbar = function (themed) {
-	this.themed = themed;
-	this.showButtons = true;
-	this.buttons = Array(null, null, null);
-	this.buttonType = {
-		cursor: 0,
-		up: 1,
-		down: 2
-	};
-	this.buttonClick = false;
-
-	this.color_bg = g_color_normal_bg;
-	this.color_txt = g_color_normal_txt;
-
-	if (this.themed) {
-		this.theme = window.CreateThemeManager("scrollbar");
-	} else {
-		this.theme = false;
-	}
-
-	this.setNewColors = function () {
-		this.color_bg = g_color_normal_bg;
-		this.color_txt = g_color_normal_txt;
-		this.setButtons();
-		this.setCursorButton();
-	};
-
-	this.setButtons = function () {
-		// normal scroll_up Image
-		// Draw Themed Scrollbar (lg/col)
-		if (this.themed) {
-			this.upImage_normal = gdi.CreateImage(this.w, this.w);
-			var gb = this.upImage_normal.GetGraphics();
-			try {
-				this.theme.SetPartAndStateId(1, 1);
-				this.theme.DrawThemeBackground(gb, 0, 0, this.w, this.w);
-			} catch (e) {
-				DrawPolyStar(gb, 4, 4, this.w - 8, 1, 3, 0, RGB(0, 0, 0), blendColors(this.color_txt, this.color_bg, 0.5), 0, 255);
-			}
-		} else {
-			this.upImage_normal = gdi.CreateImage(70, 70);
-			var gb = this.upImage_normal.GetGraphics();
-			DrawPolyStar(gb, 11, 16, 44, 1, 3, 0, RGB(0, 0, 0), blendColors(this.color_txt, this.color_bg, 0.5), 0, 255);
-		}
-		this.upImage_normal.ReleaseGraphics(gb);
-
-		// hover scroll_up Image
-		// Draw Themed Scrollbar (lg/col)
-		if (this.themed) {
-			this.upImage_hover = gdi.CreateImage(this.w, this.w);
-			gb = this.upImage_hover.GetGraphics();
-			try {
-				this.theme.SetPartAndStateId(1, 2);
-				this.theme.DrawThemeBackground(gb, 0, 0, this.w, this.w);
-			} catch (e) {
-				DrawPolyStar(gb, 4, 4, this.w - 8, 1, 3, 0, blendColors(this.color_txt, this.color_bg, 0.3), blendColors(this.color_txt, this.color_bg, 0.3), 0, 255);
-			}
-		} else {
-			this.upImage_hover = gdi.CreateImage(70, 70);
-			var gb = this.upImage_hover.GetGraphics();
-			DrawPolyStar(gb, 11, 16, 44, 1, 3, 0, blendColors(this.color_txt, this.color_bg, 0.3), blendColors(this.color_txt, this.color_bg, 0.3), 0, 255);
-		}
-		this.upImage_hover.ReleaseGraphics(gb);
-
-		// down scroll_up Image
-		// Draw Themed Scrollbar (lg/col)
-		if (this.themed) {
-			this.upImage_down = gdi.CreateImage(this.w, this.w);
-			gb = this.upImage_down.GetGraphics();
-			try {
-				this.theme.SetPartAndStateId(1, 3);
-				this.theme.DrawThemeBackground(gb, 0, 0, this.w, this.w);
-			} catch (e) {
-				DrawPolyStar(gb, 4, 4, this.w - 8, 1, 3, 0, RGB(0, 0, 0), blendColors(this.color_txt, this.color_bg, 0.05), 0, 255);
-			}
-		} else {
-			this.upImage_down = gdi.CreateImage(70, 70);
-			gb = this.upImage_down.GetGraphics();
-			DrawPolyStar(gb, 11, 13, 44, 1, 3, 0, RGB(0, 0, 0), blendColors(this.color_txt, this.color_bg, 0.05), 0, 255);
-		}
-		this.upImage_down.ReleaseGraphics(gb);
-
-		// normal scroll_down Image
-		// Draw Themed Scrollbar (lg/col)
-		if (this.themed) {
-			this.downImage_normal = gdi.CreateImage(this.w, this.w);
-			gb = this.downImage_normal.GetGraphics();
-			try {
-				this.theme.SetPartAndStateId(1, 5);
-				this.theme.DrawThemeBackground(gb, 0, 0, this.w, this.w);
-			} catch (e) {
-				DrawPolyStar(gb, 4, 4, this.w - 8, 1, 3, 0, RGB(0, 0, 0), blendColors(this.color_txt, this.color_bg, 0.5), 180, 255);
-			}
-		} else {
-			this.downImage_normal = gdi.CreateImage(70, 70);
-			gb = this.downImage_normal.GetGraphics();
-			DrawPolyStar(gb, 11, 10, 44, 1, 3, 0, RGB(0, 0, 0), blendColors(this.color_txt, this.color_bg, 0.5), 180, 255);
-		}
-		this.downImage_normal.ReleaseGraphics(gb);
-
-		// hover scroll_down Image
-		// Draw Themed Scrollbar (lg/col)
-		if (this.themed) {
-			this.downImage_hover = gdi.CreateImage(this.w, this.w);
-			gb = this.downImage_hover.GetGraphics();
-			try {
-				this.theme.SetPartAndStateId(1, 6);
-				this.theme.DrawThemeBackground(gb, 0, 0, this.w, this.w);
-			} catch (e) {
-				DrawPolyStar(gb, 4, 4, this.w - 8, 1, 3, 1, blendColors(this.color_txt, this.color_bg, 0.3), blendColors(this.color_txt, this.color_bg, 0.3), 180, 255);
-			}
-		} else {
-			this.downImage_hover = gdi.CreateImage(70, 70);
-			gb = this.downImage_hover.GetGraphics();
-			DrawPolyStar(gb, 11, 10, 44, 1, 3, 1, blendColors(this.color_txt, this.color_bg, 0.3), blendColors(this.color_txt, this.color_bg, 0.3), 180, 255);
-		}
-		this.downImage_hover.ReleaseGraphics(gb);
-
-		// down scroll_down Image
-		// Draw Themed Scrollbar (lg/col)
-		if (this.themed) {
-			this.downImage_down = gdi.CreateImage(this.w, this.w);
-			gb = this.downImage_down.GetGraphics();
-			try {
-				this.theme.SetPartAndStateId(1, 7);
-				this.theme.DrawThemeBackground(gb, 0, 0, this.w, this.w);
-			} catch (e) {
-				DrawPolyStar(gb, 4, 4, this.w - 8, 1, 3, 0, RGB(0, 0, 0), blendColors(this.color_txt, this.color_bg, 0.05), 180, 255);
-			}
-		} else {
-			this.downImage_down = gdi.CreateImage(70, 70);
-			gb = this.downImage_down.GetGraphics();
-			DrawPolyStar(gb, 11, 13, 44, 1, 3, 0, RGB(0, 0, 0), blendColors(this.color_txt, this.color_bg, 0.05), 180, 255);
-		}
-		this.downImage_down.ReleaseGraphics(gb);
-
-		for (let i = 1; i < this.buttons.length; i++) {
-			switch (i) {
-				case this.buttonType.cursor:
-					this.buttons[this.buttonType.cursor] = new button(this.cursorImage_normal, this.cursorImage_hover, this.cursorImage_down);
-					break;
-				case this.buttonType.up:
-					this.buttons[this.buttonType.up] = new button(this.upImage_normal.Resize(this.w, this.w, 2), this.upImage_hover.Resize(this.w, this.w, 2), this.upImage_down.Resize(this.w, this.w, 2));
-					break;
-				case this.buttonType.down:
-					this.buttons[this.buttonType.down] = new button(this.downImage_normal.Resize(this.w, this.w, 2), this.downImage_hover.Resize(this.w, this.w, 2), this.downImage_down.Resize(this.w, this.w, 2));
-					break;
-			}
-		}
-	};
-
-	this.setCursorButton = function () {
-		// normal cursor Image
-		this.cursorImage_normal = gdi.CreateImage(this.cursorw, this.cursorh);
-		var gb = this.cursorImage_normal.GetGraphics();
-		// Draw Themed Scrollbar (lg/col)
-		if (this.themed) {
-			try {
-				this.theme.SetPartAndStateId(3, 1);
-				this.theme.DrawThemeBackground(gb, 0, 0, this.cursorw, this.cursorh);
-				if (this.cursorh >= 30) {
-					this.theme.SetPartAndStateId(9, 1);
-					this.theme.DrawThemeBackground(gb, 0, 0, this.cursorw, this.cursorh);
-				}
-			} catch (e) {
-				gb.FillSolidRect(1, 0, this.cursorw - 2, this.cursorh, blendColors(this.color_txt, this.color_bg, 0.5));
-			}
-		} else {
-			gb.FillSolidRect(1, 0, this.cursorw - 2, this.cursorh, blendColors(this.color_txt, this.color_bg, 0.5) & 0x88ffffff);
-			gb.DrawRect(1, 0, this.cursorw - 2 - 1, this.cursorh - 1, 1.0, this.color_txt & 0x44ffffff);
-		}
-		this.cursorImage_normal.ReleaseGraphics(gb);
-
-		// hover cursor Image
-		this.cursorImage_hover = gdi.CreateImage(this.cursorw, this.cursorh);
-		gb = this.cursorImage_hover.GetGraphics();
-		// Draw Themed Scrollbar (lg/col)
-		if (this.themed) {
-			try {
-				this.theme.SetPartAndStateId(3, 2);
-				this.theme.DrawThemeBackground(gb, 0, 0, this.cursorw, this.cursorh);
-				if (this.cursorh >= 30) {
-					this.theme.SetPartAndStateId(9, 2);
-					this.theme.DrawThemeBackground(gb, 0, 0, this.cursorw, this.cursorh);
-				}
-			} catch (e) {
-				gb.FillSolidRect(1, 0, this.cursorw - 2, this.cursorh, blendColors(this.color_txt, this.color_bg, 0.3));
-			}
-		} else {
-			gb.FillSolidRect(1, 0, this.cursorw - 2, this.cursorh, blendColors(this.color_txt, this.color_bg, 0.3) & 0x88ffffff);
-			gb.DrawRect(1, 0, this.cursorw - 2 - 1, this.cursorh - 1, 1.0, this.color_txt & 0x44ffffff);
-		}
-		this.cursorImage_hover.ReleaseGraphics(gb);
-
-		// down cursor Image
-		this.cursorImage_down = gdi.CreateImage(this.cursorw, this.cursorh);
-		gb = this.cursorImage_down.GetGraphics();
-		// Draw Themed Scrollbar (lg/col)
-		if (this.themed) {
-			try {
-				this.theme.SetPartAndStateId(3, 3);
-				this.theme.DrawThemeBackground(gb, 0, 0, this.cursorw, this.cursorh);
-				if (this.cursorh >= 30) {
-					this.theme.SetPartAndStateId(9, 3);
-					this.theme.DrawThemeBackground(gb, 0, 0, this.cursorw, this.cursorh);
-				}
-			} catch (e) {
-				gb.FillSolidRect(1, 0, this.cursorw - 2, this.cursorh, blendColors(this.color_txt, this.color_bg, 0.05));
-			}
-		} else {
-			gb.FillSolidRect(1, 0, this.cursorw - 2, this.cursorh, blendColors(this.color_txt, this.color_bg, 0.05) & 0x88ffffff);
-			gb.DrawRect(1, 0, this.cursorw - 2 - 1, this.cursorh - 1, 1.0, this.color_txt & 0x44ffffff);
-		}
-		this.cursorImage_down.ReleaseGraphics(gb);
-
-		// create/refresh cursor Button in buttons array
-		this.buttons[this.buttonType.cursor] = new button(this.cursorImage_normal, this.cursorImage_hover, this.cursorImage_down);
-		this.buttons[this.buttonType.cursor].x = this.x;
-		this.buttons[this.buttonType.cursor].y = this.cursory;
-	};
-
-	this.draw = function (gr) {
-		// scrollbar background
-		if (this.themed) {
-			try {
-				this.theme.SetPartAndStateId(6, 1);
-				this.theme.DrawThemeBackground(gr, this.x, this.y, this.w, this.h);
-			} catch (e) {
-				gr.FillSolidRect(this.x, this.y, this.w, this.h, this.color_bg & 0x25ffffff);
-				gr.FillSolidRect(this.x, this.y, 1, this.h, this.color_txt & 0x05ffffff);
-			}
-		} else {
-			gr.FillSolidRect(this.x, this.y, this.w, this.h, this.color_bg & 0x25ffffff);
-			gr.FillSolidRect(this.x, this.y, 1, this.h, this.color_txt & 0x05ffffff);
-		}
-		// scrollbar buttons
-		if (cScrollBar.visible)
-			this.buttons[this.buttonType.cursor].draw(gr, this.x, this.cursory, 200);
-		if (this.showButtons) {
-			this.buttons[this.buttonType.up].draw(gr, this.x, this.y, 200);
-			this.buttons[this.buttonType.down].draw(gr, this.x, this.areay + this.areah, 200);
-		}
-	};
-
-	this.updateScrollbar = function () {
-		var prev_cursorh = this.cursorh;
-		this.total = brw.rowsCount;
-		this.rowh = ppt.rowHeight;
-		this.totalh = this.total * this.rowh;
-		// set scrollbar visibility
-		cScrollBar.visible = (this.totalh > brw.h);
-		// set cursor width/height
-		this.cursorw = cScrollBar.width;
-		if (this.total > 0) {
-			this.cursorh = Math.round((brw.h / this.totalh) * this.areah);
-			if (this.cursorh < cScrollBar.minCursorHeight)
-				this.cursorh = cScrollBar.minCursorHeight;
-		} else {
-			this.cursorh = cScrollBar.minCursorHeight;
-		}
-		// set cursor y pos
-		this.setCursorY();
-		if (this.cursorw && this.cursorh && this.cursorh != prev_cursorh)
-			this.setCursorButton();
-	};
-
-	this.setCursorY = function () {
-		// set cursor y pos
-		var ratio = scroll / (this.totalh - brw.h);
-		this.cursory = this.areay + Math.round((this.areah - this.cursorh) * ratio);
-	};
-
-	this.setSize = function () {
-		this.buttonh = cScrollBar.width;
-		this.x = brw.x + brw.w;
-		this.y = brw.y - ppt.headerBarHeight * 0;
-		this.w = cScrollBar.width;
-		this.h = brw.h + ppt.headerBarHeight * 0;
-		if (this.showButtons) {
-			this.areay = this.y + this.buttonh;
-			this.areah = this.h - (this.buttonh * 2);
-		} else {
-			this.areay = this.y;
-			this.areah = this.h;
-		}
-		this.setButtons();
-	};
-
-	this.setScrollFromCursorPos = function () {
-		// calc ratio of the scroll cursor to calc the equivalent item for the full list (with gh)
-		var ratio = (this.cursory - this.areay) / (this.areah - this.cursorh);
-		// calc idx of the item (of the full list with gh) to display at top of the panel list (visible)
-		scroll = Math.round((this.totalh - brw.h) * ratio);
-	};
-
-	this.cursorCheck = function (event, x, y) {
-		if (!this.buttons[this.buttonType.cursor])
-			return;
-		switch (event) {
-			case "down":
-				var tmp = this.buttons[this.buttonType.cursor].checkstate(event, x, y);
-				if (tmp == ButtonStates.down) {
-					this.cursorClickX = x;
-					this.cursorClickY = y;
-					this.cursorDrag = true;
-					this.cursorDragDelta = y - this.cursory;
-				}
-				break;
-			case "up":
-				this.buttons[this.buttonType.cursor].checkstate(event, x, y);
-				if (this.cursorDrag) {
-					this.setScrollFromCursorPos();
-					brw.repaint();
-				}
-				this.cursorClickX = 0;
-				this.cursorClickY = 0;
-				this.cursorDrag = false;
-				break;
-			case "move":
-				this.buttons[this.buttonType.cursor].checkstate(event, x, y);
-				if (this.cursorDrag) {
-					this.cursory = y - this.cursorDragDelta;
-					if (this.cursory + this.cursorh > this.areay + this.areah) {
-						this.cursory = (this.areay + this.areah) - this.cursorh;
-					}
-					if (this.cursory < this.areay) {
-						this.cursory = this.areay;
-					}
-					this.setScrollFromCursorPos();
-					brw.repaint();
-				}
-				break;
-			case "leave":
-				this.buttons[this.buttonType.cursor].checkstate(event, 0, 0);
-				break;
-		}
-	};
-
-	this._isHover = function (x, y) {
-		return (x >= this.x && x <= this.x + this.w && y >= this.y && y <= this.y + this.h);
-	};
-
-	this._isHoverArea = function (x, y) {
-		return (x >= this.x && x <= this.x + this.w && y >= this.areay && y <= this.areay + this.areah);
-	};
-
-	this._isHoverCursor = function (x, y) {
-		return (x >= this.x && x <= this.x + this.w && y >= this.cursory && y <= this.cursory + this.cursorh);
-	};
-
-	this.on_mouse = function (event, x, y, delta) {
-		this.isHover = this._isHover(x, y);
-		this.isHoverArea = this._isHoverArea(x, y);
-		this.isHoverCursor = this._isHoverCursor(x, y);
-		this.isHoverButtons = this.isHover && !this.isHoverCursor && !this.isHoverArea;
-		this.isHoverEmptyArea = this.isHoverArea && !this.isHoverCursor;
-
-		var scroll_step = ppt.rowHeight;
-		var scroll_step_page = brw.h;
-
-		switch (event) {
-			case "down":
-			case "dblclk":
-				if ((this.isHoverCursor || this.cursorDrag) && !this.buttonClick && !this.isHoverEmptyArea) {
-					this.cursorCheck(event, x, y);
-				} else {
-					// buttons events
-					var bt_state = ButtonStates.normal;
-					for (var i = 1; i < 3; i++) {
-						switch (i) {
-							case 1: // up button
-								bt_state = this.buttons[i].checkstate(event, x, y);
-								if ((event == "down" && bt_state == ButtonStates.down) || (event == "dblclk" && bt_state == ButtonStates.hover)) {
-									this.buttonClick = true;
-									scroll = scroll - scroll_step;
-									scroll = check_scroll(scroll);
-									if (!cScrollBar.timerID) {
-										cScrollBar.timerID = window.SetInterval(function () {
-											if (cScrollBar.timerCounter > 6) {
-												scroll = scroll - scroll_step;
-												scroll = check_scroll(scroll);
-											} else {
-												cScrollBar.timerCounter++;
-											}
-										}, 80);
-									}
-								}
-								break;
-							case 2: // down button
-								bt_state = this.buttons[i].checkstate(event, x, y);
-								if ((event == "down" && bt_state == ButtonStates.down) || (event == "dblclk" && bt_state == ButtonStates.hover)) {
-									this.buttonClick = true;
-									scroll = scroll + scroll_step;
-									scroll = check_scroll(scroll);
-									if (!cScrollBar.timerID) {
-										cScrollBar.timerID = window.SetInterval(function () {
-											if (cScrollBar.timerCounter > 6) {
-												scroll = scroll + scroll_step;
-												scroll = check_scroll(scroll);
-											} else {
-												cScrollBar.timerCounter++;
-											}
-										}, 80);
-									}
-								}
-								break;
-						}
-					}
-					if (!this.buttonClick && this.isHoverEmptyArea) {
-						// check click on empty area scrollbar
-						if (y < this.cursory) {
-							// up
-							this.buttonClick = true;
-							scroll = scroll - scroll_step_page;
-							scroll = check_scroll(scroll);
-							if (!cScrollBar.timerID) {
-								cScrollBar.timerID = window.SetInterval(function () {
-									if (cScrollBar.timerCounter > 6 && m_y < brw.scrollbar.cursory) {
-										scroll = scroll - scroll_step_page;
-										scroll = check_scroll(scroll);
-									} else {
-										cScrollBar.timerCounter++;
-									}
-								}, 80);
-							}
-						} else {
-							// down
-							this.buttonClick = true;
-							scroll = scroll + scroll_step_page;
-							scroll = check_scroll(scroll);
-							if (!cScrollBar.timerID) {
-								cScrollBar.timerID = window.SetInterval(function () {
-									if (cScrollBar.timerCounter > 6 && m_y > brw.scrollbar.cursory + brw.scrollbar.cursorh) {
-										scroll = scroll + scroll_step_page;
-										scroll = check_scroll(scroll);
-									} else {
-										cScrollBar.timerCounter++;
-									}
-								}, 80);
-							}
-						}
-					}
-				}
-				break;
-			case "right":
-			case "up":
-				if (cScrollBar.timerID) {
-					window.ClearInterval(cScrollBar.timerID);
-					cScrollBar.timerID = false;
-				}
-				cScrollBar.timerCounter = -1;
-
-				this.cursorCheck(event, x, y);
-				for (var i = 1; i < 3; i++) {
-					this.buttons[i].checkstate(event, x, y);
-				}
-				this.buttonClick = false;
-				break;
-			case "move":
-				this.cursorCheck(event, x, y);
-				for (var i = 1; i < 3; i++) {
-					this.buttons[i].checkstate(event, x, y);
-				}
-				break;
-			case "wheel":
-				if (!this.buttonClick) {
-					this.updateScrollbar();
-				}
-				break;
-			case "leave":
-				this.cursorCheck(event, 0, 0);
-				for (var i = 1; i < 3; i++) {
-					this.buttons[i].checkstate(event, 0, 0);
-				}
-				break;
-		}
-	};
-};
 
 const oGroup = function (index, start, handle, groupkey) {
 	this.index = index;
@@ -1478,6 +951,8 @@ const oBrowser = function (name) {
 	this.SHIFT_start_id = null;
 	this.SHIFT_count = 0;
 	this.scrollbar = new oScrollbar(cScrollBar.themed);
+	this.scrollbar.parenView = this;
+	this.check_scroll = this.scrollbar.check_scroll;
 	this.keypressed = false;
 
 	this.metadblist_selection = plman.GetPlaylistSelectedItems(g_active_playlist);
@@ -1515,9 +990,9 @@ const oBrowser = function (name) {
 
 		this.scrollbar.setSize();
 
-		scroll = Math.round(scroll / ppt.rowHeight) * ppt.rowHeight;
-		scroll = check_scroll(scroll);
-		scroll_ = scroll;
+		this.scrollbar.scroll = Math.round(this.scrollbar.scroll / ppt.rowHeight) * ppt.rowHeight;
+		this.scrollbar.scroll = this.check_scroll(this.scrollbar.scroll);
+		this.scrollbar.scroll_ = this.scrollbar.scroll;
 
 		// scrollbar update
 		this.scrollbar.updateScrollbar();
@@ -1534,9 +1009,9 @@ const oBrowser = function (name) {
 		g_focus_row = this.getOffsetFocusItem(g_focus_id);
 		// if focused track not totally visible, we scroll to show it centered in the panel
 		if (g_focus_row < scroll / ppt.rowHeight || g_focus_row > scroll / ppt.rowHeight + brw.totalRowsVis - 1) {
-			scroll = (g_focus_row - Math.floor(brw.totalRowsVis / 2)) * ppt.rowHeight;
-			scroll = check_scroll(scroll);
-			scroll_ = scroll;
+			this.scrollbar.scroll = (g_focus_row - Math.floor(brw.totalRowsVis / 2)) * ppt.rowHeight;
+			this.scrollbar.scroll = this.check_scroll(this.scrollbar.scroll);
+			this.scrollbar.scroll_ = this.scrollbar.scroll;
 		}
 		if (this.rowsCount > 0)
 			brw.gettags(true);
@@ -1658,8 +1133,8 @@ const oBrowser = function (name) {
 
 	this.showFocusedItem = function () {
 		g_focus_row = this.getOffsetFocusItem(g_focus_id);
-		scroll = (g_focus_row - Math.floor(this.totalRowsVis / 2)) * ppt.rowHeight;
-		scroll = check_scroll(scroll);
+		this.scrollbar.scroll = (g_focus_row - Math.floor(this.totalRowsVis / 2)) * ppt.rowHeight;
+		this.scrollbar.scroll = this.check_scroll(this.scrollbar.scroll);
 		this.scrollbar.updateScrollbar();
 	};
 
@@ -1831,15 +1306,15 @@ const oBrowser = function (name) {
 		g_focus_row = brw.getOffsetFocusItem(g_focus_id);
 		if (g_focus_id < 0) { // focused item not set
 			if (is_first_populate) {
-				scroll = scroll_ = 0;
+				this.scrollbar.scroll = this.scrollbar.scroll_ = 0;
 			}
 		} else {
 			if (is_first_populate) {
 				// if focused track not totally visible, we scroll to show it centered in the panel
-				if (g_focus_row < scroll / ppt.rowHeight || g_focus_row > scroll / ppt.rowHeight + brw.totalRowsVis - 1) {
-					scroll = (g_focus_row - Math.floor(brw.totalRowsVis / 2)) * ppt.rowHeight;
-					scroll = check_scroll(scroll);
-					scroll_ = scroll;
+				if (g_focus_row < this.scrollbar.scroll / ppt.rowHeight || g_focus_row > this.scrollbar.scroll / ppt.rowHeight + brw.totalRowsVis - 1) {
+					this.scrollbar.scroll = (g_focus_row - Math.floor(brw.totalRowsVis / 2)) * ppt.rowHeight;
+					this.scrollbar.scroll = this.check_scroll(this.scrollbar.scroll);
+					this.scrollbar.scroll_ = this.scrollbar.scroll;
 				}
 			}
 		}
@@ -1857,9 +1332,9 @@ const oBrowser = function (name) {
 			start_ = 0;
 			end_ = this.rows.length - 1;
 		} else {
-			if (scroll_ < 0)
-				scroll_ = scroll;
-			start_ = Math.round(scroll_ / ppt.rowHeight + 0.4);
+			if (this.scrollbar.scroll_ < 0)
+				this.scrollbar.scroll_ = this.scrollbar.scroll;
+			start_ = Math.round(this.scrollbar.scroll_ / ppt.rowHeight + 0.4);
 			end_ = start_ + this.totalRows + (ppt.groupHeaderRowsNumber - 1);
 			// check boundaries
 			start_ = start_ > 0 ? start_ - 1 : start_;
@@ -1955,7 +1430,7 @@ const oBrowser = function (name) {
 			}
 
 			for (var i = g_start_; i <= g_end_; i++) {
-				ay = Math.floor(this.y + (i * ah) - scroll_);
+				ay = Math.floor(this.y + (i * ah) - this.scrollbar.scroll_);
 				this.rows[i].x = ax;
 				this.rows[i].y = ay;
 
@@ -1993,11 +1468,13 @@ const oBrowser = function (name) {
 								}
 							}
 							if (g_selected) {
-								var group_color_txt_normal = (ppt.enableCustomColors ? g_color_selected_txt : g_color_normal_bg);
-								var group_color_txt_fader = blendColors(group_color_txt_normal, g_color_selected_bg, 0.25);
-								gr.FillSolidRect(ax, ay - ((ghrh - 1) * ah), aw, ah * ghrh - 1, g_color_selected_bg & 0xb0ffffff);
+								// var group_color_txt_normal = (ppt.enableCustomColors ? g_color_selected_txt : g_color_normal_bg);
+								var group_color_txt_normal = globalColors.background;
+								// var group_color_txt_fader = blendColors(group_color_txt_normal, g_color_selected_bg, 0.25);
+								var group_color_txt_fader = blendColors(group_color_txt_normal, globalColors.selection, 0.25);
+								gr.FillSolidRect(ax, ay - ((ghrh - 1) * ah), aw, ah * ghrh - 1, globalColors.selection & 0xb0ffffff);
 							} else {
-								var group_color_txt_normal = g_color_normal_txt;
+								var group_color_txt_normal = globalColors.text;
 								var group_color_txt_fader = blendColors(g_color_normal_txt, g_color_normal_bg, 0.25);
 								//gr.FillGradRect(ax, ay - ((ghrh - 1) * ah), aw, ah * ghrh - 1, 90, 0, g_color_normal_txt & 0x06ffffff, 1.0);
 								gr.FillSolidRect(ax, ay - ((ghrh - 1) * ah), aw, ah * ghrh - 1, g_color_normal_txt & 0x05ffffff);
@@ -2337,7 +1814,6 @@ const oBrowser = function (name) {
 
 			}
 			// draw scrollbar
-			//if(cScrollBar.enabled || (m_x > ww - cScrollBar.width && m_x < ww && m_y > ppt.headerBarHeight && m_y < wh))  {
 			if (cScrollBar.enabled) {
 				brw.scrollbar && brw.scrollbar.draw(gr);
 			}
@@ -2419,7 +1895,7 @@ const oBrowser = function (name) {
 
 		// get hover row index (mouse cursor hover)
 		if (y > this.y && y < this.y + this.h) {
-			this.activeRow = Math.ceil((y + scroll_ - this.y) / ppt.rowHeight - 1);
+			this.activeRow = Math.ceil((y + this.scrollbar.scroll_ - this.y) / ppt.rowHeight - 1);
 			if (this.activeRow >= this.rows.length)
 				this.activeRow = -1;
 		} else {
@@ -2430,7 +1906,7 @@ const oBrowser = function (name) {
 		this.ishover_rating_prev = this.ishover_rating;
 		if (this.activeRow > -1) {
 			var rating_x = this.x + this.w - cColumns.track_time_part - (cColumns.track_rating_part + 10);
-			var rating_y = Math.floor(this.y + (this.activeRow * ppt.rowHeight) - scroll_);
+			var rating_y = Math.floor(this.y + (this.activeRow * ppt.rowHeight) - this.scrollbar.scroll_);
 			if (ppt.showRating) {
 				this.ishover_rating = (this.rows[this.activeRow].type == 0 && x >= rating_x && x <= rating_x + cColumns.track_rating_part && y >= rating_y && y <= rating_y + ppt.rowHeight);
 			} else {
@@ -2443,7 +1919,7 @@ const oBrowser = function (name) {
 		switch (event) {
 			case "down":
 				this.metadblist_selection = plman.GetPlaylistSelectedItems(g_active_playlist);
-				if (!cTouch.down && !timers.mouseDown && this.ishover && this.activeRow > -1 && Math.abs(scroll - scroll_) < 2) {
+				if (!cTouch.down && !timers.mouseDown && this.ishover && this.activeRow > -1 && Math.abs(this.scrollbar.scroll - this.scrollbar.scroll_) < 2) {
 					var rowType = this.rows[this.activeRow].type;
 					//
 					this.drag_clicked = true;
@@ -2593,7 +2069,7 @@ const oBrowser = function (name) {
 				}
 				break;
 			case "dblclk":
-				if (this.ishover && this.activeRow > -1 && Math.abs(scroll - scroll_) < 2) {
+				if (this.ishover && this.activeRow > -1 && Math.abs(this.scrollbar.scroll - this.scrollbar.scroll_) < 2) {
 					var rowType = this.rows[this.activeRow].type;
 					switch (true) {
 						case (rowType > 0 && rowType < 99): // group header
@@ -2602,10 +2078,10 @@ const oBrowser = function (name) {
 							///*
 							g_focus_row = this.getOffsetFocusItem(g_focus_id);
 							// if focused track not totally visible, we scroll to show it centered in the panel
-							if (g_focus_row < scroll / ppt.rowHeight || g_focus_row > scroll / ppt.rowHeight + brw.totalRowsVis - 1) {
-								scroll = (g_focus_row - Math.floor(brw.totalRowsVis / 2)) * ppt.rowHeight;
-								scroll = check_scroll(scroll);
-								scroll_ = scroll;
+							if (g_focus_row < this.scrollbar.scroll / ppt.rowHeight || g_focus_row > this.scrollbar.scroll / ppt.rowHeight + brw.totalRowsVis - 1) {
+								this.scrollbar.scroll = (g_focus_row - Math.floor(brw.totalRowsVis / 2)) * ppt.rowHeight;
+								this.scrollbar.scroll = this.check_scroll(this.scrollbar.scroll);
+								this.scrollbar.scroll_ = this.scrollbar.scroll;
 							}
 							//*/
 							if (this.rowsCount > 0)
@@ -2660,7 +2136,7 @@ const oBrowser = function (name) {
 				break;
 			case "right":
 				this.metadblist_selection = plman.GetPlaylistSelectedItems(g_active_playlist);
-				if (this.ishover && this.activeRow > -1 && Math.abs(scroll - scroll_) < 2) {
+				if (this.ishover && this.activeRow > -1 && Math.abs(this.scrollbar.scroll - this.scrollbar.scroll_) < 2) {
 					var rowType = this.rows[this.activeRow].type;
 					switch (true) {
 						case (rowType > 0 && rowType < 99): // ----------------> group header row
@@ -2741,26 +2217,26 @@ const oBrowser = function (name) {
 		}
 
 		// get hover row index (mouse cursor hover)
-		if (m_y > brw.y && m_y < brw.y + brw.h) {
-			brw.activeRow = Math.ceil((m_y + scroll_ - brw.y) / ppt.rowHeight - 1);
+		if (mouse.y > brw.y && mouse.y < brw.y + brw.h) {
+			brw.activeRow = Math.ceil((mouse.y + this.scrollbar.scroll_ - brw.y) / ppt.rowHeight - 1);
 			if (brw.activeRow >= brw.rows.length)
 				brw.activeRow = -1;
 		} else {
 			brw.activeRow = -1;
 		}
 
-		scroll = check_scroll(scroll);
-		if (Math.abs(scroll - scroll_) >= 1) {
-			scroll_ += (scroll - scroll_) / ppt.scrollSmoothness;
+		this.scrollbar.scroll = this.check_scroll(this.scrollbar.scroll);
+		if (Math.abs(this.scrollbar.scroll - this.scrollbar.scroll_) >= 1) {
+			this.scrollbar.scroll_ += (this.scrollbar.scroll - this.scrollbar.scroll_) / ppt.scrollSmoothness;
 			need_repaint = true;
 			isScrolling = true;
 			//
-			if (scroll_prev != scroll)
+			if (this.scrollbar.scroll_prev != this.scrollbar.scroll)
 				brw.scrollbar.updateScrollbar();
 		} else {
 			if (isScrolling) {
-				if (scroll_ < 1)
-					scroll_ = 0;
+				if (this.scrollbar.scroll_ < 1)
+					this.scrollbar.scroll_ = 0;
 				isScrolling = false;
 				need_repaint = true;
 			}
@@ -2773,7 +2249,7 @@ const oBrowser = function (name) {
 			window.Repaint();
 		}
 
-		scroll_prev = scroll;
+		this.scrollbar.scroll_prev = scroll;
 
 	}, ppt.refreshRate);
 
@@ -3168,7 +2644,6 @@ var g_selHolder = fb.AcquireUiSelectionHolder();
 g_selHolder.SetPlaylistSelectionTracking();
 var foo_playcount = utils.CheckComponent("foo_playcount", true);
 
-var m_x = 0, m_y = 0;
 var g_active_playlist = null;
 var g_focus_id = -1;
 var g_focus_id_prev = -1;
@@ -3181,10 +2656,10 @@ var g_color_selected_bg = 0;
 var g_color_normal_txt = 0;
 var g_color_selected_txt = 0;
 var g_color_highlight = 0;
-var g_syscolor_window_bg = 0;
-var g_syscolor_highlight = 0;
-var g_syscolor_button_bg = 0;
-var g_syscolor_button_txt = 0;
+// var g_syscolor_window_bg = 0;
+// var g_syscolor_highlight = 0;
+// var g_syscolor_button_bg = 0;
+// var g_syscolor_button_txt = 0;
 // boolean to avoid callbacks
 var g_avoid_on_playlists_changed = false;
 var g_avoid_on_playlist_switch = false;
@@ -3200,7 +2675,7 @@ var g_total_duration_text = "";
 var g_first_populate_done = false;
 var g_first_populate_launched = false;
 //
-var scroll_ = 0, scroll = 0, scroll_prev = 0;
+// var scroll_ = 0, scroll = 0, scroll_prev = 0;
 var g_start_ = 0, g_end_ = 0;
 var g_wallpaperImg = null;
 
@@ -3213,7 +2688,8 @@ function on_init() {
 	window.DlgCode = DLGC_WANTALLKEYS;
 
 	get_font();
-	get_colors();
+	// get_colors();
+	updateColors();
 	get_metrics();
 
 	g_active_playlist = plman.ActivePlaylist;
@@ -3290,9 +2766,9 @@ registerCallback("on_mouse_lbtn_down", function on_mouse_lbtn_down(x, y) {
 		window.ClearInterval(cTouch.timer);
 		cTouch.timer = false;
 		// stop scrolling but not abrupt, add a little offset for the stop
-		if (Math.abs(scroll - scroll_) > ppt.rowHeight) {
-			scroll = (scroll > scroll_ ? scroll_ + ppt.rowHeight : scroll_ - ppt.rowHeight);
-			scroll = check_scroll(scroll);
+		if (Math.abs(this.scrollbar.scroll - this.scrollbar.scroll_) > ppt.rowHeight) {
+			this.scrollbar.scroll = (this.scrollbar.scroll > this.scrollbar.scroll_ ? this.scrollbar.scroll_ + ppt.rowHeight : this.scrollbar.scroll_ - ppt.rowHeight);
+			this.scrollbar.scroll = this.scrollbar.check_scroll(scroll);
 		}
 	}
 
@@ -3310,7 +2786,7 @@ registerCallback("on_mouse_lbtn_down", function on_mouse_lbtn_down(x, y) {
 				timers.mouseDown = window.SetTimeout(function () {
 					window.ClearTimeout(timers.mouseDown);
 					timers.mouseDown = false;
-					if (Math.abs(cTouch.y_start - m_y) > 13) {
+					if (Math.abs(cTouch.y_start - mouse.y) > 13) {
 						cTouch.down = true;
 					} else {
 						brw.on_mouse("down", x, y);
@@ -3346,7 +2822,7 @@ registerCallback("on_mouse_lbtn_up", function on_mouse_lbtn_up(x, y) {
 	if (timers.mouseDown) {
 		window.ClearTimeout(timers.mouseDown);
 		timers.mouseDown = false;
-		if (Math.abs(cTouch.y_start - m_y) <= 24) {
+		if (Math.abs(cTouch.y_start - mouse.y) <= 24) {
 			brw.on_mouse("down", x, y);
 		}
 	}
@@ -3355,7 +2831,7 @@ registerCallback("on_mouse_lbtn_up", function on_mouse_lbtn_up(x, y) {
 	if (cTouch.down) {
 		cTouch.down = false;
 		cTouch.y_end = y;
-		cTouch.scroll_delta = scroll - scroll_;
+		cTouch.scroll_delta = this.scrollbar.scroll - this.scrollbar.scroll_;
 		//cTouch.y_delta = cTouch.y_start - cTouch.y_end;
 		if (Math.abs(cTouch.scroll_delta) > 24) {
 			cTouch.multiplier = ((1000 - cTouch.t1.Time) / 20);
@@ -3365,8 +2841,8 @@ registerCallback("on_mouse_lbtn_up", function on_mouse_lbtn_up(x, y) {
 			if (cTouch.timer)
 				window.ClearInterval(cTouch.timer);
 			cTouch.timer = window.SetInterval(function () {
-				scroll += cTouch.delta * cTouch.multiplier;
-				scroll = check_scroll(scroll);
+				this.scrollbar.scroll += cTouch.delta * cTouch.multiplier;
+				this.scrollbar.scroll = this.check_scroll(this.scrollbar.scroll);
 				cTouch.multiplier = cTouch.multiplier - 1;
 				cTouch.delta = cTouch.delta - (cTouch.delta / 10);
 				if (cTouch.multiplier < 1) {
@@ -3406,7 +2882,7 @@ registerCallback("on_mouse_rbtn_up", function on_mouse_rbtn_up(x, y) {
 
 registerCallback("on_mouse_move", function on_mouse_move(x, y) {
 
-	if (m_x == x && m_y == y)
+	if (mouse.x == x && mouse.y == y)
 		return;
 
 	// inputBox
@@ -3421,8 +2897,8 @@ registerCallback("on_mouse_move", function on_mouse_move(x, y) {
 			cTouch.y_current = y;
 			cTouch.y_move = (cTouch.y_current - cTouch.y_prev);
 			if (x < brw.w) {
-				scroll -= cTouch.y_move;
-				cTouch.scroll_delta = scroll - scroll_;
+				this.scrollbar.scroll -= cTouch.y_move;
+				cTouch.scroll_delta = this.scrollbar.scroll - this.scrollbar.scroll_;
 				if (Math.abs(cTouch.scroll_delta) < 24)
 					cTouch.y_start = cTouch.y_current;
 				cTouch.y_prev = cTouch.y_current;
@@ -3432,8 +2908,8 @@ registerCallback("on_mouse_move", function on_mouse_move(x, y) {
 		}
 	}
 
-	m_x = x;
-	m_y = y;
+	mouse.x = x;
+	mouse.y = y;
 })
 
 registerCallback("on_mouse_wheel", function on_mouse_wheel(step) {
@@ -3520,12 +2996,12 @@ registerCallback("on_mouse_wheel", function on_mouse_wheel(step) {
 	} else {
 		if (pman.state == 1) {
 			if (pman.scr_w > 0)
-				pman.on_mouse("wheel", m_x, m_y, step);
+				pman.on_mouse("wheel", mouse.x, mouse.y, step);
 		} else {
 			var rowStep = ppt.rowScrollStep;
-			scroll -= step * ppt.rowHeight * rowStep;
-			scroll = check_scroll(scroll);
-			brw.on_mouse("wheel", m_x, m_y, step);
+			this.scrollbar.scroll -= step * ppt.rowHeight * rowStep;
+			this.scrollbar.scroll = this.check_scroll(this.scrollbar.scroll);
+			brw.on_mouse("wheel", mouse.x, mouse.y, step);
 		}
 	}
 
@@ -3587,10 +3063,10 @@ function get_metrics() {
 		//
 		g_focus_row = brw.getOffsetFocusItem(g_focus_id);
 		// if focused track not totally visible, we scroll to show it centered in the panel
-		if (g_focus_row < scroll / ppt.rowHeight || g_focus_row > scroll / ppt.rowHeight + brw.totalRowsVis - 1) {
-			scroll = (g_focus_row - Math.floor(brw.totalRowsVis / 2)) * ppt.rowHeight;
-			scroll = check_scroll(scroll);
-			scroll_ = scroll;
+		if (g_focus_row < this.scrollbar.scroll / ppt.rowHeight || g_focus_row > this.scrollbar.scroll / ppt.rowHeight + brw.totalRowsVis - 1) {
+			this.scrollbar.scroll = (g_focus_row - Math.floor(brw.totalRowsVis / 2)) * ppt.rowHeight;
+			this.scrollbar.scroll = this.check_scroll(this.scrollbar.scroll);
+			this.scrollbar.scroll_ = this.scrollbar.scroll;
 		}
 		if (brw.rowsCount > 0)
 			brw.gettags(true);
@@ -3691,13 +3167,14 @@ function get_font() {
 	}
 }
 
+
 function get_colors() {
 	var arr;
 	// get some system colors
-	g_syscolor_window_bg = utils.GetSysColour(COLOR_WINDOW);
-	g_syscolor_highlight = utils.GetSysColour(COLOR_HIGHLIGHT);
-	g_syscolor_button_bg = utils.GetSysColour(COLOR_BTNFACE);
-	g_syscolor_button_txt = utils.GetSysColour(COLOR_BTNTEXT);
+	// g_syscolor_window_bg = utils.GetSysColour(COLOR_WINDOW);
+	// g_syscolor_highlight = utils.GetSysColour(COLOR_HIGHLIGHT);
+	// g_syscolor_button_bg = utils.GetSysColour(COLOR_BTNFACE);
+	// g_syscolor_button_txt = utils.GetSysColour(COLOR_BTNTEXT);
 
 	arr = window.GetProperty("CUSTOM COLOR TEXT NORMAL", "180-180-180").split("-");
 	g_color_normal_txt = RGB(arr[0], arr[1], arr[2]);
@@ -3736,7 +3213,8 @@ registerCallback("on_font_changed", function on_font_changed() {
 })
 
 registerCallback("on_colours_changed", function on_colours_changed() {
-	get_colors();
+	// get_colors();
+	updateColors();
 	get_images();
 	if (brw)
 		brw.scrollbar.setNewColors();
@@ -4393,7 +3871,7 @@ registerCallback("on_playlist_items_added", function on_playlist_items_added(pla
 registerCallback("on_playlist_items_removed", function on_playlist_items_removed(playlist_idx, new_count) {
 
 	if (playlist_idx == g_active_playlist && new_count == 0)
-		scroll = scroll_ = 0;
+		this.scrollbar.scroll = this.scrollbar.scroll_ = 0;
 	if (g_avoid_on_playlist_items_removed_callbacks_on_sendItemToPlaylist)
 		return;
 
@@ -4447,16 +3925,16 @@ registerCallback("on_item_focus_change", function on_item_focus_change(playlist,
 
 			// if new focused track not totally visible, we scroll to show it centered in the panel
 			g_focus_row = brw.getOffsetFocusItem(g_focus_id);
-			if (g_focus_row < scroll / ppt.rowHeight || g_focus_row > scroll / ppt.rowHeight + brw.totalRowsVis - 0.1) {
-				var old = scroll;
-				scroll = (g_focus_row - Math.floor(brw.totalRowsVis / 2)) * ppt.rowHeight;
-				scroll = check_scroll(scroll);
+			if (g_focus_row < this.scrollbar.scroll / ppt.rowHeight || g_focus_row > this.scrollbar.scroll / ppt.rowHeight + brw.totalRowsVis - 0.1) {
+				// var old = scroll;
+				this.scrollbar.scroll = (g_focus_row - Math.floor(brw.totalRowsVis / 2)) * ppt.rowHeight;
+				this.scrollbar.scroll = this.check_scroll(this.scrollbar.scroll);
 				if (!ppt.enableFullScrollEffectOnFocusChange) {
-					if (Math.abs(scroll - scroll_) > ppt.rowHeight * 5) {
-						if (scroll_ > scroll) {
-							scroll_ = scroll + ppt.rowHeight * 5;
+					if (Math.abs(this.scrollbar.scroll - this.scrollbar.scroll_) > ppt.rowHeight * 5) {
+						if (this.scrollbar.scroll_ > this.scrollbar.scroll) {
+							this.scrollbar.scroll_ = this.scrollbar.scroll + ppt.rowHeight * 5;
 						} else {
-							scroll_ = scroll - ppt.rowHeight * 5;
+							this.scrollbar.scroll_ = this.scrollbar.scroll - ppt.rowHeight * 5;
 						}
 					}
 				}
@@ -4524,7 +4002,7 @@ registerCallback("on_focus", function on_focus(is_focused) {
 	}
 })
 
-function check_scroll(scroll___) {
+function _check_scroll(scroll___) {
 	if (scroll___ < 0)
 		scroll___ = 0;
 	var g1 = brw.h - (brw.totalRowsVis * ppt.rowHeight);
