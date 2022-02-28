@@ -1,20 +1,9 @@
 /**
- * @description 
+ * @description
  */
-
 
 import { ColorTypeCUI, ColorTypeDUI, RGB } from "./common";
 import { ppt, globalColors, ColorMode } from "./configure";
-
-export class ColorTheme {
-  constructor() {
-    this.text;
-    this.secondaryText;
-    this.background;
-    this.textSelection;
-    this.highlight;
-  }
-}
 
 const InstanceType = {
   DUI: 1,
@@ -92,8 +81,6 @@ export function getCustomColors() {
   }
 }
 
-
-
 export function updateColors() {
   switch (ppt.colorMode) {
     case ColorMode.Sys:
@@ -106,7 +93,7 @@ export function updateColors() {
       Object.assign(globalColors, getCustomColors());
       break;
     default:
-      ppt.colorMode = ColorMode.Custom;
+			ppt.colorMode = ColorMode.Sys;
       updateColors(ppt.colorMode);
       break;
   }

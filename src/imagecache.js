@@ -28,11 +28,11 @@ export class ImageCache {
 	}
 
 	/**
-	 * Try to load image from _cachelist. if failed, will first try to load 
+	 * Try to load image from _cachelist. if failed, will first try to load
 	 * from cache folder, then use fb's api to get albumart.
-	 * @param {string} key 
-	 * @param {FbMetadbHandle} metadb 
-	 * @returns {GdiBitmap} 
+	 * @param {string} key
+	 * @param {FbMetadbHandle} metadb
+	 * @returns {GdiBitmap}
 	 */
 	hit(key, metadb) {
 		if (!key) { return null; }

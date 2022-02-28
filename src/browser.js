@@ -296,7 +296,7 @@ registerCallback("on_get_album_art_done", function on_get_album_art_done(metadb,
 })
 
 // ======================
-// Cache related helpers 
+// Cache related helpers
 
 var CACHE_FOLDER = fb.ProfilePath + "smp_smooth_cache\\";
 

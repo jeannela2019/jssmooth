@@ -2739,7 +2739,7 @@ registerCallback("on_paint", function (gr) {
 			if (g_filterbox.inputbox.visible) {
 				g_filterbox.draw(gr, 5, 2);
 			}
-		} 
+		}
 	}
 });
 

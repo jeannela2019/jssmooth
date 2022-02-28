@@ -18,8 +18,8 @@ export class Emitter {
   }
 
 	/**
-	 * 
-	 * @param  {...any} cbArgs callback function arguments 
+	 *
+	 * @param  {...any} cbArgs callback function arguments
 	 */
   fire(...cbArgs) {
     if (this._listeners) {
