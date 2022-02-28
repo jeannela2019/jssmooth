@@ -1,9 +1,7 @@
-import { DrawPolyStar, blendColors, RGB } from "./common";
-import { button, ButtonStates } from "./common";
-import { get_system_scrollbar_width } from "./common";
+import { blendColors, button, ButtonStates, DrawPolyStar, get_system_scrollbar_width, RGB } from "./common";
+import { globalColors, ppt } from "./configure";
 import { mouse } from "./mouse";
-import { globalColors } from "./colorscheme";
-import { ppt } from "./configure";
+
 
 
 export const cScrollBar = {
@@ -40,7 +38,7 @@ export const oScrollbar = function (themed) {
   this.scroll_ = 0;
   this.scroll_prev = 0;
 
-  this.check_scroll = function (scroll___) {
+  this.check_scroll = (scroll___) => {
     if (scroll___ < 0) {
       scroll___ = 0;
     }
@@ -176,7 +174,7 @@ export const oScrollbar = function (themed) {
     }
     this.downImage_down.ReleaseGraphics(gb);
 
-    for (let i = 1; i < this.buttons.length; i++) {
+    for (let i = 1; i < 3; i++) {
       switch (i) {
         case this.buttonType.cursor:
           this.buttons[this.buttonType.cursor] = new button(this.cursorImage_normal, this.cursorImage_hover, this.cursorImage_down);
@@ -308,7 +306,7 @@ export const oScrollbar = function (themed) {
 
   this.setCursorY = function () {
     // set cursor y pos
-    var ratio = scroll / (this.totalh - this.parentView.h);
+    var ratio = this.scroll / (this.totalh - this.parentView.h);
     this.cursory = this.areay + Math.round((this.areah - this.cursorh) * ratio);
   };
 
@@ -332,7 +330,7 @@ export const oScrollbar = function (themed) {
     // calc ratio of the scroll cursor to calc the equivalent item for the full list (with gh)
     var ratio = (this.cursory - this.areay) / (this.areah - this.cursorh);
     // calc idx of the item (of the full list with gh) to display at top of the panel list (visible)
-    scroll = Math.round((this.totalh - this.parentView.h) * ratio);
+    this.scroll = Math.round((this.totalh - this.parentView.h) * ratio);
   };
 
   this.cursorCheck = function (event, x, y) {

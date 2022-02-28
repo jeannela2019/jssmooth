@@ -1,4 +1,10 @@
-import { ColorMode } from "./colorscheme";
+export const globalColors = {};
+
+export const ColorMode = {
+  Sys: 0,
+  Fb: 1,
+  Custom: 2
+}
 
 export const ppt = {
   tf_artist: fb.TitleFormat("%artist%"),
@@ -23,7 +29,7 @@ export const ppt = {
   autocollapse: window.GetProperty("_PROPERTY: Autocollapse groups", false),
   enableFullScrollEffectOnFocusChange: false,
   enableCustomColors: window.GetProperty("_PROPERTY: Custom Colors", false),
-  colorMode: window.GetProperty("_PROPERTY: Color Mode", ColorMode.Sys),
+  colorMode: window.GetProperty("_PROPERTY: Color Mode", ColorMode.Custom),
   showgroupheaders: window.GetProperty("_DISPLAY: Show Group Headers", true),
   showwallpaper: window.GetProperty("_DISPLAY: Show Wallpaper", false),
   wallpaperalpha: 150,

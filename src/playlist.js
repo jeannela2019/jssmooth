@@ -1,27 +1,10 @@
-import { button, ButtonStates } from "./common";
-import { fso, CACHE_FOLDER } from "./common";
-import { DT_LEFT, DT_RIGHT, DT_CALCRECT, DT_VCENTER, DT_CENTER, DT_END_ELLIPSIS, DT_NOPREFIX } from "./common";
-import { VK_CONTROL, VK_SHIFT, VK_BACK, VK_DELETE, VK_ESCAPE, VK_UP, VK_DOWN, VK_PGDN, VK_PGUP, VK_END, VK_HOME, } from "./common";
-import { VK_F2, VK_F6, VK_TAB, VK_RETURN } from "./common";
-import { MF_STRING, MF_GRAYED, MF_DISABLED } from "./common";
-import { IDC_ARROW, IDC_HELP, IDC_HAND } from "./common";
-import { DLGC_WANTALLKEYS } from "./common";
-// import { COLOR_WINDOW, COLOR_HIGHLIGHT, COLOR_BTNFACE, COLOR_BTNTEXT } from "./common";
-import { TrackType, FontTypeCUI, FontTypeDUI, ColorTypeCUI, ColorTypeDUI } from "./common";
-import { process_cachekey, process_string, match, resize, on_load } from "./common";
-import { GetKeyboardMask, KMask, VK_F3, VK_F5 } from "./common";
-import { RGBA, RGB, blendColors, DrawPolyStar } from "./common";
-import { oInputbox } from "./inputbox";
-import { cc_stringformat, lc_stringformat } from "./common"
-import { FILE_ATTRIBUTE_DIRECTORY } from "./common";
-import { num } from "./common";
-import { drawImage, draw_blurred_image, draw_glass_reflect } from "./common";
+import { blendColors, button, ButtonStates, CACHE_FOLDER, toRGB, cc_stringformat, ColorTypeCUI, ColorTypeDUI, DLGC_WANTALLKEYS, drawImage, DrawPolyStar, draw_blurred_image, draw_glass_reflect, DT_CALCRECT, DT_CENTER, DT_END_ELLIPSIS, DT_LEFT, DT_NOPREFIX, DT_RIGHT, DT_VCENTER, FILE_ATTRIBUTE_DIRECTORY, FontTypeCUI, FontTypeDUI, fso, GetKeyboardMask, IDC_ARROW, IDC_HAND, IDC_HELP, KMask, lc_stringformat, match, MF_DISABLED, MF_GRAYED, MF_STRING, num, on_load, process_cachekey, process_string, resize, RGB, RGBA, TrackType, VK_BACK, VK_CONTROL, VK_DELETE, VK_DOWN, VK_END, VK_ESCAPE, VK_F2, VK_F3, VK_F5, VK_F6, VK_HOME, VK_PGDN, VK_PGUP, VK_RETURN, VK_SHIFT, VK_TAB, VK_UP } from "./common";
+import { globalColors, ppt } from "./configure";
 import { registerCallback } from "./event";
-import { oScrollbar, cScrollBar } from "./scrollbar"
+import { oInputbox } from "./inputbox";
 import { mouse } from "./mouse";
-import { ppt } from "./configure";
-import { globalColors, updateColors } from "./colorscheme";
-
+import { cScrollBar, oScrollbar } from "./scrollbar";
+import { updateColors } from "./colorscheme";
 
 const smoothPath = `${fb.ProfilePath}packages\\jssmooth\\`;
 const imagePath = smoothPath + "images\\"
@@ -776,8 +759,8 @@ const oFilterBox = function () {
 		this.images.magnify = gdi.CreateImage(48, 48);
 		gb = this.images.magnify.GetGraphics();
 		gb.SetSmoothingMode(2);
-		gb.DrawLine(33, 33, 42, 42, 6.0, g_color_normal_txt & 0x99ffffff);
-		gb.DrawEllipse(4, 4, 32, 32, 5.0, g_color_normal_txt & 0x99ffffff);
+		gb.DrawLine(33, 33, 42, 42, 6.0, globalColors.text & 0x99ffffff);
+		gb.DrawEllipse(4, 4, 32, 32, 5.0, globalColors.text & 0x99ffffff);
 		gb.FillEllipse(12, 7, 19, 19, RGBA(250, 250, 250, 20));
 		gb.SetSmoothingMode(0);
 		this.images.magnify.ReleaseGraphics(gb);
@@ -789,16 +772,16 @@ const oFilterBox = function () {
 		var xpts2 = Array(5, w - 6, w - 6, 5, w - 5, 6, 6, w - 5);
 		gb.FillPolygon(RGB(170, 170, 170), 0, xpts1);
 		gb.FillPolygon(RGB(170, 170, 170), 0, xpts2);
-		gb.DrawLine(6, 6, w - 6, w - 6, 2.0, blendColors(g_color_normal_txt, g_color_normal_bg, 0.35));
-		gb.DrawLine(6, w - 6, w - 6, 6, 2.0, blendColors(g_color_normal_txt, g_color_normal_bg, 0.35));
+		gb.DrawLine(6, 6, w - 6, w - 6, 2.0, blendColors(globalColors.text, globalColors.background, 0.35));
+		gb.DrawLine(6, w - 6, w - 6, 6, 2.0, blendColors(globalColors.text, globalColors.background, 0.35));
 		gb.SetSmoothingMode(0);
 		this.images.resetIcon_off.ReleaseGraphics(gb);
 
 		this.images.resetIcon_ov = gdi.CreateImage(w, w);
 		gb = this.images.resetIcon_ov.GetGraphics();
 		gb.SetSmoothingMode(2);
-		gb.DrawLine(4, 4, w - 4, w - 4, 3.0, blendColors(g_color_normal_txt, g_color_normal_bg, 0.35));
-		gb.DrawLine(4, w - 4, w - 4, 4, 3.0, blendColors(g_color_normal_txt, g_color_normal_bg, 0.35));
+		gb.DrawLine(4, 4, w - 4, w - 4, 3.0, blendColors(globalColors.text, globalColors.background, 0.35));
+		gb.DrawLine(4, w - 4, w - 4, 4, 3.0, blendColors(globalColors.text, globalColors.background, 0.35));
 		gb.SetSmoothingMode(0);
 		this.images.resetIcon_ov.ReleaseGraphics(gb);
 
@@ -815,14 +798,14 @@ const oFilterBox = function () {
 	this.getImages();
 
 	this.on_init = function () {
-		this.inputbox = new oInputbox(cFilterBox.w, cFilterBox.h, "", "Filter", g_color_normal_txt, 0, 0, g_color_selected_bg, g_sendResponse, "brw");
+		this.inputbox = new oInputbox(cFilterBox.w, cFilterBox.h, "", "Filter", globalColors.text, 0, 0, globalColors.selection, g_sendResponse, "brw");
 		this.inputbox.autovalidation = true;
 	};
 	this.on_init();
 
 	this.reset_colors = function () {
-		this.inputbox.textcolor = g_color_normal_txt;
-		this.inputbox.backselectioncolor = g_color_selected_bg;
+		this.inputbox.textcolor = globalColors.text;
+		this.inputbox.backselectioncolor = globalColors.selection;
 	};
 
 	this.setSize = function (w, h, font_size) {
@@ -951,8 +934,8 @@ const oBrowser = function (name) {
 	this.SHIFT_start_id = null;
 	this.SHIFT_count = 0;
 	this.scrollbar = new oScrollbar(cScrollBar.themed);
-	this.scrollbar.parenView = this;
-	this.check_scroll = this.scrollbar.check_scroll;
+	this.scrollbar.parentView = this;
+	this.check_scroll = this.scrollbar.check_scroll.bind(this.scrollbar);
 	this.keypressed = false;
 
 	this.metadblist_selection = plman.GetPlaylistSelectedItems(g_active_playlist);
@@ -1008,7 +991,7 @@ const oBrowser = function (name) {
 		this.setList(true);
 		g_focus_row = this.getOffsetFocusItem(g_focus_id);
 		// if focused track not totally visible, we scroll to show it centered in the panel
-		if (g_focus_row < scroll / ppt.rowHeight || g_focus_row > scroll / ppt.rowHeight + brw.totalRowsVis - 1) {
+		if (g_focus_row < this.scrollbar.scroll / ppt.rowHeight || g_focus_row > this.scrollbar.scroll / ppt.rowHeight + brw.totalRowsVis - 1) {
 			this.scrollbar.scroll = (g_focus_row - Math.floor(brw.totalRowsVis / 2)) * ppt.rowHeight;
 			this.scrollbar.scroll = this.check_scroll(this.scrollbar.scroll);
 			this.scrollbar.scroll_ = this.scrollbar.scroll;
@@ -1468,17 +1451,17 @@ const oBrowser = function (name) {
 								}
 							}
 							if (g_selected) {
-								// var group_color_txt_normal = (ppt.enableCustomColors ? g_color_selected_txt : g_color_normal_bg);
-								var group_color_txt_normal = globalColors.background;
-								// var group_color_txt_fader = blendColors(group_color_txt_normal, g_color_selected_bg, 0.25);
+								// var group_color_txt_normal = (ppt.enableCustomColors ? globalColors.selectedText : globalColors.background);
+								var group_color_txt_normal = globalColors.selectedText;
+								// var group_color_txt_fader = blendColors(group_color_txt_normal, globalColors.selection, 0.25);
 								var group_color_txt_fader = blendColors(group_color_txt_normal, globalColors.selection, 0.25);
 								gr.FillSolidRect(ax, ay - ((ghrh - 1) * ah), aw, ah * ghrh - 1, globalColors.selection & 0xb0ffffff);
 							} else {
 								var group_color_txt_normal = globalColors.text;
-								var group_color_txt_fader = blendColors(g_color_normal_txt, g_color_normal_bg, 0.25);
-								//gr.FillGradRect(ax, ay - ((ghrh - 1) * ah), aw, ah * ghrh - 1, 90, 0, g_color_normal_txt & 0x06ffffff, 1.0);
-								gr.FillSolidRect(ax, ay - ((ghrh - 1) * ah), aw, ah * ghrh - 1, g_color_normal_txt & 0x05ffffff);
-								gr.FillSolidRect(ax, ay - ((ghrh - 1) * ah), aw, 1, g_color_normal_txt & 0x08ffffff);
+								var group_color_txt_fader = blendColors(globalColors.text, globalColors.background, 0.25);
+								//gr.FillGradRect(ax, ay - ((ghrh - 1) * ah), aw, ah * ghrh - 1, 90, 0, globalColors.text & 0x06ffffff, 1.0);
+								gr.FillSolidRect(ax, ay - ((ghrh - 1) * ah), aw, ah * ghrh - 1, globalColors.text & 0x05ffffff);
+								gr.FillSolidRect(ax, ay - ((ghrh - 1) * ah), aw, 1, globalColors.text & 0x08ffffff);
 							}
 							// ==========
 							// cover art
@@ -1502,7 +1485,7 @@ const oBrowser = function (name) {
 									var cv_x = Math.floor(ax + dx + 1);
 									var cv_y = Math.floor(ay + dy - ((ghrh - 1) * ah));
 									gr.DrawImage(this.groups[g].cover_img, cv_x, cv_y, cv_w, cv_h, 1, 1, cv_w, cv_h, 0, 255);
-									gr.DrawRect(cv_x, cv_y, cv_w - 1, cv_h - 1, 1.0, g_color_normal_txt & 0x25ffffff);
+									gr.DrawRect(cv_x, cv_y, cv_w - 1, cv_h - 1, 1.0, globalColors.text & 0x25ffffff);
 								} else {
 									var cv_x = Math.floor(ax + cover.margin + 1);
 									var cv_y = Math.floor(ay - ((ghrh - 1) * ah) + cover.margin);
@@ -1550,17 +1533,17 @@ const oBrowser = function (name) {
 							// =========
 							// track bg
 							// =========
-							var track_color_txt = g_color_normal_txt;
-							var track_artist_color_text = blendColors(track_color_txt, g_color_normal_bg, 0.25);
-							var track_color_rating = blendColors(track_color_txt, g_color_normal_bg, 0.2);
+							var track_color_txt = globalColors.text;
+							var track_artist_color_text = blendColors(track_color_txt, globalColors.background, 0.25);
+							var track_color_rating = blendColors(track_color_txt, globalColors.background, 0.2);
 
 							// selected track bg
 							var t_selected = (plman.IsPlaylistItemSelected(g_active_playlist, this.rows[i].playlistTrackId));
 							if (t_selected) {
-								track_color_txt = (ppt.enableCustomColors ? g_color_selected_txt : g_color_normal_bg);
-								track_artist_color_text = blendColors(track_color_txt, g_color_selected_bg, 0.25);
-								track_color_rating = blendColors(track_color_txt, g_color_selected_bg, 0.2);
-								gr.FillSolidRect(ax, ay, aw, ah, g_color_selected_bg & 0xb0ffffff);
+								track_color_txt = (ppt.enableCustomColors ? globalColors.selectedText : globalColors.background);
+								track_artist_color_text = blendColors(track_color_txt, globalColors.selection, 0.25);
+								track_color_rating = blendColors(track_color_txt, globalColors.selection, 0.2);
+								gr.FillSolidRect(ax, ay, aw, ah, globalColors.selection & 0xb0ffffff);
 								// default track bg (odd/even)
 								if (ppt.showgroupheaders) {
 									if (this.rows[i].albumTrackId % 2 == 0) {
@@ -1579,17 +1562,17 @@ const oBrowser = function (name) {
 								// default track bg (odd/even)
 								if (ppt.showgroupheaders) {
 									if (this.rows[i].albumTrackId % 2 != 0) {
-										gr.FillSolidRect(ax, ay, aw, ah, g_color_normal_txt & 0x05ffffff);
+										gr.FillSolidRect(ax, ay, aw, ah, globalColors.text & 0x05ffffff);
 									}
 								} else {
 									if (this.rows[i].playlistTrackId % 2 != 0) {
-										gr.FillSolidRect(ax, ay, aw, ah, g_color_normal_txt & 0x05ffffff);
+										gr.FillSolidRect(ax, ay, aw, ah, globalColors.text & 0x05ffffff);
 									}
 								}
 							}
 							// focused track bg
 							if (this.rows[i].playlistTrackId == g_focus_id) {
-								gr.DrawRect(ax + 1, ay + 1, aw - 2, ah - 2, 2.0, g_color_selected_bg & 0xd0ffffff);
+								gr.DrawRect(ax + 1, ay + 1, aw - 2, ah - 2, 2.0, globalColors.selection & 0xd0ffffff);
 							}
 
 							// =====
@@ -1849,22 +1832,22 @@ const oBrowser = function (name) {
 			// draw background part above playlist (headerbar)
 			if (fb.IsPlaying && g_wallpaperImg && ppt.showwallpaper) {
 				gr.GdiDrawBitmap(g_wallpaperImg, 0, 0, ww, brw.y - 1, 0, 0, g_wallpaperImg.Width, brw.y - 1);
-				gr.FillSolidRect(0, 0, ww, brw.y - 1, g_color_normal_bg & RGBA(255, 255, 255, ppt.wallpaperalpha));
+				gr.FillSolidRect(0, 0, ww, brw.y - 1, globalColors.background & RGBA(255, 255, 255, ppt.wallpaperalpha));
 			} else {
 				if (g_wallpaperImg && ppt.showwallpaper) {
 					gr.GdiDrawBitmap(g_wallpaperImg, 0, 0, ww, brw.y - 1, 0, 0, g_wallpaperImg.Width, brw.y - 1);
-					gr.FillSolidRect(0, 0, ww, brw.y - 1, g_color_normal_bg & RGBA(255, 255, 255, ppt.wallpaperalpha));
+					gr.FillSolidRect(0, 0, ww, brw.y - 1, globalColors.background & RGBA(255, 255, 255, ppt.wallpaperalpha));
 				} else {
-					gr.FillSolidRect(0, 0, ww, brw.y - 1, g_color_normal_bg);
+					gr.FillSolidRect(0, 0, ww, brw.y - 1, globalColors.background);
 				}
 			}
-			gr.FillSolidRect(this.x, 0, this.w + (cScrollBar.enabled ? cScrollBar.width : 0), ppt.headerBarHeight - 1, g_color_normal_bg & 0x20ffffff);
-			gr.FillSolidRect(this.x, ppt.headerBarHeight - 2, this.w + (cScrollBar.enabled ? cScrollBar.width : 0), 1, g_color_normal_txt & 0x22ffffff);
+			gr.FillSolidRect(this.x, 0, this.w + (cScrollBar.enabled ? cScrollBar.width : 0), ppt.headerBarHeight - 1, globalColors.background & 0x20ffffff);
+			gr.FillSolidRect(this.x, ppt.headerBarHeight - 2, this.w + (cScrollBar.enabled ? cScrollBar.width : 0), 1, globalColors.text & 0x22ffffff);
 
 			var tx = cFilterBox.x + cFilterBox.w + Math.round(22 * g_zoom_percent / 100) + 5;
 			var tw = this.w - tx + (cScrollBar.enabled ? cScrollBar.width : 0);
 			try {
-				gr.GdiDrawText(boxText, g_font_box, blendColors(g_color_normal_txt, g_color_normal_bg, 0.4), tx, 0, tw, ppt.headerBarHeight - 1, DT_RIGHT | DT_VCENTER | DT_CALCRECT | DT_NOPREFIX | DT_END_ELLIPSIS);
+				gr.GdiDrawText(boxText, g_font_box, blendColors(globalColors.text, globalColors.background, 0.4), tx, 0, tw, ppt.headerBarHeight - 1, DT_RIGHT | DT_VCENTER | DT_CALCRECT | DT_NOPREFIX | DT_END_ELLIPSIS);
 			} catch (e) {
 				console.log(">> debug: cScrollBar.width=" + cScrollBar.width + " /boxText=" + boxText + " /ppt.headerBarHeight=" + ppt.headerBarHeight + " /g_fsize=" + g_fsize);
 			}
@@ -2205,7 +2188,7 @@ const oBrowser = function (name) {
 		}
 	};
 
-	this.g_time = window.SetInterval(function () {
+	this.g_time = window.SetInterval(() => {
 		if (!window.IsVisible) {
 			need_repaint = true;
 			return;
@@ -2249,7 +2232,7 @@ const oBrowser = function (name) {
 			window.Repaint();
 		}
 
-		this.scrollbar.scroll_prev = scroll;
+		this.scrollbar.scroll_prev = this.scrollbar.scroll;
 
 	}, ppt.refreshRate);
 
@@ -2651,10 +2634,10 @@ var g_focus_row = 0;
 var g_focus_album_id = -1;
 var g_populate_opt = 1;
 // color vars
-var g_color_normal_bg = 0;
-var g_color_selected_bg = 0;
-var g_color_normal_txt = 0;
-var g_color_selected_txt = 0;
+//var g_color_normal_bg = 0;
+//var globalColors.selection = 0;
+//var globalColors.text = 0;
+//var globalColors.selectedText = 0;
 var g_color_highlight = 0;
 // var g_syscolor_window_bg = 0;
 // var g_syscolor_highlight = 0;
@@ -2704,7 +2687,7 @@ function on_init() {
 on_init();
 
 // START
-registerCallback("on_size", function on_size() {
+registerCallback("on_size", function () {
 	window.DlgCode = DLGC_WANTALLKEYS;
 
 	ww = window.Width;
@@ -2723,21 +2706,23 @@ registerCallback("on_size", function on_size() {
 	}
 })
 
-registerCallback("on_paint", function on_paint(gr) {
+registerCallback("on_paint", function (gr) {
+
 	if (!ww)
 		return;
+
 
 	// draw background under playlist
 	if (fb.IsPlaying && g_wallpaperImg && ppt.showwallpaper) {
 		gr.GdiDrawBitmap(g_wallpaperImg, 0, 0, ww, wh, 0, 0, g_wallpaperImg.Width, g_wallpaperImg.Height);
-		gr.FillSolidRect(0, 0, ww, wh, g_color_normal_bg & RGBA(255, 255, 255, ppt.wallpaperalpha));
+		gr.FillSolidRect(0, 0, ww, wh, globalColors.background & RGBA(255, 255, 255, ppt.wallpaperalpha));
 	} else {
-		//gr.FillSolidRect(0, 0, ww, wh, g_color_normal_bg);
+		//gr.FillSolidRect(0, 0, ww, wh, globalColors.background);
 		if (g_wallpaperImg && ppt.showwallpaper) {
 			gr.GdiDrawBitmap(g_wallpaperImg, 0, 0, ww, wh, 0, 0, g_wallpaperImg.Width, g_wallpaperImg.Height);
-			gr.FillSolidRect(0, 0, ww, wh, g_color_normal_bg & RGBA(255, 255, 255, ppt.wallpaperalpha));
+			gr.FillSolidRect(0, 0, ww, wh, globalColors.background & RGBA(255, 255, 255, ppt.wallpaperalpha));
 		} else {
-			gr.FillSolidRect(0, 0, ww, wh, g_color_normal_bg);
+			gr.FillSolidRect(0, 0, ww, wh, globalColors.background);
 		}
 	}
 
@@ -2747,18 +2732,19 @@ registerCallback("on_paint", function on_paint(gr) {
 		pman.draw(gr);
 	}
 
+
 	if (ppt.showHeaderBar) {
 		// inputBox
 		if (ppt.showFilterBox && g_filterbox) {
 			if (g_filterbox.inputbox.visible) {
 				g_filterbox.draw(gr, 5, 2);
 			}
-		}
+		} 
 	}
 });
 
 
-registerCallback("on_mouse_lbtn_down", function on_mouse_lbtn_down(x, y) {
+registerCallback("on_mouse_lbtn_down", function (x, y) {
 	g_lbtn_click = true;
 
 	// stop inertia
@@ -2766,9 +2752,9 @@ registerCallback("on_mouse_lbtn_down", function on_mouse_lbtn_down(x, y) {
 		window.ClearInterval(cTouch.timer);
 		cTouch.timer = false;
 		// stop scrolling but not abrupt, add a little offset for the stop
-		if (Math.abs(this.scrollbar.scroll - this.scrollbar.scroll_) > ppt.rowHeight) {
-			this.scrollbar.scroll = (this.scrollbar.scroll > this.scrollbar.scroll_ ? this.scrollbar.scroll_ + ppt.rowHeight : this.scrollbar.scroll_ - ppt.rowHeight);
-			this.scrollbar.scroll = this.scrollbar.check_scroll(scroll);
+		if (Math.abs(brw.scrollbar.scroll - brw.scrollbar.scroll_) > ppt.rowHeight) {
+			brw.scrollbar.scroll = (brw.scrollbar.scroll > brw.scrollbar.scroll_ ? brw.scrollbar.scroll_ + ppt.rowHeight : brw.scrollbar.scroll_ - ppt.rowHeight);
+			brw.scrollbar.scroll = brw.scrollbar.check_scroll(brw.scrollbar.scroll);
 		}
 	}
 
@@ -2806,7 +2792,7 @@ registerCallback("on_mouse_lbtn_down", function on_mouse_lbtn_down(x, y) {
 	}
 });
 
-registerCallback("on_mouse_lbtn_up", function on_mouse_lbtn_up(x, y) {
+registerCallback("on_mouse_lbtn_up", function (x, y) {
 
 	// inputBox
 	if (ppt.showHeaderBar && ppt.showFilterBox && g_filterbox.inputbox.visible) {
@@ -2856,7 +2842,7 @@ registerCallback("on_mouse_lbtn_up", function on_mouse_lbtn_up(x, y) {
 	g_lbtn_click = false;
 })
 
-registerCallback("on_mouse_lbtn_dblclk", function on_mouse_lbtn_dblclk(x, y, mask) {
+registerCallback("on_mouse_lbtn_dblclk", function (x, y, mask) {
 	if (y >= brw.y) {
 		brw.on_mouse("dblclk", x, y);
 	} else if (x > brw.x && x < brw.x + brw.w) {
@@ -2866,7 +2852,7 @@ registerCallback("on_mouse_lbtn_dblclk", function on_mouse_lbtn_dblclk(x, y, mas
 	}
 })
 
-registerCallback("on_mouse_rbtn_up", function on_mouse_rbtn_up(x, y) {
+registerCallback("on_mouse_rbtn_up", function (x, y) {
 	// inputBox
 	if (ppt.showHeaderBar && ppt.showFilterBox && g_filterbox.inputbox.visible) {
 		g_filterbox.on_mouse("rbtn_up", x, y);
@@ -2880,7 +2866,7 @@ registerCallback("on_mouse_rbtn_up", function on_mouse_rbtn_up(x, y) {
 	return true;
 })
 
-registerCallback("on_mouse_move", function on_mouse_move(x, y) {
+registerCallback("on_mouse_move", function (x, y) {
 
 	if (mouse.x == x && mouse.y == y)
 		return;
@@ -2912,7 +2898,7 @@ registerCallback("on_mouse_move", function on_mouse_move(x, y) {
 	mouse.y = y;
 })
 
-registerCallback("on_mouse_wheel", function on_mouse_wheel(step) {
+registerCallback("on_mouse_wheel", function (step) {
 
 	if (cTouch.timer) {
 		window.ClearInterval(cTouch.timer);
@@ -2999,15 +2985,15 @@ registerCallback("on_mouse_wheel", function on_mouse_wheel(step) {
 				pman.on_mouse("wheel", mouse.x, mouse.y, step);
 		} else {
 			var rowStep = ppt.rowScrollStep;
-			this.scrollbar.scroll -= step * ppt.rowHeight * rowStep;
-			this.scrollbar.scroll = this.check_scroll(this.scrollbar.scroll);
+			brw.scrollbar.scroll -= step * ppt.rowHeight * rowStep;
+			brw.scrollbar.scroll = brw.check_scroll(brw.scrollbar.scroll);
 			brw.on_mouse("wheel", mouse.x, mouse.y, step);
 		}
 	}
 
 })
 
-registerCallback("on_mouse_leave", function on_mouse_leave() {
+registerCallback("on_mouse_leave", function () {
 	// inputBox
 	if (ppt.showHeaderBar && ppt.showFilterBox && g_filterbox.inputbox.visible) {
 		g_filterbox.on_mouse("leave", 0, 0);
@@ -3082,12 +3068,12 @@ function get_images() {
 	// PLAY icon
 	images.play_on = gdi.CreateImage(70, 70);
 	gb = images.play_on.GetGraphics();
-	DrawPolyStar(gb, 12 - 2, 12, 46, 1, 3, 2, g_color_normal_bg, g_color_normal_txt, 90, 255);
+	DrawPolyStar(gb, 12 - 2, 12, 46, 1, 3, 2, globalColors.background, globalColors.text, 90, 255);
 	images.play_on.ReleaseGraphics(gb);
 
 	images.play_off = gdi.CreateImage(70, 70);
 	gb = images.play_off.GetGraphics();
-	DrawPolyStar(gb, 16 - 2, 16, 38, 1, 3, 2, g_color_normal_bg, g_color_normal_txt, 90, 255);
+	DrawPolyStar(gb, 16 - 2, 16, 38, 1, 3, 2, globalColors.background, globalColors.text, 90, 255);
 	images.play_off.ReleaseGraphics(gb);
 
 	var img_loading = gdi.Image(images.path + "load.png");
@@ -3100,9 +3086,9 @@ function get_images() {
 	images.noart = gdi.CreateImage(nw, nh);
 	gb = images.noart.GetGraphics();
 	// draw no cover art image
-	gb.FillSolidRect(0, 0, nw, nh, g_color_normal_txt & 0x10ffffff);
+	gb.FillSolidRect(0, 0, nw, nh, globalColors.text & 0x10ffffff);
 	gb.SetTextRenderingHint(4);
-	gb.DrawString(txt, gdi.Font(g_fname, Math.round(nh / 12 * 2), 1), blendColors(g_color_normal_txt, g_color_normal_bg, 0.30), 1, 1, nw, nh, cc_stringformat);
+	gb.DrawString(txt, gdi.Font(g_fname, Math.round(nh / 12 * 2), 1), blendColors(globalColors.text, globalColors.background, 0.30), 1, 1, nw, nh, cc_stringformat);
 	images.noart.ReleaseGraphics(gb);
 
 	var sw = 250,
@@ -3111,9 +3097,9 @@ function get_images() {
 	images.stream = gdi.CreateImage(sw, sh);
 	gb = images.stream.GetGraphics();
 	// draw stream art image
-	gb.FillSolidRect(0, 0, sw, sh, g_color_normal_txt & 0x10ffffff);
+	gb.FillSolidRect(0, 0, sw, sh, globalColors.text & 0x10ffffff);
 	gb.SetTextRenderingHint(4);
-	gb.DrawString(txt, gdi.Font(g_fname, Math.round(sh / 12 * 2), 1), blendColors(g_color_normal_txt, g_color_normal_bg, 0.30), 1, 1, sw, sh, cc_stringformat);
+	gb.DrawString(txt, gdi.Font(g_fname, Math.round(sh / 12 * 2), 1), blendColors(globalColors.text, globalColors.background, 0.30), 1, 1, sw, sh, cc_stringformat);
 	images.stream.ReleaseGraphics(gb);
 }
 
@@ -3167,7 +3153,7 @@ function get_font() {
 	}
 }
 
-
+/*
 function get_colors() {
 	var arr;
 	// get some system colors
@@ -3177,13 +3163,13 @@ function get_colors() {
 	// g_syscolor_button_txt = utils.GetSysColour(COLOR_BTNTEXT);
 
 	arr = window.GetProperty("CUSTOM COLOR TEXT NORMAL", "180-180-180").split("-");
-	g_color_normal_txt = RGB(arr[0], arr[1], arr[2]);
+	globalColors.text = RGB(arr[0], arr[1], arr[2]);
 	arr = window.GetProperty("CUSTOM COLOR TEXT SELECTED", "000-000-000").split("-");
-	g_color_selected_txt = RGB(arr[0], arr[1], arr[2]);
+	globalColors.selectedText = RGB(arr[0], arr[1], arr[2]);
 	arr = window.GetProperty("CUSTOM COLOR BACKGROUND NORMAL", "025-025-035").split("-");
-	g_color_normal_bg = RGB(arr[0], arr[1], arr[2]);
+	globalColors.background = RGB(arr[0], arr[1], arr[2]);
 	arr = window.GetProperty("CUSTOM COLOR BACKGROUND SELECTED", "015-177-255").split("-");
-	g_color_selected_bg = RGB(arr[0], arr[1], arr[2]);
+	globalColors.selection = RGB(arr[0], arr[1], arr[2]);
 	arr = window.GetProperty("CUSTOM COLOR HIGHLIGHT", "255-175-050").split("-");
 	g_color_highlight = RGB(arr[0], arr[1], arr[2]);
 
@@ -3191,28 +3177,30 @@ function get_colors() {
 	if (!ppt.enableCustomColors) {
 		// get UI colors set in UI Preferences if no custom color set
 		if (g_instancetype == 0) {
-			g_color_normal_txt = window.GetColourCUI(ColorTypeCUI.text);
-			g_color_selected_txt = window.GetColourCUI(ColorTypeCUI.selection_text);
-			g_color_normal_bg = window.GetColourCUI(ColorTypeCUI.background);
-			g_color_selected_bg = window.GetColourCUI(ColorTypeCUI.selection_background);
+			globalColors.text = window.GetColourCUI(ColorTypeCUI.text);
+			globalColors.selectedText = window.GetColourCUI(ColorTypeCUI.selection_text);
+			globalColors.background = window.GetColourCUI(ColorTypeCUI.background);
+			globalColors.selection = window.GetColourCUI(ColorTypeCUI.selection_background);
 			g_color_highlight = window.GetColourCUI(ColorTypeCUI.active_item_frame);
 		} else if (g_instancetype == 1) {
-			g_color_normal_txt = window.GetColourDUI(ColorTypeDUI.text);
-			g_color_selected_txt = window.GetColourDUI(ColorTypeDUI.selection);
-			g_color_normal_bg = window.GetColourDUI(ColorTypeDUI.background);
-			g_color_selected_bg = g_color_selected_txt;
+			globalColors.text = window.GetColourDUI(ColorTypeDUI.text);
+			globalColors.selectedText = window.GetColourDUI(ColorTypeDUI.selection);
+			globalColors.background = window.GetColourDUI(ColorTypeDUI.background);
+			globalColors.selection = globalColors.selectedText;
 			g_color_highlight = window.GetColourDUI(ColorTypeDUI.highlight);
 		}
 	}
 }
+*/
 
-registerCallback("on_font_changed", function on_font_changed() {
+registerCallback("on_font_changed", function () {
 	get_font();
 	get_metrics();
 	brw.repaint();
-})
+});
 
-registerCallback("on_colours_changed", function on_colours_changed() {
+registerCallback("on_colours_changed", function () {
+	console.log("on_colors_changed");
 	// get_colors();
 	updateColors();
 	get_images();
@@ -3223,13 +3211,13 @@ registerCallback("on_colours_changed", function on_colours_changed() {
 	brw.repaint();
 })
 
-registerCallback("on_script_unload", function on_script_unload() {
+registerCallback("on_script_unload", function () {
 	brw.g_time && window.ClearInterval(brw.g_time);
 	brw.g_time = false;
 })
 
 //=================================================// Keyboard Callbacks
-registerCallback("on_key_up", function on_key_up(vkey) {
+registerCallback("on_key_up", function (vkey) {
 	// inputBox
 	if (ppt.showHeaderBar && ppt.showFilterBox && g_filterbox.inputbox.visible) {
 		g_filterbox.on_key("up", vkey);
@@ -3871,7 +3859,7 @@ registerCallback("on_playlist_items_added", function on_playlist_items_added(pla
 registerCallback("on_playlist_items_removed", function on_playlist_items_removed(playlist_idx, new_count) {
 
 	if (playlist_idx == g_active_playlist && new_count == 0)
-		this.scrollbar.scroll = this.scrollbar.scroll_ = 0;
+		brw.scrollbar.scroll = brw.scrollbar.scroll_ = 0;
 	if (g_avoid_on_playlist_items_removed_callbacks_on_sendItemToPlaylist)
 		return;
 
@@ -3925,16 +3913,16 @@ registerCallback("on_item_focus_change", function on_item_focus_change(playlist,
 
 			// if new focused track not totally visible, we scroll to show it centered in the panel
 			g_focus_row = brw.getOffsetFocusItem(g_focus_id);
-			if (g_focus_row < this.scrollbar.scroll / ppt.rowHeight || g_focus_row > this.scrollbar.scroll / ppt.rowHeight + brw.totalRowsVis - 0.1) {
+			if (g_focus_row < brw.scrollbar.scroll / ppt.rowHeight || g_focus_row > brw.scrollbar.scroll / ppt.rowHeight + brw.totalRowsVis - 0.1) {
 				// var old = scroll;
-				this.scrollbar.scroll = (g_focus_row - Math.floor(brw.totalRowsVis / 2)) * ppt.rowHeight;
-				this.scrollbar.scroll = this.check_scroll(this.scrollbar.scroll);
+				brw.scrollbar.scroll = (g_focus_row - Math.floor(brw.totalRowsVis / 2)) * ppt.rowHeight;
+				brw.scrollbar.scroll = brw.check_scroll(brw.scrollbar.scroll);
 				if (!ppt.enableFullScrollEffectOnFocusChange) {
-					if (Math.abs(this.scrollbar.scroll - this.scrollbar.scroll_) > ppt.rowHeight * 5) {
-						if (this.scrollbar.scroll_ > this.scrollbar.scroll) {
-							this.scrollbar.scroll_ = this.scrollbar.scroll + ppt.rowHeight * 5;
+					if (Math.abs(brw.scrollbar.scroll - brw.scrollbar.scroll_) > ppt.rowHeight * 5) {
+						if (brw.scrollbar.scroll_ > brw.scrollbar.scroll) {
+							brw.scrollbar.scroll_ = brw.scrollbar.scroll + ppt.rowHeight * 5;
 						} else {
-							this.scrollbar.scroll_ = this.scrollbar.scroll - ppt.rowHeight * 5;
+							brw.scrollbar.scroll_ = brw.scrollbar.scroll - ppt.rowHeight * 5;
 						}
 					}
 				}

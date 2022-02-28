@@ -31,15 +31,17 @@ export class Emitter {
       }
       while (this._deliveryQueue.length > 0) {
         const [listener, args] = this._deliveryQueue.shift();
-        try {
+        // TODO: preserve try catch.
+        // try {
           if (typeof listener === 'function') {
             listener.call(undefined, args[0], args[1], args[2], args[3]);
           } else {
             listener.call(listener[1], args[0], args[1], args[2], args[3]);
           }
-        } catch (e) {
+        // } catch (e) {
           // unexpected error!
-        }
+          // console.log(e)
+        // }
       }
     }
   }
@@ -61,6 +63,9 @@ export function registerCallback(name, listener, thisArgs) {
     const eventEmitter = fbEvents[name] = new Emitter();
     globalVar[name] = function (a, b, c, d) {
       eventEmitter.fire(a, b, c, d);
+      if (name === "on_mouse_rbtn_up") {
+        return true;
+      }
     }
   }
   fbEvents[name].event(listener, thisArgs);

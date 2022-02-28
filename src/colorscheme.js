@@ -2,8 +2,9 @@
  * @description 
  */
 
-import { ColorTypeCUI, ColorTypeDUI, RGB, toRGB } from "./common";
-import { ppt } from "./configure";
+
+import { ColorTypeCUI, ColorTypeDUI, RGB } from "./common";
+import { ppt, globalColors, ColorMode } from "./configure";
 
 export class ColorTheme {
   constructor() {
@@ -32,16 +33,19 @@ function getDUIColors() {
   return {
     text: window.GetColourDUI(ColorTypeDUI.text),
     selection: window.GetColourDUI(ColorTypeDUI.selection),
+    selectedText: window.GetColourDUI(ColorTypeDUI.selection),
     background: window.GetColourDUI(ColorTypeDUI.background),
     highlight: window.GetColourDUI(ColorTypeDUI.highlight)
   }
 }
 
 function getCUIColors() {
+  console.log("get cui colors");
   return {
     text: window.GetColourCUI(ColorTypeCUI.text),
-    selection: window.GetColourCUI(ColorTypeCUI.selection_text),
+    selection: window.GetColourCUI(ColorTypeCUI.selection_background),
     background: window.GetColourCUI(ColorTypeCUI.background),
+    selectedText: window.GetColourCUI(ColorTypeCUI.selection_text),
     hightlight: window.GetColourCUI(ColorTypeCUI.active_item_frame),
   }
 }
@@ -56,7 +60,8 @@ export function getSysColors() {
     text: utils.GetSysColour(COLOR_WINDOWTEXT),
     background: utils.GetSysColour(COLOR_WINDOW),
     highlight: utils.GetSysColour(COLOR_HIGHLIGHT),
-    selection: utils.GetSysColour(COLOR_HIGHLIGHT)
+    selection: utils.GetSysColour(COLOR_HIGHLIGHT),
+    selectedText: utils.GetSysColour(COLOR_HIGHLIGHTTEXT),
   }
 }
 
@@ -80,6 +85,7 @@ function colorFromProperty(key, value) {
 export function getCustomColors() {
   return {
     text: colorFromProperty("CUSTOM COLOR TEXT NORMAL", "180-180-180"),
+    selectedText: colorFromProperty("CUSTOM COLOR TEXT SELECTION", "255-255-255"),
     background: colorFromProperty("CUSTOM COLOR BACKGROUND NORMAL", "025-025-035"),
     selection: colorFromProperty("CUSTOM COLOR BACKGROUND SELECTION", "015-177-255"),
     highlight: colorFromProperty("CUSTOM COLOR HIGHLIGHT", "255-175-050")
@@ -87,27 +93,21 @@ export function getCustomColors() {
 }
 
 
-export let globalColors;
 
-export const ColorMode = {
-  Sys: 0,
-  Fb: 1,
-  Custom: 2
-}
-
-export function updateColors(colorMode) {
-  switch (colorMode) {
+export function updateColors() {
+  switch (ppt.colorMode) {
     case ColorMode.Sys:
-      globalColors = getSysColors();
+      Object.assign(globalColors, getSysColors());
       break;
     case ColorMode.Fb:
-      globalColors = getFbColors();
+      Object.assign(globalColors, getFbColors());
       break;
     case ColorMode.Custom:
-      globalColors = getCustomColors();
+      Object.assign(globalColors, getCustomColors());
       break;
     default:
-      ppt.colorMode = ColorMode.Fb;
+      ppt.colorMode = ColorMode.Custom;
+      updateColors(ppt.colorMode);
       break;
   }
 }
