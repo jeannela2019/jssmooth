@@ -6,6 +6,8 @@ export const ColorMode = {
   Custom: 2
 }
 
+export const globalFonts = {}
+
 export const ppt = {
   tf_artist: fb.TitleFormat("%artist%"),
   tf_albumartist: fb.TitleFormat("%album artist%"),
