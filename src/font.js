@@ -1,6 +1,5 @@
 import { FontTypeCUI, FontTypeDUI } from "./common";
-import { globalFonts as gf } from "./configure";
-import { ppt } from "./configure";
+import { fonts, ppt } from "./configure";
 
 
 const baseSize = 12;
@@ -28,33 +27,33 @@ export function updateFonts() {
 	const { items, labels } = getFbFonts();
 
 	try {
-		gf.name = items.Name;
-		gf.size = items.Size;
+		fonts.name = items.Name;
+		fonts.size = items.Size;
 	} catch {
-		gf.name = "arial";
-		gf.size = 12;
+		fonts.name = "arial";
+		fonts.size = 12;
 	}
 
-	gf.size += ppt.extra_font_size;
+	fonts.size += ppt.extra_font_size;
 
-	gf.items = gdi.Font(gf.name, gf.size);
-	gf.bold = gdi.Font(gf.name, gf.size, 1);
-	gf.box = gdi.Font(gf.name, gf.size - 2, 1);
+	fonts.items = gdi.Font(fonts.name, fonts.size);
+	fonts.bold = gdi.Font(fonts.name, fonts.size, 1);
+	fonts.box = gdi.Font(fonts.name, fonts.size - 2, 1);
 
-	ppt.zoompercent = Math.floor(gf.size / baseSize * 100);
+	ppt.zoompercent = Math.floor(fonts.size / baseSize * 100);
 
-	gf.group1 = gdi.Font(gf.name, (gf.size * 160 / 100), 1);
-	gf.group2 = gdi.Font(gf.name, (gf.size * 140 / 100), 0);
+	fonts.group1 = gdi.Font(fonts.name, (fonts.size * 160 / 100), 1);
+	fonts.group2 = gdi.Font(fonts.name, (fonts.size * 140 / 100), 0);
 
 	if (g_font_guifx_found) {
-		gf.rating = gdi.Font(font_guifx, Math.round(gf.size * 130 / 100), 0);
-		gf.mood = gdi.Font(font_guifx, Math.round(gf.size * 130 / 100));
+		fonts.rating = gdi.Font(font_guifx, Math.round(fonts.size * 130 / 100), 0);
+		fonts.mood = gdi.Font(font_guifx, Math.round(fonts.size * 130 / 100));
 	} else if (g_font_wingdings2_found) {
-		gf.rating = gdi.Font(font_wingdings2, Math.round(gf.size * 130 / 100));
-		gf.mood = gdi.Font(font_wingdings2, Math.round(gf.size * 130 / 100));
+		fonts.rating = gdi.Font(font_wingdings2, Math.round(fonts.size * 130 / 100));
+		fonts.mood = gdi.Font(font_wingdings2, Math.round(fonts.size * 130 / 100));
 	} else {
-		gf.rating = gdi.Font("arial", Math.round(gf.size * 170 / 100));
-		gf.mood = gdi.Font("arial", Math.round(gf.size * 120 / 100));
+		fonts.rating = gdi.Font("arial", Math.round(fonts.size * 170 / 100));
+		fonts.mood = gdi.Font("arial", Math.round(fonts.size * 120 / 100));
 	}
 
 }

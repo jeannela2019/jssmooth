@@ -1,11 +1,7 @@
-import { RGB, RGBA, blendColors } from "./common";
-import { IDC_ARROW } from "./common";
-import { globalFonts as fonts } from "./configure";
+import { blendColors, DT_CALCRECT, DT_END_ELLIPSIS, DT_LEFT, DT_NOPREFIX, DT_RIGHT, DT_VCENTER, IDC_ARROW, RGB, RGBA } from "./common";
+import { fonts, timers } from "./configure";
 import { mouse } from "./mouse";
 
-const timers = {
-
-}
 
 export const cPlaylistManager = {
 	width: 230,
@@ -37,13 +33,14 @@ export const oPlaylistManager = function (name) {
 	this.name = name;
 	this.playlists = [];
 	this.state = 0; // 0 = hidden, 1 = visible
+	this.parentView = null;
 	// metrics
 	this.scroll = 0;
 	this.offset = 0;
 	this.w = 250;
-	this.h = brw.h - 100;
-	this.x = ww;
-	this.y = brw.y + 50;
+	this.h = 0;
+	this.x = 0;
+	this.y = 0;
 	this.total_playlists = null;
 	this.rowTotal = -1;
 	this.drop_done = false;
@@ -75,32 +72,38 @@ export const oPlaylistManager = function (name) {
 		this.adjustPanelHeight();
 	};
 
+	this.repaint = function () {
+		this.parentView && this.parentView.repaint();
+	}
+
 	this.showPanel = function () {
+		const pman = this;
 		if (pman.offset < pman.w) {
 			var delta = Math.ceil((pman.w - pman.offset) / 2);
 			pman.offset += delta;
-			brw.repaint();
+			pman.repaint();
 		}
 		if (pman.offset >= pman.w) {
 			pman.offset = pman.w;
 			window.ClearInterval(timers.showPlaylistManager);
 			timers.showPlaylistManager = false;
-			brw.repaint();
+			pman.repaint();
 		}
 	};
 
 	this.hidePanel = function () {
+		const pman = this;
 		if (pman.offset > 0) {
 			var delta = Math.ceil((pman.w - (pman.w - pman.offset)) / 2);
 			pman.offset -= delta;
-			brw.repaint();
+			pman.repaint();
 		}
 		if (pman.offset < 1) {
 			pman.offset = 0;
 			pman.state = 0;
 			window.ClearInterval(timers.hidePlaylistManager);
 			timers.hidePlaylistManager = false;
-			brw.repaint();
+			pman.repaint();
 		}
 	};
 
@@ -266,6 +269,8 @@ export const oPlaylistManager = function (name) {
 
 	this.on_mouse = function (event, x, y, delta) {
 		this.ishover = this._isHover(x, y);
+		const pman = this;
+		const brw = this.parentView;
 
 		switch (event) {
 			case "move":
@@ -277,7 +282,7 @@ export const oPlaylistManager = function (name) {
 				}
 				if (this.activeIndex != this.activeIndexSaved) {
 					this.activeIndexSaved = this.activeIndex;
-					brw.repaint();
+					this.repaint();
 				}
 				if (this.scr_w > 0 && x > this.x - this.offset && x <= this.x - this.offset + this.w) {
 					if (y < this.y && pman.scroll > 0) {
@@ -289,7 +294,7 @@ export const oPlaylistManager = function (name) {
 									window.ClearInterval(timers.scrollPman);
 									timers.scrollPman = false;
 								} else {
-									brw.repaint();
+									pman.repaint();
 								}
 							}, 100);
 						}
@@ -302,7 +307,7 @@ export const oPlaylistManager = function (name) {
 									window.ClearInterval(timers.scrollPman);
 									timers.scrollPman = false;
 								} else {
-									brw.repaint();
+									pman.repaint();
 								}
 							}, 100);
 						}
@@ -320,7 +325,7 @@ export const oPlaylistManager = function (name) {
 					window.SetCursor(IDC_ARROW);
 					this.drop_done = false;
 					if (this.activeIndex > -1) {
-						brw.metadblist_selection = plman.GetPlaylistSelectedItems(g_active_playlist);
+						brw.metadblist_selection = plman.GetPlaylistSelectedItems(plman.ActivePlaylist);
 						if (this.activeRow == 0) {
 							// send to a new playlist
 							this.drop_done = true;
@@ -369,7 +374,7 @@ export const oPlaylistManager = function (name) {
 							timers.showPlaylistManager = false;
 						}
 						if (!timers.hidePlaylistManager) {
-							timers.hidePlaylistManager = window.SetInterval(this.hidePanel, 25);
+							timers.hidePlaylistManager = window.SetInterval(() => this.hidePanel(), 25);
 						}
 						brw.drag_moving = false;
 					}
@@ -384,7 +389,7 @@ export const oPlaylistManager = function (name) {
 						timers.showPlaylistManager = false;
 					}
 					if (!timers.hidePlaylistManager) {
-						timers.hidePlaylistManager = window.SetInterval(this.hidePanel, 25);
+						timers.hidePlaylistManager = window.SetInterval(() => this.hidePanel(), 25);
 					}
 					brw.drag_moving = false;
 				}
@@ -408,7 +413,7 @@ export const oPlaylistManager = function (name) {
 						timers.showPlaylistManager = false;
 					}
 					if (!timers.hidePlaylistManager) {
-						timers.hidePlaylistManager = window.SetInterval(this.hidePanel, 25);
+						timers.hidePlaylistManager = window.SetInterval(() => this.hidePanel(), 25);
 					}
 					brw.drag_moving = false;
 				}

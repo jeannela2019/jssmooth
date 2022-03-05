@@ -6,7 +6,27 @@ export const ColorMode = {
   Custom: 2
 }
 
-export const globalFonts = {}
+export const fonts = {
+	name: "",
+	size: 0,
+	items: null,
+	bold: null,
+	box: null,
+	group1: null,
+	group2: null,
+	rating: null,
+	mood: null,
+}
+
+export const timers = {
+	coverLoad: false,
+	coverDone: false,
+	mouseWheel: false,
+	saveCover: false,
+	mouseDown: false,
+	showPlaylistManager: false,
+	hidePlaylistManager: false
+};
 
 export const ppt = {
   tf_artist: fb.TitleFormat("%artist%"),

@@ -1,11 +1,13 @@
-import { blendColors, button, ButtonStates, CACHE_FOLDER, toRGB, cc_stringformat, ColorTypeCUI, ColorTypeDUI, DLGC_WANTALLKEYS, drawImage, DrawPolyStar, draw_blurred_image, draw_glass_reflect, DT_CALCRECT, DT_CENTER, DT_END_ELLIPSIS, DT_LEFT, DT_NOPREFIX, DT_RIGHT, DT_VCENTER, FILE_ATTRIBUTE_DIRECTORY, FontTypeCUI, FontTypeDUI, fso, GetKeyboardMask, IDC_ARROW, IDC_HAND, IDC_HELP, KMask, lc_stringformat, match, MF_DISABLED, MF_GRAYED, MF_STRING, num, on_load, process_cachekey, process_string, resize, RGB, RGBA, TrackType, VK_BACK, VK_CONTROL, VK_DELETE, VK_DOWN, VK_END, VK_ESCAPE, VK_F2, VK_F3, VK_F5, VK_F6, VK_HOME, VK_PGDN, VK_PGUP, VK_RETURN, VK_SHIFT, VK_TAB, VK_UP } from "./common";
-import { globalColors, ppt } from "./configure";
+import { blendColors, button, ButtonStates, CACHE_FOLDER, cc_stringformat, DLGC_WANTALLKEYS, drawImage, DrawPolyStar, draw_blurred_image, draw_glass_reflect, DT_CALCRECT, DT_CENTER, DT_END_ELLIPSIS, DT_LEFT, DT_NOPREFIX, DT_RIGHT, DT_VCENTER, FILE_ATTRIBUTE_DIRECTORY, FontTypeCUI, FontTypeDUI, fso, GetKeyboardMask, IDC_ARROW, IDC_HAND, IDC_HELP, KMask, lc_stringformat, match, MF_DISABLED, MF_GRAYED, MF_STRING, num, on_load, process_cachekey, process_string, resize, RGB, RGBA, TrackType, VK_BACK, VK_CONTROL, VK_DELETE, VK_DOWN, VK_END, VK_ESCAPE, VK_F2, VK_F3, VK_F5, VK_F6, VK_HOME, VK_PGDN, VK_PGUP, VK_RETURN, VK_SHIFT, VK_TAB, VK_UP } from "./common";
+import { globalColors, ppt, timers, fonts } from "./configure";
 import { registerCallback } from "./event";
 import { oInputbox } from "./inputbox";
 import { mouse } from "./mouse";
 import { cScrollBar, oScrollbar } from "./scrollbar";
 import { updateColors } from "./colorscheme";
 import { cPlaylistManager, oPlaylistManager } from "./playlistmgr";
+import { updateFonts } from "./font";
+
 
 const smoothPath = `${fb.ProfilePath}packages\\jssmooth\\`;
 const imagePath = smoothPath + "images\\"
@@ -81,15 +83,6 @@ const cList = {
 	incsearch_timer: false
 };
 
-const timers = {
-	coverLoad: false,
-	coverDone: false,
-	mouseWheel: false,
-	saveCover: false,
-	mouseDown: false,
-	showPlaylistManager: false,
-	hidePlaylistManager: false
-};
 
 function setWallpaperImg() {
 	if (!fb.IsPlaying || !ppt.showwallpaper) return null;
@@ -1090,10 +1083,10 @@ const oBrowser = function (name) {
 							// text
 							// =====
 							// right area
-							cColumns.dateWidth = gr.CalcTextWidth(arr_e[3], g_font_group1) + 10;
-							gr.GdiDrawText(arr_e[3], g_font_group1, group_color_txt_normal, ax + aw - cColumns.dateWidth - 5, ay - ((ghrh - 1) * ah) + Math.round(ah * 1 / 3) - 2, cColumns.dateWidth, Math.round(ah * 2 / 3), DT_RIGHT | DT_VCENTER | DT_CALCRECT | DT_END_ELLIPSIS | DT_NOPREFIX);
-							cColumns.genreWidth = gr.CalcTextWidth(arr_e[2], g_font_group2) + 10;
-							gr.GdiDrawText(arr_e[2], g_font_group2, group_color_txt_fader, ax + aw - cColumns.genreWidth - 5, ay - ((ghrh - 2) * ah), cColumns.genreWidth, Math.round(ah * 2 / 3), DT_RIGHT | DT_VCENTER | DT_CALCRECT | DT_END_ELLIPSIS | DT_NOPREFIX);
+							cColumns.dateWidth = gr.CalcTextWidth(arr_e[3], fonts.group1) + 10;
+							gr.GdiDrawText(arr_e[3], fonts.group1, group_color_txt_normal, ax + aw - cColumns.dateWidth - 5, ay - ((ghrh - 1) * ah) + Math.round(ah * 1 / 3) - 2, cColumns.dateWidth, Math.round(ah * 2 / 3), DT_RIGHT | DT_VCENTER | DT_CALCRECT | DT_END_ELLIPSIS | DT_NOPREFIX);
+							cColumns.genreWidth = gr.CalcTextWidth(arr_e[2], fonts.group2) + 10;
+							gr.GdiDrawText(arr_e[2], fonts.group2, group_color_txt_fader, ax + aw - cColumns.genreWidth - 5, ay - ((ghrh - 2) * ah), cColumns.genreWidth, Math.round(ah * 2 / 3), DT_RIGHT | DT_VCENTER | DT_CALCRECT | DT_END_ELLIPSIS | DT_NOPREFIX);
 							// left area
 							if (arr_g[1] == "?") {
 								if (this.groups[g].count > 1) {
@@ -1105,10 +1098,10 @@ const oBrowser = function (name) {
 							} else {
 								var album_name = arr_g[1];
 							}
-							gr.GdiDrawText(arr_g[0].toUpperCase(), g_font_group1, group_color_txt_fader, ax + text_left_margin + 5, ay - ((ghrh - 1) * ah) + Math.round(ah * 1 / 3) - 2, aw - text_left_margin - cColumns.dateWidth - 10, Math.round(ah * 2 / 3), DT_LEFT | DT_VCENTER | DT_CALCRECT | DT_END_ELLIPSIS | DT_NOPREFIX);
-							gr.GdiDrawText(album_name, g_font_group2, group_color_txt_normal, ax + text_left_margin + 25, ay - ((ghrh - 2) * ah), aw - text_left_margin - cColumns.genreWidth - 30, Math.round(ah * 2 / 3), DT_LEFT | DT_VCENTER | DT_CALCRECT | DT_END_ELLIPSIS | DT_NOPREFIX);
+							gr.GdiDrawText(arr_g[0].toUpperCase(), fonts.group1, group_color_txt_fader, ax + text_left_margin + 5, ay - ((ghrh - 1) * ah) + Math.round(ah * 1 / 3) - 2, aw - text_left_margin - cColumns.dateWidth - 10, Math.round(ah * 2 / 3), DT_LEFT | DT_VCENTER | DT_CALCRECT | DT_END_ELLIPSIS | DT_NOPREFIX);
+							gr.GdiDrawText(album_name, fonts.group2, group_color_txt_normal, ax + text_left_margin + 25, ay - ((ghrh - 2) * ah), aw - text_left_margin - cColumns.genreWidth - 30, Math.round(ah * 2 / 3), DT_LEFT | DT_VCENTER | DT_CALCRECT | DT_END_ELLIPSIS | DT_NOPREFIX);
 							if (nowplaying_group) {
-								gr.GdiDrawText(">", g_font_group2, group_color_txt_normal, ax + text_left_margin + 5, ay - ((ghrh - 2) * ah), 20, Math.round(ah * 2 / 3), DT_LEFT | DT_VCENTER | DT_CALCRECT | DT_END_ELLIPSIS | DT_NOPREFIX);
+								gr.GdiDrawText(">", fonts.group2, group_color_txt_normal, ax + text_left_margin + 5, ay - ((ghrh - 2) * ah), 20, Math.round(ah * 2 / 3), DT_LEFT | DT_VCENTER | DT_CALCRECT | DT_END_ELLIPSIS | DT_NOPREFIX);
 							}
 						}
 						break;
@@ -1203,11 +1196,11 @@ const oBrowser = function (name) {
 
 								if (ppt.showRating && track_type != 3) {
 									if (g_font_guifx_found) {
-										cColumns.track_rating_part = gr.CalcTextWidth("bbbbb", g_font_rating);
+										cColumns.track_rating_part = gr.CalcTextWidth("bbbbb", fonts.rating);
 									} else if (g_font_wingdings2_found) {
-										cColumns.track_rating_part = gr.CalcTextWidth(String.fromCharCode(234).repeat(5), g_font_rating);
+										cColumns.track_rating_part = gr.CalcTextWidth(String.fromCharCode(234).repeat(5), fonts.rating);
 									} else {
-										cColumns.track_rating_part = gr.CalcTextWidth(String.fromCharCode(0x25CF).repeat(5), g_font_rating);
+										cColumns.track_rating_part = gr.CalcTextWidth(String.fromCharCode(0x25CF).repeat(5), fonts.rating);
 									}
 								} else {
 									cColumns.track_rating_part = 0;
@@ -1228,20 +1221,20 @@ const oBrowser = function (name) {
 										}
 										track_time_part = g_time_remaining;
 										//
-										cColumns.track_num_part = gr.CalcTextWidth(track_num_part, g_font) + 10;
-										cColumns.track_artist_part = track_artist_part.length > 0 ? gr.CalcTextWidth(track_artist_part, g_font) + 0 : 0;
-										cColumns.track_title_part = gr.CalcTextWidth(track_title_part, g_font) + 10;
-										cColumns.track_time_part = gr.CalcTextWidth("00:00:00", g_font) + 10;
+										cColumns.track_num_part = gr.CalcTextWidth(track_num_part, fonts.items) + 10;
+										cColumns.track_artist_part = track_artist_part.length > 0 ? gr.CalcTextWidth(track_artist_part, fonts.items) + 0 : 0;
+										cColumns.track_title_part = gr.CalcTextWidth(track_title_part, fonts.items) + 10;
+										cColumns.track_time_part = gr.CalcTextWidth("00:00:00", fonts.items) + 10;
 										var tx = ax + cColumns.track_num_part;
 										var tw = aw - cColumns.track_num_part;
 										if (track_time_part == "ON AIR") {
-											gr.GdiDrawText(g_radio_title, g_font, track_color_txt, tx + 10, ay_1, tw - cColumns.track_time_part - 15 - (cColumns.track_rating_part + 10), ah_1, DT_LEFT | DT_VCENTER | DT_CALCRECT | DT_END_ELLIPSIS | DT_NOPREFIX);
-											gr.GdiDrawText(g_radio_artist, g_font, track_artist_color_text, tx + 10, ay_2, tw - cColumns.track_time_part - 15, ah_2, DT_LEFT | DT_VCENTER | DT_CALCRECT | DT_END_ELLIPSIS | DT_NOPREFIX);
+											gr.GdiDrawText(g_radio_title, fonts.items, track_color_txt, tx + 10, ay_1, tw - cColumns.track_time_part - 15 - (cColumns.track_rating_part + 10), ah_1, DT_LEFT | DT_VCENTER | DT_CALCRECT | DT_END_ELLIPSIS | DT_NOPREFIX);
+											gr.GdiDrawText(g_radio_artist, fonts.items, track_artist_color_text, tx + 10, ay_2, tw - cColumns.track_time_part - 15, ah_2, DT_LEFT | DT_VCENTER | DT_CALCRECT | DT_END_ELLIPSIS | DT_NOPREFIX);
 										} else {
-											gr.GdiDrawText(track_title_part, g_font, track_color_txt, tx + 10, ay_1, tw - cColumns.track_time_part - 15 - (cColumns.track_rating_part + 10), ah_1, DT_LEFT | DT_VCENTER | DT_CALCRECT | DT_END_ELLIPSIS | DT_NOPREFIX);
-											gr.GdiDrawText(track_artist_part, g_font, track_artist_color_text, tx + 10, ay_2, tw - cColumns.track_time_part - 15, ah_2, DT_LEFT | DT_VCENTER | DT_CALCRECT | DT_END_ELLIPSIS | DT_NOPREFIX);
+											gr.GdiDrawText(track_title_part, fonts.items, track_color_txt, tx + 10, ay_1, tw - cColumns.track_time_part - 15 - (cColumns.track_rating_part + 10), ah_1, DT_LEFT | DT_VCENTER | DT_CALCRECT | DT_END_ELLIPSIS | DT_NOPREFIX);
+											gr.GdiDrawText(track_artist_part, fonts.items, track_artist_color_text, tx + 10, ay_2, tw - cColumns.track_time_part - 15, ah_2, DT_LEFT | DT_VCENTER | DT_CALCRECT | DT_END_ELLIPSIS | DT_NOPREFIX);
 										}
-										gr.GdiDrawText(track_time_part, g_font, track_color_txt, tx + tw - cColumns.track_time_part - 5, ay_1, cColumns.track_time_part, ah_1, DT_RIGHT | DT_VCENTER | DT_CALCRECT | DT_END_ELLIPSIS | DT_NOPREFIX);
+										gr.GdiDrawText(track_time_part, fonts.items, track_color_txt, tx + tw - cColumns.track_time_part - 5, ay_1, cColumns.track_time_part, ah_1, DT_RIGHT | DT_VCENTER | DT_CALCRECT | DT_END_ELLIPSIS | DT_NOPREFIX);
 										if (g_seconds == 0 || g_seconds / 2 == Math.floor(g_seconds / 2)) {
 											gr.DrawImage(images.play_on.Resize(ppt.rowHeight, ppt.rowHeight, 2), ax + 2, ay, ppt.rowHeight, ppt.rowHeight, 0, 0, ppt.rowHeight, ppt.rowHeight, 0, 255);
 										} else {
@@ -1250,38 +1243,38 @@ const oBrowser = function (name) {
 										// rating Stars
 										if (ppt.showRating && track_type != 3) {
 											if (g_font_guifx_found) {
-												gr.DrawString("b".repeat(5), g_font_rating, track_color_txt & 0x15ffffff, tx + tw - cColumns.track_time_part - (cColumns.track_rating_part + 10), ay_1, cColumns.track_rating_part + 10, ah_1, lc_stringformat);
-												gr.DrawString("b".repeat(track_rating_part), g_font_rating, track_color_rating, tx + tw - cColumns.track_time_part - (cColumns.track_rating_part + 10), ay_1, cColumns.track_rating_part + 10, ah_1, lc_stringformat);
+												gr.DrawString("b".repeat(5), fonts.rating, track_color_txt & 0x15ffffff, tx + tw - cColumns.track_time_part - (cColumns.track_rating_part + 10), ay_1, cColumns.track_rating_part + 10, ah_1, lc_stringformat);
+												gr.DrawString("b".repeat(track_rating_part), fonts.rating, track_color_rating, tx + tw - cColumns.track_time_part - (cColumns.track_rating_part + 10), ay_1, cColumns.track_rating_part + 10, ah_1, lc_stringformat);
 											} else if (g_font_wingdings2_found) {
-												gr.DrawString(String.fromCharCode(234).repeat(5), g_font_rating, track_color_txt & 0x15ffffff, tx + tw - cColumns.track_time_part - (cColumns.track_rating_part + 10), ay_1, cColumns.track_rating_part + 10, ah_1, lc_stringformat);
-												gr.DrawString(String.fromCharCode(234).repeat(track_rating_part), g_font_rating, track_color_rating, tx + tw - cColumns.track_time_part - (cColumns.track_rating_part + 10), ay_1, cColumns.track_rating_part + 10, ah_1, lc_stringformat);
+												gr.DrawString(String.fromCharCode(234).repeat(5), fonts.rating, track_color_txt & 0x15ffffff, tx + tw - cColumns.track_time_part - (cColumns.track_rating_part + 10), ay_1, cColumns.track_rating_part + 10, ah_1, lc_stringformat);
+												gr.DrawString(String.fromCharCode(234).repeat(track_rating_part), fonts.rating, track_color_rating, tx + tw - cColumns.track_time_part - (cColumns.track_rating_part + 10), ay_1, cColumns.track_rating_part + 10, ah_1, lc_stringformat);
 											} else {
-												gr.DrawString(String.fromCharCode(0x25CF).repeat(5), g_font_rating, track_color_txt & 0x15ffffff, tx + tw - cColumns.track_time_part - (cColumns.track_rating_part + 10), ay_1, cColumns.track_rating_part + 10, ah_1, lc_stringformat);
-												gr.DrawString(String.fromCharCode(0x25CF).repeat(track_rating_part), g_font_rating, track_color_rating, tx + tw - cColumns.track_time_part - (cColumns.track_rating_part + 10), ay_1, cColumns.track_rating_part + 10, ah_1, lc_stringformat);
+												gr.DrawString(String.fromCharCode(0x25CF).repeat(5), fonts.rating, track_color_txt & 0x15ffffff, tx + tw - cColumns.track_time_part - (cColumns.track_rating_part + 10), ay_1, cColumns.track_rating_part + 10, ah_1, lc_stringformat);
+												gr.DrawString(String.fromCharCode(0x25CF).repeat(track_rating_part), fonts.rating, track_color_rating, tx + tw - cColumns.track_time_part - (cColumns.track_rating_part + 10), ay_1, cColumns.track_rating_part + 10, ah_1, lc_stringformat);
 											}
 										}
 									} else {
-										cColumns.track_num_part = gr.CalcTextWidth(track_num_part, g_font) + 10;
-										cColumns.track_artist_part = track_artist_part.length > 0 ? gr.CalcTextWidth(track_artist_part, g_font) : 0;
-										cColumns.track_title_part = gr.CalcTextWidth(track_title_part, g_font) + 10;
-										cColumns.track_time_part = gr.CalcTextWidth("00:00:00", g_font) + 10;
+										cColumns.track_num_part = gr.CalcTextWidth(track_num_part, fonts.items) + 10;
+										cColumns.track_artist_part = track_artist_part.length > 0 ? gr.CalcTextWidth(track_artist_part, fonts.items) : 0;
+										cColumns.track_title_part = gr.CalcTextWidth(track_title_part, fonts.items) + 10;
+										cColumns.track_time_part = gr.CalcTextWidth("00:00:00", fonts.items) + 10;
 										var tx = ax + cColumns.track_num_part;
 										var tw = aw - cColumns.track_num_part;
-										gr.GdiDrawText(track_num_part, g_font, track_color_txt, ax + 10, ay_1, cColumns.track_num_part, ah_1, DT_RIGHT | DT_VCENTER | DT_CALCRECT | DT_END_ELLIPSIS | DT_NOPREFIX);
-										gr.GdiDrawText(track_artist_part, g_font, track_artist_color_text, tx + 10, ay_2, tw - cColumns.track_time_part - 15, ah_2, DT_LEFT | DT_VCENTER | DT_CALCRECT | DT_END_ELLIPSIS | DT_NOPREFIX);
-										gr.GdiDrawText(track_title_part, g_font, track_color_txt, tx + 10, ay_1, tw - cColumns.track_time_part - 15 - (cColumns.track_rating_part + 10), ah_1, DT_LEFT | DT_VCENTER | DT_CALCRECT | DT_END_ELLIPSIS | DT_NOPREFIX);
-										gr.GdiDrawText(track_time_part, g_font, track_color_txt, tx + tw - cColumns.track_time_part - 5, ay_1, cColumns.track_time_part, ah_1, DT_RIGHT | DT_VCENTER | DT_CALCRECT | DT_END_ELLIPSIS | DT_NOPREFIX);
+										gr.GdiDrawText(track_num_part, fonts.items, track_color_txt, ax + 10, ay_1, cColumns.track_num_part, ah_1, DT_RIGHT | DT_VCENTER | DT_CALCRECT | DT_END_ELLIPSIS | DT_NOPREFIX);
+										gr.GdiDrawText(track_artist_part, fonts.items, track_artist_color_text, tx + 10, ay_2, tw - cColumns.track_time_part - 15, ah_2, DT_LEFT | DT_VCENTER | DT_CALCRECT | DT_END_ELLIPSIS | DT_NOPREFIX);
+										gr.GdiDrawText(track_title_part, fonts.items, track_color_txt, tx + 10, ay_1, tw - cColumns.track_time_part - 15 - (cColumns.track_rating_part + 10), ah_1, DT_LEFT | DT_VCENTER | DT_CALCRECT | DT_END_ELLIPSIS | DT_NOPREFIX);
+										gr.GdiDrawText(track_time_part, fonts.items, track_color_txt, tx + tw - cColumns.track_time_part - 5, ay_1, cColumns.track_time_part, ah_1, DT_RIGHT | DT_VCENTER | DT_CALCRECT | DT_END_ELLIPSIS | DT_NOPREFIX);
 										// rating Stars
 										if (ppt.showRating && track_type != 3) {
 											if (g_font_guifx_found) {
-												gr.DrawString("b".repeat(5), g_font_rating, track_color_txt & 0x15ffffff, tx + tw - cColumns.track_time_part - (cColumns.track_rating_part + 10), ay_1, cColumns.track_rating_part + 10, ah_1, lc_stringformat);
-												gr.DrawString("b".repeat(track_rating_part), g_font_rating, track_color_rating, tx + tw - cColumns.track_time_part - (cColumns.track_rating_part + 10), ay_1, cColumns.track_rating_part + 10, ah_1, lc_stringformat);
+												gr.DrawString("b".repeat(5), fonts.rating, track_color_txt & 0x15ffffff, tx + tw - cColumns.track_time_part - (cColumns.track_rating_part + 10), ay_1, cColumns.track_rating_part + 10, ah_1, lc_stringformat);
+												gr.DrawString("b".repeat(track_rating_part), fonts.rating, track_color_rating, tx + tw - cColumns.track_time_part - (cColumns.track_rating_part + 10), ay_1, cColumns.track_rating_part + 10, ah_1, lc_stringformat);
 											} else if (g_font_wingdings2_found) {
-												gr.DrawString(String.fromCharCode(234).repeat(5), g_font_rating, track_color_txt & 0x15ffffff, tx + tw - cColumns.track_time_part - (cColumns.track_rating_part + 10), ay_1, cColumns.track_rating_part + 10, ah_1, lc_stringformat);
-												gr.DrawString(String.fromCharCode(234).repeat(track_rating_part), g_font_rating, track_color_rating, tx + tw - cColumns.track_time_part - (cColumns.track_rating_part + 10), ay_1, cColumns.track_rating_part + 10, ah_1, lc_stringformat);
+												gr.DrawString(String.fromCharCode(234).repeat(5), fonts.rating, track_color_txt & 0x15ffffff, tx + tw - cColumns.track_time_part - (cColumns.track_rating_part + 10), ay_1, cColumns.track_rating_part + 10, ah_1, lc_stringformat);
+												gr.DrawString(String.fromCharCode(234).repeat(track_rating_part), fonts.rating, track_color_rating, tx + tw - cColumns.track_time_part - (cColumns.track_rating_part + 10), ay_1, cColumns.track_rating_part + 10, ah_1, lc_stringformat);
 											} else {
-												gr.DrawString(String.fromCharCode(0x25CF).repeat(5), g_font_rating, track_color_txt & 0x15ffffff, tx + tw - cColumns.track_time_part - (cColumns.track_rating_part + 10), ay_1, cColumns.track_rating_part + 10, ah_1, lc_stringformat);
-												gr.DrawString(String.fromCharCode(0x25CF).repeat(track_rating_part), g_font_rating, track_color_rating, tx + tw - cColumns.track_time_part - (cColumns.track_rating_part + 10), ay_1, cColumns.track_rating_part + 10, ah_1, lc_stringformat);
+												gr.DrawString(String.fromCharCode(0x25CF).repeat(5), fonts.rating, track_color_txt & 0x15ffffff, tx + tw - cColumns.track_time_part - (cColumns.track_rating_part + 10), ay_1, cColumns.track_rating_part + 10, ah_1, lc_stringformat);
+												gr.DrawString(String.fromCharCode(0x25CF).repeat(track_rating_part), fonts.rating, track_color_rating, tx + tw - cColumns.track_time_part - (cColumns.track_rating_part + 10), ay_1, cColumns.track_rating_part + 10, ah_1, lc_stringformat);
 											}
 										}
 									}
@@ -1303,29 +1296,29 @@ const oBrowser = function (name) {
 											}
 										}
 										//
-										cColumns.track_num_part = gr.CalcTextWidth(track_num_part, g_font) + 10;
-										cColumns.track_title_part = gr.CalcTextWidth(track_title_part, g_font) + 10;
-										cColumns.track_time_part = gr.CalcTextWidth("00:00:00", g_font) + 10;
+										cColumns.track_num_part = gr.CalcTextWidth(track_num_part, fonts.items) + 10;
+										cColumns.track_title_part = gr.CalcTextWidth(track_title_part, fonts.items) + 10;
+										cColumns.track_time_part = gr.CalcTextWidth("00:00:00", fonts.items) + 10;
 										if (track_time_part == "ON AIR") {
-											cColumns.track_artist_part = g_radio_artist.length > 0 ? gr.CalcTextWidth(g_radio_artist, g_font) : 0;
+											cColumns.track_artist_part = g_radio_artist.length > 0 ? gr.CalcTextWidth(g_radio_artist, fonts.items) : 0;
 										} else {
-											cColumns.track_artist_part = track_artist_part.length > 0 ? gr.CalcTextWidth(track_artist_part, g_font) : 0;
+											cColumns.track_artist_part = track_artist_part.length > 0 ? gr.CalcTextWidth(track_artist_part, fonts.items) : 0;
 										}
 										var tx = ax + cColumns.track_num_part;
 										var tw = aw - cColumns.track_num_part;
 										if (cColumns.track_artist_part > 0) {
 											if (track_time_part == "ON AIR") {
-												gr.GdiDrawText(g_radio_artist, g_font, track_artist_color_text, tx + 10, ay, tw - cColumns.track_time_part - 15 - (cColumns.track_rating_part + 10), ah, DT_LEFT | DT_VCENTER | DT_CALCRECT | DT_END_ELLIPSIS | DT_NOPREFIX);
+												gr.GdiDrawText(g_radio_artist, fonts.items, track_artist_color_text, tx + 10, ay, tw - cColumns.track_time_part - 15 - (cColumns.track_rating_part + 10), ah, DT_LEFT | DT_VCENTER | DT_CALCRECT | DT_END_ELLIPSIS | DT_NOPREFIX);
 											} else {
-												gr.GdiDrawText(track_artist_part, g_font, track_artist_color_text, tx + 10, ay, tw - cColumns.track_time_part - 15 - (cColumns.track_rating_part + 10), ah, DT_LEFT | DT_VCENTER | DT_CALCRECT | DT_END_ELLIPSIS | DT_NOPREFIX);
+												gr.GdiDrawText(track_artist_part, fonts.items, track_artist_color_text, tx + 10, ay, tw - cColumns.track_time_part - 15 - (cColumns.track_rating_part + 10), ah, DT_LEFT | DT_VCENTER | DT_CALCRECT | DT_END_ELLIPSIS | DT_NOPREFIX);
 											}
 										}
 										if (track_time_part == "ON AIR") {
-											gr.GdiDrawText(g_radio_title, g_font, track_color_txt, tx + cColumns.track_artist_part + 10, ay, tw - cColumns.track_artist_part - cColumns.track_time_part - 15 - (cColumns.track_rating_part + 10), ah, DT_LEFT | DT_VCENTER | DT_CALCRECT | DT_END_ELLIPSIS | DT_NOPREFIX);
+											gr.GdiDrawText(g_radio_title, fonts.items, track_color_txt, tx + cColumns.track_artist_part + 10, ay, tw - cColumns.track_artist_part - cColumns.track_time_part - 15 - (cColumns.track_rating_part + 10), ah, DT_LEFT | DT_VCENTER | DT_CALCRECT | DT_END_ELLIPSIS | DT_NOPREFIX);
 										} else {
-											gr.GdiDrawText(track_title_part, g_font, track_color_txt, tx + cColumns.track_artist_part + 10, ay, tw - cColumns.track_artist_part - cColumns.track_time_part - 15 - (cColumns.track_rating_part + 10), ah, DT_LEFT | DT_VCENTER | DT_CALCRECT | DT_END_ELLIPSIS | DT_NOPREFIX);
+											gr.GdiDrawText(track_title_part, fonts.items, track_color_txt, tx + cColumns.track_artist_part + 10, ay, tw - cColumns.track_artist_part - cColumns.track_time_part - 15 - (cColumns.track_rating_part + 10), ah, DT_LEFT | DT_VCENTER | DT_CALCRECT | DT_END_ELLIPSIS | DT_NOPREFIX);
 										}
-										gr.GdiDrawText(track_time_part, g_font, track_color_txt, tx + tw - cColumns.track_time_part - 5, ay, cColumns.track_time_part, ah, DT_RIGHT | DT_VCENTER | DT_CALCRECT | DT_END_ELLIPSIS | DT_NOPREFIX);
+										gr.GdiDrawText(track_time_part, fonts.items, track_color_txt, tx + tw - cColumns.track_time_part - 5, ay, cColumns.track_time_part, ah, DT_RIGHT | DT_VCENTER | DT_CALCRECT | DT_END_ELLIPSIS | DT_NOPREFIX);
 										if (g_seconds == 0 || g_seconds / 2 == Math.floor(g_seconds / 2)) {
 											gr.DrawImage(images.play_on.Resize(ppt.rowHeight, ppt.rowHeight, 2), ax + 5, ay, ppt.rowHeight, ppt.rowHeight, 0, 0, ppt.rowHeight, ppt.rowHeight, 0, 255);
 										} else {
@@ -1334,40 +1327,40 @@ const oBrowser = function (name) {
 										// rating Stars
 										if (ppt.showRating && track_type != 3) {
 											if (g_font_guifx_found) {
-												gr.DrawString("b".repeat(5), g_font_rating, track_color_txt & 0x15ffffff, tx + tw - cColumns.track_time_part - (cColumns.track_rating_part + 10), ay, cColumns.track_rating_part + 10, ah, lc_stringformat);
-												gr.DrawString("b".repeat(track_rating_part), g_font_rating, track_color_rating, tx + tw - cColumns.track_time_part - (cColumns.track_rating_part + 10), ay, cColumns.track_rating_part + 10, ah, lc_stringformat);
+												gr.DrawString("b".repeat(5), fonts.rating, track_color_txt & 0x15ffffff, tx + tw - cColumns.track_time_part - (cColumns.track_rating_part + 10), ay, cColumns.track_rating_part + 10, ah, lc_stringformat);
+												gr.DrawString("b".repeat(track_rating_part), fonts.rating, track_color_rating, tx + tw - cColumns.track_time_part - (cColumns.track_rating_part + 10), ay, cColumns.track_rating_part + 10, ah, lc_stringformat);
 											} else if (g_font_wingdings2_found) {
-												gr.DrawString(String.fromCharCode(234).repeat(5), g_font_rating, track_color_txt & 0x15ffffff, tx + tw - cColumns.track_time_part - (cColumns.track_rating_part + 10), ay, cColumns.track_rating_part + 10, ah, lc_stringformat);
-												gr.DrawString(String.fromCharCode(234).repeat(track_rating_part), g_font_rating, track_color_rating, tx + tw - cColumns.track_time_part - (cColumns.track_rating_part + 10), ay, cColumns.track_rating_part + 10, ah, lc_stringformat);
+												gr.DrawString(String.fromCharCode(234).repeat(5), fonts.rating, track_color_txt & 0x15ffffff, tx + tw - cColumns.track_time_part - (cColumns.track_rating_part + 10), ay, cColumns.track_rating_part + 10, ah, lc_stringformat);
+												gr.DrawString(String.fromCharCode(234).repeat(track_rating_part), fonts.rating, track_color_rating, tx + tw - cColumns.track_time_part - (cColumns.track_rating_part + 10), ay, cColumns.track_rating_part + 10, ah, lc_stringformat);
 											} else {
-												gr.DrawString(String.fromCharCode(0x25CF).repeat(5), g_font_rating, track_color_txt & 0x15ffffff, tx + tw - cColumns.track_time_part - (cColumns.track_rating_part + 10), ay, cColumns.track_rating_part + 10, ah, lc_stringformat);
-												gr.DrawString(String.fromCharCode(0x25CF).repeat(track_rating_part), g_font_rating, track_color_rating, tx + tw - cColumns.track_time_part - (cColumns.track_rating_part + 10), ay, cColumns.track_rating_part + 10, ah, lc_stringformat);
+												gr.DrawString(String.fromCharCode(0x25CF).repeat(5), fonts.rating, track_color_txt & 0x15ffffff, tx + tw - cColumns.track_time_part - (cColumns.track_rating_part + 10), ay, cColumns.track_rating_part + 10, ah, lc_stringformat);
+												gr.DrawString(String.fromCharCode(0x25CF).repeat(track_rating_part), fonts.rating, track_color_rating, tx + tw - cColumns.track_time_part - (cColumns.track_rating_part + 10), ay, cColumns.track_rating_part + 10, ah, lc_stringformat);
 											}
 										}
 									} else { // default track
-										cColumns.track_num_part = gr.CalcTextWidth(track_num_part, g_font) + 10;
-										cColumns.track_artist_part = track_artist_part.length > 0 ? gr.CalcTextWidth(track_artist_part, g_font) + 0 : 0;
-										cColumns.track_title_part = gr.CalcTextWidth(track_title_part, g_font) + 10;
-										cColumns.track_time_part = gr.CalcTextWidth("00:00:00", g_font) + 10;
+										cColumns.track_num_part = gr.CalcTextWidth(track_num_part, fonts.items) + 10;
+										cColumns.track_artist_part = track_artist_part.length > 0 ? gr.CalcTextWidth(track_artist_part, fonts.items) + 0 : 0;
+										cColumns.track_title_part = gr.CalcTextWidth(track_title_part, fonts.items) + 10;
+										cColumns.track_time_part = gr.CalcTextWidth("00:00:00", fonts.items) + 10;
 										var tx = ax + cColumns.track_num_part;
 										var tw = aw - cColumns.track_num_part;
-										gr.GdiDrawText(track_num_part, g_font, track_color_txt, ax + 10, ay, cColumns.track_num_part, ah, DT_RIGHT | DT_VCENTER | DT_CALCRECT | DT_END_ELLIPSIS | DT_NOPREFIX);
+										gr.GdiDrawText(track_num_part, fonts.items, track_color_txt, ax + 10, ay, cColumns.track_num_part, ah, DT_RIGHT | DT_VCENTER | DT_CALCRECT | DT_END_ELLIPSIS | DT_NOPREFIX);
 										if (cColumns.track_artist_part > 0) {
-											gr.GdiDrawText(track_artist_part, g_font, track_artist_color_text, tx + 10, ay, tw - cColumns.track_time_part - 15 - (cColumns.track_rating_part + 10), ah, DT_LEFT | DT_VCENTER | DT_CALCRECT | DT_END_ELLIPSIS | DT_NOPREFIX);
+											gr.GdiDrawText(track_artist_part, fonts.items, track_artist_color_text, tx + 10, ay, tw - cColumns.track_time_part - 15 - (cColumns.track_rating_part + 10), ah, DT_LEFT | DT_VCENTER | DT_CALCRECT | DT_END_ELLIPSIS | DT_NOPREFIX);
 										}
-										gr.GdiDrawText(track_title_part, g_font, track_color_txt, tx + cColumns.track_artist_part + 10, ay, tw - cColumns.track_artist_part - cColumns.track_time_part - 15 - (cColumns.track_rating_part + 10), ah, DT_LEFT | DT_VCENTER | DT_CALCRECT | DT_END_ELLIPSIS | DT_NOPREFIX);
-										gr.GdiDrawText(track_time_part, g_font, track_color_txt, tx + tw - cColumns.track_time_part - 5, ay, cColumns.track_time_part, ah, DT_RIGHT | DT_VCENTER | DT_CALCRECT | DT_END_ELLIPSIS | DT_NOPREFIX);
+										gr.GdiDrawText(track_title_part, fonts.items, track_color_txt, tx + cColumns.track_artist_part + 10, ay, tw - cColumns.track_artist_part - cColumns.track_time_part - 15 - (cColumns.track_rating_part + 10), ah, DT_LEFT | DT_VCENTER | DT_CALCRECT | DT_END_ELLIPSIS | DT_NOPREFIX);
+										gr.GdiDrawText(track_time_part, fonts.items, track_color_txt, tx + tw - cColumns.track_time_part - 5, ay, cColumns.track_time_part, ah, DT_RIGHT | DT_VCENTER | DT_CALCRECT | DT_END_ELLIPSIS | DT_NOPREFIX);
 										// rating Stars
 										if (ppt.showRating && track_type != 3) {
 											if (g_font_guifx_found) {
-												gr.DrawString("b".repeat(5), g_font_rating, track_color_txt & 0x15ffffff, tx + tw - cColumns.track_time_part - (cColumns.track_rating_part + 10), ay, cColumns.track_rating_part + 10, ah, lc_stringformat);
-												gr.DrawString("b".repeat(track_rating_part), g_font_rating, track_color_rating, tx + tw - cColumns.track_time_part - (cColumns.track_rating_part + 10), ay, cColumns.track_rating_part + 10, ah, lc_stringformat);
+												gr.DrawString("b".repeat(5), fonts.rating, track_color_txt & 0x15ffffff, tx + tw - cColumns.track_time_part - (cColumns.track_rating_part + 10), ay, cColumns.track_rating_part + 10, ah, lc_stringformat);
+												gr.DrawString("b".repeat(track_rating_part), fonts.rating, track_color_rating, tx + tw - cColumns.track_time_part - (cColumns.track_rating_part + 10), ay, cColumns.track_rating_part + 10, ah, lc_stringformat);
 											} else if (g_font_wingdings2_found) {
-												gr.DrawString(String.fromCharCode(234).repeat(5), g_font_rating, track_color_txt & 0x15ffffff, tx + tw - cColumns.track_time_part - (cColumns.track_rating_part + 10), ay, cColumns.track_rating_part + 10, ah, lc_stringformat);
-												gr.DrawString(String.fromCharCode(234).repeat(track_rating_part), g_font_rating, track_color_rating, tx + tw - cColumns.track_time_part - (cColumns.track_rating_part + 10), ay, cColumns.track_rating_part + 10, ah, lc_stringformat);
+												gr.DrawString(String.fromCharCode(234).repeat(5), fonts.rating, track_color_txt & 0x15ffffff, tx + tw - cColumns.track_time_part - (cColumns.track_rating_part + 10), ay, cColumns.track_rating_part + 10, ah, lc_stringformat);
+												gr.DrawString(String.fromCharCode(234).repeat(track_rating_part), fonts.rating, track_color_rating, tx + tw - cColumns.track_time_part - (cColumns.track_rating_part + 10), ay, cColumns.track_rating_part + 10, ah, lc_stringformat);
 											} else {
-												gr.DrawString(String.fromCharCode(0x25CF).repeat(5), g_font_rating, track_color_txt & 0x15ffffff, tx + tw - cColumns.track_time_part - (cColumns.track_rating_part + 10), ay, cColumns.track_rating_part + 10, ah, lc_stringformat);
-												gr.DrawString(String.fromCharCode(0x25CF).repeat(track_rating_part), g_font_rating, track_color_rating, tx + tw - cColumns.track_time_part - (cColumns.track_rating_part + 10), ay, cColumns.track_rating_part + 10, ah, lc_stringformat);
+												gr.DrawString(String.fromCharCode(0x25CF).repeat(5), fonts.rating, track_color_txt & 0x15ffffff, tx + tw - cColumns.track_time_part - (cColumns.track_rating_part + 10), ay, cColumns.track_rating_part + 10, ah, lc_stringformat);
+												gr.DrawString(String.fromCharCode(0x25CF).repeat(track_rating_part), fonts.rating, track_color_rating, tx + tw - cColumns.track_time_part - (cColumns.track_rating_part + 10), ay, cColumns.track_rating_part + 10, ah, lc_stringformat);
 											}
 										}
 									}
@@ -1438,7 +1431,7 @@ const oBrowser = function (name) {
 			var tx = cFilterBox.x + cFilterBox.w + Math.round(22 * g_zoom_percent / 100) + 5;
 			var tw = this.w - tx + (cScrollBar.enabled ? cScrollBar.width : 0);
 			try {
-				gr.GdiDrawText(boxText, g_font_box, blendColors(globalColors.text, globalColors.background, 0.4), tx, 0, tw, ppt.headerBarHeight - 1, DT_RIGHT | DT_VCENTER | DT_CALCRECT | DT_NOPREFIX | DT_END_ELLIPSIS);
+				gr.GdiDrawText(boxText, fonts.box, blendColors(globalColors.text, globalColors.background, 0.4), tx, 0, tw, ppt.headerBarHeight - 1, DT_RIGHT | DT_VCENTER | DT_CALCRECT | DT_NOPREFIX | DT_END_ELLIPSIS);
 			} catch (e) {
 				console.log(">> debug: cScrollBar.width=" + cScrollBar.width + " /boxText=" + boxText + " /ppt.headerBarHeight=" + ppt.headerBarHeight + " /g_fsize=" + g_fsize);
 			}
@@ -1689,7 +1682,7 @@ const oBrowser = function (name) {
 							timers.hidePlaylistManager = false;
 						}
 						if (!timers.showPlaylistManager) {
-							timers.showPlaylistManager = window.SetInterval(pman.showPanel, 25);
+							timers.showPlaylistManager = window.SetInterval(() => pman.showPanel(), 25);
 						}
 					}
 				}
@@ -2205,11 +2198,6 @@ var g_instancetype = window.InstanceType;
 let g_fname, g_fsize, g_fstyle, g_font_bold;
 let g_font_box;
 var g_font = null;
-var g_font_headers = null;
-var g_font_group1 = null;
-var g_font_group2 = null;
-var g_font_rating = null;
-var g_font_mood = null;
 var g_font_guifx_found = utils.CheckFont("guifx v2 transports");
 var g_font_wingdings2_found = utils.CheckFont("wingdings 2");
 
@@ -2227,16 +2215,8 @@ var g_focus_row = 0;
 var g_focus_album_id = -1;
 var g_populate_opt = 1;
 // color vars
-//var g_color_normal_bg = 0;
-//var globalColors.selection = 0;
-//var globalColors.text = 0;
-//var globalColors.selectedText = 0;
 var g_color_highlight = 0;
-// var g_syscolor_window_bg = 0;
-// var g_syscolor_highlight = 0;
-// var g_syscolor_button_bg = 0;
-// var g_syscolor_button_txt = 0;
-// boolean to avoid callbacks
+//
 var g_avoid_on_playlists_changed = false;
 var g_avoid_on_playlist_switch = false;
 var g_avoid_on_item_focus_change = false;
@@ -2273,6 +2253,7 @@ function on_init() {
 
 	brw = new oBrowser("brw");
 	pman = new oPlaylistManager("pman");
+	pman.parentView = brw;
 
 	g_filterbox = new oFilterBox();
 	g_filterbox.inputbox.visible = true;
@@ -2476,8 +2457,8 @@ registerCallback("on_mouse_move", function (x, y) {
 			cTouch.y_current = y;
 			cTouch.y_move = (cTouch.y_current - cTouch.y_prev);
 			if (x < brw.w) {
-				this.scrollbar.scroll -= cTouch.y_move;
-				cTouch.scroll_delta = this.scrollbar.scroll - this.scrollbar.scroll_;
+				brw.scrollbar.scroll -= cTouch.y_move;
+				cTouch.scroll_delta = brw.scrollbar.scroll - brw.scrollbar.scroll_;
 				if (Math.abs(cTouch.scroll_delta) < 24)
 					cTouch.y_start = cTouch.y_current;
 				cTouch.y_prev = cTouch.y_current;
@@ -2642,10 +2623,10 @@ function get_metrics() {
 		//
 		g_focus_row = brw.getOffsetFocusItem(g_focus_id);
 		// if focused track not totally visible, we scroll to show it centered in the panel
-		if (g_focus_row < this.scrollbar.scroll / ppt.rowHeight || g_focus_row > this.scrollbar.scroll / ppt.rowHeight + brw.totalRowsVis - 1) {
-			this.scrollbar.scroll = (g_focus_row - Math.floor(brw.totalRowsVis / 2)) * ppt.rowHeight;
-			this.scrollbar.scroll = this.check_scroll(this.scrollbar.scroll);
-			this.scrollbar.scroll_ = this.scrollbar.scroll;
+		if (g_focus_row < brw.scrollbar.scroll / ppt.rowHeight || g_focus_row > brw.scrollbar.scroll / ppt.rowHeight + brw.totalRowsVis - 1) {
+			brw.scrollbar.scroll = (g_focus_row - Math.floor(brw.totalRowsVis / 2)) * ppt.rowHeight;
+			brw.scrollbar.scroll = brw.check_scroll(brw.scrollbar.scroll);
+			brw.scrollbar.scroll_ = brw.scrollbar.scroll;
 		}
 		if (brw.rowsCount > 0)
 			brw.gettags(true);
@@ -2697,15 +2678,16 @@ function get_images() {
 }
 
 function get_font() {
+	updateFonts();
 	var font_error = false;
 	var default_font = null;
 
 	if (g_instancetype == 0) {
 		default_font = window.GetFontCUI(FontTypeCUI.items);
-		g_font_headers = window.GetFontCUI(FontTypeCUI.labels);
+		// g_font_headers = window.GetFontCUI(FontTypeCUI.labels);
 	} else if (g_instancetype == 1) {
 		default_font = window.GetFontDUI(FontTypeDUI.playlists);
-		g_font_headers = window.GetFontDUI(FontTypeDUI.tabs);
+		// g_font_headers = window.GetFontDUI(FontTypeDUI.tabs);
 	}
 
 	try {
@@ -2722,28 +2704,14 @@ function get_font() {
 
 	// adjust font size if extra zoom activated
 	g_fsize += ppt.extra_font_size;
-	g_font = gdi.Font(g_fname, g_fsize, 0);
+	// fonts.items = gdi.Font(g_fname, g_fsize, 0);
 	// g_font_bold = gdi.Font(g_fname, g_fsize, 1);
-	g_font_box = gdi.Font(g_fname, g_fsize - 2, 1);
+	// fonts.box = gdi.Font(g_fname, g_fsize - 2, 1);
 
 	g_zoom_percent = Math.floor(g_fsize / 12 * 100);
 
-	g_font_group1 = gdi.Font(g_fname, (g_fsize * 160 / 100), 1);
-	g_font_group2 = gdi.Font(g_fname, (g_fsize * 140 / 100), 0);
-
-	//g_font_guifx_found = false;
-	//g_font_wingdings2_found = false;
-
-	if (g_font_guifx_found) {
-		g_font_rating = gdi.Font("guifx v2 transports", Math.round(g_fsize * 130 / 100), 0);
-		g_font_mood = gdi.Font("guifx v2 transports", Math.round(g_fsize * 130 / 100), 0);
-	} else if (g_font_wingdings2_found) {
-		g_font_rating = gdi.Font("wingdings 2", Math.round(g_fsize * 130 / 100), 0);
-		g_font_mood = gdi.Font("wingdings 2", Math.round(g_fsize * 200 / 100), 0);
-	} else {
-		g_font_rating = gdi.Font("arial", Math.round(g_fsize * 170 / 100), 0);
-		g_font_mood = gdi.Font("arial", Math.round(g_fsize * 120 / 100), 0);
-	}
+	// fonts.group1 = gdi.Font(g_fname, (g_fsize * 160 / 100), 1);
+	// fonts.group2 = gdi.Font(g_fname, (g_fsize * 140 / 100), 0);
 }
 
 registerCallback("on_font_changed", function () {

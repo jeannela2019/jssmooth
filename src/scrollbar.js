@@ -415,7 +415,7 @@ export const oScrollbar = function (themed) {
                   this.scroll = this.scroll - scroll_step;
                   this.scroll = this.check_scroll(this.scroll);
                   if (!cScrollBar.timerID) {
-                    cScrollBar.timerID = window.SetInterval(function () {
+										cScrollBar.timerID = window.SetInterval(() => {
                       if (cScrollBar.timerCounter > 6) {
                         this.scroll = this.scroll - scroll_step;
                         this.scroll = this.check_scroll(this.scroll);
@@ -433,7 +433,7 @@ export const oScrollbar = function (themed) {
                   this.scroll = this.scroll + scroll_step;
                   this.scroll = this.check_scroll(this.scroll);
                   if (!cScrollBar.timerID) {
-                    cScrollBar.timerID = window.SetInterval(function () {
+										cScrollBar.timerID = window.SetInterval(() => {
                       if (cScrollBar.timerCounter > 6) {
                         this.scroll = this.scroll + scroll_step;
                         this.scroll = this.check_scroll(this.scroll);
@@ -454,7 +454,7 @@ export const oScrollbar = function (themed) {
               this.scroll = this.scroll - scroll_step_page;
               this.scroll = this.check_scroll(this.scroll);
               if (!cScrollBar.timerID) {
-                cScrollBar.timerID = window.SetInterval(function () {
+								cScrollBar.timerID = window.SetInterval(() => {
                   if (cScrollBar.timerCounter > 6 && mouse.y < this.parentView.scrollbar.cursory) {
                     this.scroll = this.scroll - scroll_step_page;
                     this.scroll = this.check_scroll(this.scroll);
@@ -469,7 +469,7 @@ export const oScrollbar = function (themed) {
               this.scroll = this.scroll + scroll_step_page;
               this.scroll = this.check_scroll(this.scroll);
               if (!cScrollBar.timerID) {
-                cScrollBar.timerID = window.SetInterval(function () {
+								cScrollBar.timerID = window.SetInterval(() => {
                   if (cScrollBar.timerCounter > 6 && mouse.y > this.parentView.scrollbar.cursory + this.parentView.scrollbar.cursorh) {
                     this.scroll = this.scroll + scroll_step_page;
                     this.scroll = this.check_scroll(this.scroll);
