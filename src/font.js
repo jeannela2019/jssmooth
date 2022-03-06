@@ -58,6 +58,10 @@ export function updateFonts() {
 
 }
 
-export function $ZM(val) {
+export function $zoom(val) {
 	return Math.round(val * ppt.zoompercent / 100);
+}
+
+export function $zoomfloor(val) {
+	return Math.floor(val * ppt.zoompercent / 100);
 }

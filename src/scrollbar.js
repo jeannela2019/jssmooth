@@ -1,5 +1,5 @@
 import { blendColors, button, ButtonStates, DrawPolyStar, get_system_scrollbar_width, RGB } from "./common";
-import { globalColors, ppt } from "./configure";
+import { colors, ppt } from "./configure";
 import { mouse } from "./mouse";
 
 
@@ -32,8 +32,8 @@ export const oScrollbar = function (themed) {
   };
   this.buttonClick = false;
 
-  this.color_bg = globalColors.background;
-  this.color_txt = globalColors.text;
+  this.color_bg = colors.background;
+  this.color_txt = colors.text;
   this.scroll = 0;
   this.scroll_ = 0;
   this.scroll_prev = 0;
@@ -59,8 +59,8 @@ export const oScrollbar = function (themed) {
   this.parentView;
 
   this.setNewColors = function () {
-    this.color_bg = globalColors.background;
-    this.color_txt = globalColors.text;
+    this.color_bg = colors.background;
+    this.color_txt = colors.text;
     this.setButtons();
     this.setCursorButton();
   };

@@ -3,7 +3,7 @@
  */
 
 import { ColorTypeCUI, ColorTypeDUI, RGB } from "./common";
-import { ppt, globalColors, ColorMode } from "./configure";
+import { ppt, colors, ColorMode } from "./configure";
 
 const InstanceType = {
   DUI: 1,
@@ -84,13 +84,13 @@ export function getCustomColors() {
 export function updateColors() {
   switch (ppt.colorMode) {
     case ColorMode.Sys:
-      Object.assign(globalColors, getSysColors());
+			Object.assign(colors, getSysColors());
       break;
     case ColorMode.Fb:
-      Object.assign(globalColors, getFbColors());
+			Object.assign(colors, getFbColors());
       break;
     case ColorMode.Custom:
-      Object.assign(globalColors, getCustomColors());
+			Object.assign(colors, getCustomColors());
       break;
     default:
 			ppt.colorMode = ColorMode.Sys;

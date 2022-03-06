@@ -6,32 +6,33 @@ export function drawImage(gr, img, src_x, src_y, src_w, src_h, auto_fill, border
 	if (!img || !src_w || !src_h) {
 		return;
 	}
+	let dst_x, dst_y, dst_w, dst_h;
 	gr.SetInterpolationMode(7);
 	if (auto_fill) {
 		if (img.Width / img.Height < src_w / src_h) {
-			var dst_w = img.Width;
-			var dst_h = Math.round(src_h * img.Width / src_w);
-			var dst_x = 0;
-			var dst_y = Math.round((img.Height - dst_h) / 4);
+			dst_w = img.Width;
+			dst_h = Math.round(src_h * img.Width / src_w);
+			dst_x = 0;
+			dst_y = Math.round((img.Height - dst_h) / 4);
 		} else {
-			var dst_w = Math.round(src_w * img.Height / src_h);
-			var dst_h = img.Height;
-			var dst_x = Math.round((img.Width - dst_w) / 2);
-			var dst_y = 0;
+			dst_w = Math.round(src_w * img.Height / src_h);
+			dst_h = img.Height;
+			dst_x = Math.round((img.Width - dst_w) / 2);
+			dst_y = 0;
 		}
 		gr.DrawImage(img, src_x, src_y, src_w, src_h, dst_x + 3, dst_y + 3, dst_w - 6, dst_h - 6, 0, alpha || 255);
 	} else {
-		var s = Math.min(src_w / img.Width, src_h / img.Height);
-		var w = Math.floor(img.Width * s);
-		var h = Math.floor(img.Height * s);
+		let s = Math.min(src_w / img.Width, src_h / img.Height);
+		let w = Math.floor(img.Width * s);
+		let h = Math.floor(img.Height * s);
 		src_x += Math.round((src_w - w) / 2);
 		src_y += src_h - h;
 		src_w = w;
 		src_h = h;
-		var dst_x = 0;
-		var dst_y = 0;
-		var dst_w = img.Width;
-		var dst_h = img.Height;
+		let dst_x = 0;
+		let dst_y = 0;
+		let dst_w = img.Width;
+		let dst_h = img.Height;
 		gr.DrawImage(img, src_x, src_y, src_w, src_h, dst_x, dst_y, dst_w, dst_h, 0, alpha || 255);
 	}
 	if (border) {

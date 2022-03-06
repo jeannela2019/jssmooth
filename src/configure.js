@@ -1,4 +1,10 @@
-export const globalColors = {};
+export const colors = {
+	text: 0,
+	selectedText: 0,
+	background: 0,
+	selection: 0,
+	highlight: 0
+};
 
 export const ColorMode = {
   Sys: 0,
