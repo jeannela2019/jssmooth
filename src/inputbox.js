@@ -15,7 +15,7 @@ export const cInputbox = {
 	clipboard: null
 }
 
-export const oInputbox = function (w, h, default_text, empty_text, textcolor, backcolor, bordercolor, backselectioncolor, func, parentObjectName) {
+export const Inputbox = function (w, h, default_text, empty_text, textcolor, backcolor, bordercolor, backselectioncolor, func, parentObject) {
 	this.font = gdi.Font("arial", 13, 0);
 	this.font_italic = gdi.Font("arial", 13, 2);
 	this.w = w;
@@ -33,7 +33,7 @@ export const oInputbox = function (w, h, default_text, empty_text, textcolor, ba
 	this.func = func;
 	var gfunc = func;
 	var gfunc_launch_timer = false;
-	var g_parentObjectName = parentObjectName;
+	// var g_parentObjectName = parentObject;
 	this.autovalidation = false;
 	//
 	this.edit = false;
@@ -133,7 +133,7 @@ export const oInputbox = function (w, h, default_text, empty_text, textcolor, ba
 	}
 
 	this.repaint = function () {
-		eval(g_parentObjectName + ".repaint()");
+		parentObject && parentObject.repaint();
 	}
 
 	this.CalcText = function () {
@@ -187,7 +187,7 @@ export const oInputbox = function (w, h, default_text, empty_text, textcolor, ba
 		}
 		cInputbox.timer_cursor = window.SetInterval(function () {
 			cInputbox.cursor_state = !cInputbox.cursor_state;
-			eval(g_parentObjectName + ".repaint()");
+			parentObject.repaint();
 		}, 500);
 	}
 
@@ -466,7 +466,7 @@ export const oInputbox = function (w, h, default_text, empty_text, textcolor, ba
 					break;
 				case VK_RETURN:
 					if (this.edit && this.text.length >= 0) {
-						eval(this.func);
+						gfunc();
 					} else { }
 					break;
 				case VK_ESCAPE:

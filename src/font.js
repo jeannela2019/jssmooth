@@ -8,6 +8,9 @@ const g_font_wingdings2_found = utils.CheckFont("wingdings 2");
 const font_guifx = "guifx v2 transports";
 const font_wingdings2 = "wingdings 2";
 
+fonts.guifx_found = g_font_guifx_found;
+fonts.wingdings2_found = g_font_wingdings2_found;
+
 function getFbFonts() {
 	if (window.InstanceType === 1) {
 		return {

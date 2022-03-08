@@ -535,7 +535,6 @@ export function decode_colour(opt_colour, resultype) {
 					XYZ_colour.RGBcolour = RGB(0, 0, 0)
 			}
 			return XYZ_colour;
-			break;
 		default:
 			switch (opt_colour.length) {
 				case 23:
@@ -580,13 +579,10 @@ export function HSL2RGB(zH, zS, zL, result) {
 	switch (result) {
 		case "R":
 			return Math.round(R);
-			break;
 		case "G":
 			return Math.round(G);
-			break;
 		case "B":
 			return Math.round(B);
-			break;
 		default:
 			return RGB(Math.round(R), Math.round(G), Math.round(B));
 	}
@@ -655,67 +651,6 @@ export function RGB2HSL(RGB_colour) {
 	return HSL_colour;
 }
 
-export function DrawColoredText(gr, text, font, default_color, x, y, w, h, alignment, force_default_color) {
-	var txt = "",
-		color = default_color,
-		lg = 0,
-		i = 1,
-		z = 0,
-		tmp = "";
-	var pos = text.indexOf(String.fromCharCode(3));
-	if (pos < 0) { // no specific color
-		gr.GdiDrawText(text, font, default_color, x, y, w, h, alignment | DT_CALCRECT | DT_VCENTER | DT_END_ELLIPSIS | DT_NOPREFIX);
-	} else {
-		var tab = text.split(String.fromCharCode(3));
-		var fin = tab.length;
-
-		switch (alignment) {
-			case DT_CENTER:
-				var full_lg = gr.CalcTextWidth(tab[0], font);
-				for (var m = i; m < fin; m += 2) {
-					full_lg += gr.CalcTextWidth(tab[m + 1], font);
-				}
-				if (full_lg > w)
-					full_lg = w;
-				var delta_align = ((w - full_lg) / 2);
-				break;
-			case DT_RIGHT:
-				var full_lg = gr.CalcTextWidth(tab[0], font);
-				for (var m = i; m < fin; m += 2) {
-					full_lg += gr.CalcTextWidth(tab[m + 1], font);
-				}
-				if (full_lg > w)
-					full_lg = w;
-				var delta_align = (w - full_lg);
-				break;
-			default:
-				var delta_align = 0;
-		}
-
-		// if first part is default color
-		if (pos > 0) {
-			txt = tab[0];
-			lg = gr.CalcTextWidth(txt, font);
-			gr.GdiDrawText(txt, font, color, x + delta_align + z, y, w - z, h, DT_LEFT | DT_CALCRECT | DT_VCENTER | DT_END_ELLIPSIS | DT_NOPREFIX);
-			z += lg;
-		}
-
-		// draw all other colored parts
-		while (i < fin && z < w) {
-			if (!force_default_color) {
-				tmp = tab[i];
-				color = eval("0xFF" + tmp.substr(4, 2) + tmp.substr(2, 2) + tmp.substr(0, 2));
-			}
-			//color = RGB(parseInt(tmp.substr(0,2),16), parseInt(tmp.substr(2,2),16), parseInt(tmp.substr(4,2),16));
-			txt = tab[i + 1];
-			lg = gr.CalcTextWidth(txt, font);
-			gr.GdiDrawText(txt, font, color, x + delta_align + z, y, w - z, h, DT_LEFT | DT_CALCRECT | DT_VCENTER | DT_END_ELLIPSIS | DT_NOPREFIX);
-			z += lg;
-			i += 2;
-		}
-	}
-}
-
 export function DrawPolyStar(gr, x, y, out_radius, in_radius, points, line_thickness, line_color, fill_color, angle, opacity) {
 	// ---------------------
 	// code by ExtremeHunter
@@ -746,10 +681,6 @@ export function DrawPolyStar(gr, x, y, out_radius, in_radius, points, line_thick
 
 	//---> Draw image
 	gr.DrawImage(img, x, y, out_radius, out_radius, 0, 0, out_radius, out_radius, angle, opacity);
-}
-
-export function zoom(value, factor) {
-	return Math.ceil(value * factor / 100);
 }
 
 export function get_system_scrollbar_width() {

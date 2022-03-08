@@ -22,6 +22,8 @@ export const fonts = {
 	group2: null,
 	rating: null,
 	mood: null,
+	guifx_found: false,
+	wingdings2_found: false,
 }
 
 export const timers = {
@@ -37,14 +39,14 @@ export const timers = {
 export const ppt = {
   tf_artist: fb.TitleFormat("%artist%"),
   tf_albumartist: fb.TitleFormat("%album artist%"),
-  tf_groupkey: fb.TitleFormat(window.GetProperty("_PROPERTY: tf_groupkey", "$if2(%album artist%,$if(%length%,'?',%title%)) ^^ $if2(%album%,$if(%length%,'?',%path%)) ^^ %discnumber% ## [%artist%] ^^ %title% ^^ [%genre%] ^^ [%date%]")),
-  tf_track: fb.TitleFormat("%tracknumber% ^^ [%length%] ^^ $if2(%rating%,0) ^^ %mood%"),
+	tf_groupkey: fb.TitleFormat(window.GetProperty("_PROPERTY: tf_groupkey", "[%date%] ^^ $if2(%album%,$if(%length%,'?',%path%)) ^^ %discnumber% ## [%artist%] ^^ %title% ^^ [%genre%] ^^ $if2(%album artist%,$if(%length%,'?',%title%))")),
+	tf_track: fb.TitleFormat("%tracknumber% ^^ [%length%] ^^ $if2(%rating%,0) ^^ [%mood%]"),
   tf_path: fb.TitleFormat("$directory_path(%path%)\\"),
   tf_crc: fb.TitleFormat("$crc32(%path%)"),
   tf_time_remaining: fb.TitleFormat("$if(%length%,-%playback_time_remaining%,'ON AIR')"),
-  defaultRowHeight: window.GetProperty("_PROPERTY: Row Height", 35),
-  doubleRowPixelAdds: 3,
-  rowHeight: window.GetProperty("_PROPERTY: Row Height", 35),
+	defaultRowHeight: window.GetProperty("_PROPERTY: Row Height", 36),
+	doubleRowPixelAdds: 4,
+	rowHeight: window.GetProperty("_PROPERTY: Row Height", 36),
   rowScrollStep: 3,
   scrollSmoothness: 2.5,
   refreshRate: 40,

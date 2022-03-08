@@ -2,7 +2,7 @@ import { RGB, RGBA, blendColors } from "./common";
 import { button, ButtonStates } from "./common";
 import { colors } from "./configure";
 import { $zoom } from "./font";
-import { oInputbox } from "./inputbox";
+import { Inputbox } from "./inputbox";
 
 export const cFilterBox = {
 	enabled: window.GetProperty("_PROPERTY: Enable Filter Box", true),
@@ -14,7 +14,14 @@ export const cFilterBox = {
 	h: 20,
 };
 
-export const oFilterBox = function (onFilter) {
+export const FilterBox = function (onFilter) {
+
+	this.parentView = null;
+
+	this.repaint = function () {
+		this.parentView && this.parentView.repaint();
+	}
+
 	this.images = {
 		magnify: null,
 		resetIcon_off: null,
@@ -71,7 +78,7 @@ export const oFilterBox = function (onFilter) {
 	this.getImages();
 
 	this.on_init = function () {
-		this.inputbox = new oInputbox(
+		this.inputbox = new Inputbox(
 			cFilterBox.w,
 			cFilterBox.h,
 			"",
@@ -81,10 +88,11 @@ export const oFilterBox = function (onFilter) {
 			0,
 			colors.selection,
 			onFilter,
-			"brw"
+			this
 		);
 		this.inputbox.autovalidation = true;
 	};
+
 	this.on_init();
 
 	this.reset_colors = function () {
@@ -136,21 +144,9 @@ export const oFilterBox = function (onFilter) {
 			);
 		}
 		for (var i = 0; i < cFilterBox.h - 2; i += 2) {
-			gr.FillSolidRect(
-				bx + $zoom(22) + cFilterBox.w,
-				by + 2 + i,
-				1,
-				1,
-				RGB(100, 100, 100)
-			);
+			gr.FillSolidRect(bx + $zoom(22) + cFilterBox.w, by + 2 + i, 1, 1, RGB(100, 100, 100));
 		}
-		this.inputbox.draw(
-			gr,
-			bx + $zoom(22),
-			by,
-			0,
-			0
-		);
+		this.inputbox.draw(gr, bx + $zoom(22), by, 0, 0);
 	};
 
 	this.on_mouse = function (event, x, y, delta) {

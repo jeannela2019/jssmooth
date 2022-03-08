@@ -3,11 +3,10 @@ import { colors, ppt } from "./configure";
 import { mouse } from "./mouse";
 
 
-
 export const cScrollBar = {
   enabled: window.GetProperty("_DISPLAY: Show Scrollbar", true),
   visible: true,
-  themed: false,
+	themed: !ppt.enableCustomColors,
   defaultWidth: get_system_scrollbar_width(),
   width: get_system_scrollbar_width(),
   ButtonType: {
@@ -21,7 +20,7 @@ export const cScrollBar = {
   timerCounter: -1
 };
 
-export const oScrollbar = function (themed) {
+export const Scrollbar = function (themed) {
   this.themed = themed;
   this.showButtons = true;
   this.buttons = [];
