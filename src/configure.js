@@ -40,7 +40,7 @@ export const ppt = {
   tf_artist: fb.TitleFormat("%artist%"),
   tf_albumartist: fb.TitleFormat("%album artist%"),
 	tf_groupkey: fb.TitleFormat(window.GetProperty("_PROPERTY: tf_groupkey", "[%date%] ^^ $if2(%album%,$if(%length%,'?',%path%)) ^^ %discnumber% ## [%artist%] ^^ %title% ^^ [%genre%] ^^ $if2(%album artist%,$if(%length%,'?',%title%))")),
-	tf_track: fb.TitleFormat("%tracknumber% ^^ [%length%] ^^ $if2(%rating%,0) ^^ [%mood%]"),
+	tf_track: fb.TitleFormat("%tracknumber% ^^ [%length%] ^^ $if2(%rating%,0) ^^ $trim([%mood%])"),
   tf_path: fb.TitleFormat("$directory_path(%path%)\\"),
   tf_crc: fb.TitleFormat("$crc32(%path%)"),
   tf_time_remaining: fb.TitleFormat("$if(%length%,-%playback_time_remaining%,'ON AIR')"),
