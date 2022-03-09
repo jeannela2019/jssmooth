@@ -1,4 +1,4 @@
-import { blendColors, CACHE_FOLDER, cc_stringformat, DLGC_WANTALLKEYS, drawImage, DrawPolyStar, draw_blurred_image, draw_glass_reflect, DT_CALCRECT, DT_CENTER, DT_END_ELLIPSIS, DT_LEFT, DT_NOPREFIX, DT_RIGHT, DT_VCENTER, FILE_ATTRIBUTE_DIRECTORY, FontTypeCUI, FontTypeDUI, fso, GetKeyboardMask, IDC_ARROW, IDC_HAND, IDC_HELP, KMask, lc_stringformat, match, MF_DISABLED, MF_GRAYED, MF_STRING, num, on_load, process_cachekey, process_string, resize, RGB, RGBA, TrackType, VK_BACK, VK_CONTROL, VK_DELETE, VK_DOWN, VK_END, VK_ESCAPE, VK_F2, VK_F3, VK_F5, VK_F6, VK_HOME, VK_PGDN, VK_PGUP, VK_RETURN, VK_SHIFT, VK_TAB, VK_UP } from "./common";
+import { blendColors, CACHE_FOLDER, cc_stringformat, DLGC_WANTALLKEYS, drawImage, DrawPolyStar, draw_blurred_image, draw_glass_reflect, DT_CALCRECT, DT_CENTER, DT_END_ELLIPSIS, DT_LEFT, DT_NOPREFIX, DT_RIGHT, DT_VCENTER, FILE_ATTRIBUTE_DIRECTORY, FontTypeCUI, FontTypeDUI, fso, GetKeyboardMask, getTimestamp, IDC_ARROW, IDC_HAND, IDC_HELP, KMask, lc_stringformat, match, MF_DISABLED, MF_GRAYED, MF_STRING, num, on_load, process_cachekey, process_string, resize, RGB, RGBA, TrackType, VK_BACK, VK_CONTROL, VK_DELETE, VK_DOWN, VK_END, VK_ESCAPE, VK_F2, VK_F3, VK_F5, VK_F6, VK_HOME, VK_PGDN, VK_PGUP, VK_RETURN, VK_SHIFT, VK_TAB, VK_UP } from "./common";
 import { colors, ppt, timers, fonts } from "./configure";
 import { registerCallback } from "./event";
 import { mouse } from "./mouse";
@@ -1038,7 +1038,6 @@ const Browser = function (name) {
 									track_rating_part = this.rows[i].rating;
 								}
 
-								const track_mood_part = (arr_t[3] ? 1 : 0);
 
 								if (ppt.showRating && track_type != 3) {
 									if (g_font_guifx_found) {
@@ -1051,6 +1050,9 @@ const Browser = function (name) {
 								} else {
 									columns.track_rating_part = 0;
 								}
+
+								const track_mood_part = (arr_t[3] ? 1 : 0);
+								this.rows[i].mood = track_mood_part;
 
 								if (ppt.showMood && track_type !== 3) {
 									columns.mood.w = $zoom(36);
@@ -1465,7 +1467,19 @@ const Browser = function (name) {
 									}
 								} else if (this.ishover_mood) {
 									// mood;
-
+									if (this.rows[this.activeRow].tracktype < 2) {
+										g_mood_updated = true;
+										g_rating_rowId = this.activeRow;
+										let handles = new FbMetadbHandleList(this.rows[this.activeRow].metadb);
+										// toggle mood;
+										let mood = this.rows[this.activeRow].mood;
+										if (mood === 1) {
+											handles.UpdateFileInfoFromJSON(JSON.stringify({ "MOOD": "" }));
+										} else {
+											handles.UpdateFileInfoFromJSON(JSON.stringify({ "MOOD": getTimestamp() }));
+										}
+									}
+									window.Repaint();
 								} else {
 									if (plman.IsPlaylistItemSelected(g_active_playlist, playlistTrackId)) {
 										if (this.metadblist_selection.Count > 1) {
@@ -2124,6 +2138,8 @@ var g_wallpaperImg = null;
 
 var g_rating_updated = false;
 var g_rating_rowId = -1;
+var g_mood_updated = false;
+var g_mood_rowId = -1;
 let pman;
 
 function on_init() {
@@ -3334,6 +3350,13 @@ registerCallback("on_metadb_changed", function (handles) {
 			brw.rows[g_rating_rowId].tracktags = ppt.tf_track.EvalWithMetadb(brw.rows[g_rating_rowId].metadb);
 			g_rating_rowId = -1;
 		}
+		window.Repaint();
+	} else if (g_mood_updated) {
+		g_mood_updated = false;
+		if (brw.rows[g_mood_rowId]) {
+			brw.rows[g_mood_rowId].tracktags = ppt.tf_track.EvalWithMetadb(brw.rows[g_mood_rowId].metadb);
+		}
+		g_mood_rowId = -1;
 		window.Repaint();
 	} else {
 		if (!(handles.Count == 1 && handles[0].Length < 0)) {
