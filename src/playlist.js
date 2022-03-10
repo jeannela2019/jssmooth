@@ -353,7 +353,7 @@ const Group = function (index, start, handle, groupkey) {
 
 };
 
-const Browser = function (name) {
+const PlaylistView = function (name) {
 	this.name = name;
 	this.groups = [];
 	this.rows = [];
@@ -2080,6 +2080,7 @@ const Browser = function (name) {
 	};
 };
 
+
 /*
 ===================================================================================================
 Main
@@ -2149,7 +2150,7 @@ function on_init() {
 	g_active_playlist = plman.ActivePlaylist;
 	g_focus_id = getFocusId(g_active_playlist);
 
-	brw = new Browser("brw");
+	brw = new PlaylistView("brw");
 
 	pman = new oPlaylistManager("pman");
 	pman.parentView = brw;
