@@ -3333,7 +3333,7 @@ registerCallback("on_item_focus_change", function (playlist, from, to) {
 	}
 })
 
-registerCallback("on_metadb_changed", function (handles) {
+registerCallback("on_metadb_changed", function (handles, fromhook) {
 	if (!brw.list)
 		return;
 

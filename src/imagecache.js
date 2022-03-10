@@ -1,6 +1,7 @@
 /// <reference path="../typings/fsmp.d.ts" />
 
-import { AlbumArtId, fso } from "./common";
+import { AlbumArtId, fso, blendColors, cc_stringformat } from "./common";
+import { colors, fonts, ppt, timers } from "./configure";
 
 const LoadReq = {
 	Notyet: 0,
@@ -27,13 +28,6 @@ export class ImageCache {
 		this.prevKey;
 	}
 
-	/**
-	 * Try to load image from _cachelist. if failed, will first try to load
-	 * from cache folder, then use fb's api to get albumart.
-	 * @param {string} key
-	 * @param {FbMetadbHandle} metadb
-	 * @returns {GdiBitmap}
-	 */
 	hit(key, metadb) {
 		if (!key) { return null; }
 		let cacheItem = this._cachelist[key];
@@ -51,23 +45,23 @@ export class ImageCache {
 		}
 
 		// Load from disc cache.
-		if (this.discCache && cacheItem.loadReq === LoadReq.Notyet && ImageCache.coverLoad < 0) {
-			ImageCache.coverLoad = setTimeout(() => {
+		if (this.discCache && cacheItem.loadReq === LoadReq.Notyet && timers.coverLoad == null) {
+			timers.coverLoad = setTimeout(() => {
 				cacheItem.tid = gdi.LoadImageAsync(window.ID, this.cacheFolder + key);
 				cacheItem.loadReq = LoadReq.Loading;
-				clearTimeout(ImageCache.coverLoad);
-				ImageCache.coverLoad = -1;
+				clearTimeout(timers.coverLoad);
+				timers.coverLoad = null;
 			}, 30);
 		}
 
 
 		// Get album art.
-		if (!this.discCache || cacheItem.loadReq === LoadReq.Done && ImageCache.coverLoad < 0) {
-			ImageCache.coverLoad = setTimeout(() => {
+		if (!this.discCache || cacheItem.loadReq === LoadReq.Done && timers.coverLoad == null) {
+			timers.coverLoad = setTimeout(() => {
 				utils.GetAlbumArtAsync(window.ID, metadb, AlbumArtId.front, false);
 				cacheItem.loadReq = LoadReq.Retrying;
-				clearTimeout(ImageCache.coverLoad);
-				ImageCache.coverLoad = -1;
+				clearTimeout(timers.coverLoad);
+				timers.coverLoad = null;
 			}, 30);
 		}
 
@@ -75,8 +69,8 @@ export class ImageCache {
 	}
 
 	clear() {
-		clearTimeout(ImageCache.coverLoad);
-		ImageCache.coverLoad = -1;
+		clearTimeout(timers.coverLoad);
+		timers.coverLoad = null;
 		this.prevMetadb = null;
 		this.prevKey = null;
 		this._cachelist = {}
@@ -101,16 +95,13 @@ export class ImageCache {
 	}
 
 	onGetAlbumDone(metadb, art_id, image, image_path) {
-
-
-
 		if (!metadb) return;
 		if (!image && art_id === AlbumArtId.front) {
-			if (ImageCache.coverLoad < 0) {
-				ImageCache.coverLoad = setTimeout(() => {
+			if (timers.coverLoad == null) {
+				timers.coverLoad = setTimeout(() => {
 					utils.GetAlbumArtAsync(window.ID, metadb, AlbumArtId.disc, false);
-					clearTimeout(ImageCache.coverLoad);
-					ImageCache.coverLoad = -1;
+					clearTimeout(timers.coverLoad);
+					timers.coverLoad = null;
 				}, 30);
 			}
 		} else {
@@ -167,21 +158,6 @@ export class ImageCache {
 	}
 }
 
-ImageCache.coverLoad = -1;
-ImageCache.coverDone = -1;
-
-ImageCache.resetTimers = function () {
-	if (ImageCache.coverLoad !== -1) {
-		clearTimeout(ImageCache.coverDone);
-		ImageCache.coverDone = -1;
-	}
-}
-
-// function FormatCover(image, w, h) {
-//   if (!image || w <= 0 || h <= 0) return image;
-//   return image.Resize(w, h, 2);
-// }
-
 function FormatCover(image, w, h) {
 	let w1 = image.Width;
 	let h1 = image.Height;
@@ -203,3 +179,61 @@ function FormatCover(image, w, h) {
 function checkCache3(cacheFolder, key) {
 	return fso.FileExists(cacheFolder + key);
 }
+
+function createFolder(dir) {
+	try {
+		if (!fso.FolderExists(dir)) fso.CreateFolder(dir);
+		return true;
+	} catch (e) { }
+	return false;
+}
+
+
+function checkFolder(dir) {
+	let result, tmpFileLoc = "";
+	const pattern = /(.*?)\\/gm;
+	while ((result = pattern.exec(dir))) {
+		tmpFileLoc = tmpFileLoc.concat(result[0]);
+		if (!createFolder(tmpFileLoc)) { return false; }
+	}
+	return true;
+}
+
+
+function getStubImages(fonts, colors) {
+	var nw = 250,
+		nh = 250,
+		txt = "NO\nCOVER";
+	const images = {}
+	let gb;
+
+	images.noart = gdi.CreateImage(nw, nh);
+	gb = images.noart.GetGraphics();
+	// draw no cover art image
+	gb.FillSolidRect(0, 0, nw, nh, colors.text & 0x10ffffff);
+	gb.SetTextRenderingHint(4);
+	gb.DrawString(txt, gdi.Font(fonts.name, Math.round(nh / 12 * 2), 1), blendColors(colors.text, colors.background, 0.30), 1, 1, nw, nh, cc_stringformat);
+	images.noart.ReleaseGraphics(gb);
+
+	var sw = 250,
+		sh = 250;
+	txt = "STREAM";
+	images.stream = gdi.CreateImage(sw, sh);
+	gb = images.stream.GetGraphics();
+	// draw stream art image
+	gb.FillSolidRect(0, 0, sw, sh, colors.text & 0x10ffffff);
+	gb.SetTextRenderingHint(4);
+	gb.DrawString(txt, gdi.Font(fonts.name, Math.round(sh / 12 * 2), 1), blendColors(colors.text, colors.background, 0.30), 1, 1, sw, sh, cc_stringformat);
+	images.stream.ReleaseGraphics(gb);
+
+	return images;
+}
+
+// ======================//
+const testCache = new ImageCache({
+	discCache: true,
+	cacheFolder: `${fb.ProfilePath}testcache\\`,
+	imageSize: 250,
+	tf_key: ppt.tf_key,
+	stubImages: getStubImages(fonts, colors)
+});

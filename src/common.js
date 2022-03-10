@@ -1,6 +1,5 @@
 /// <reference path="../typings/fsmp.d.ts" />
 
-export var fso = new ActiveXObject("Scripting.FileSystemObject");
 
 export function drawImage(gr, img, src_x, src_y, src_w, src_h, auto_fill, border, alpha) {
 	if (!img || !src_w || !src_h) {
@@ -725,7 +724,9 @@ export function getTimestamp() {
 	return timestamp;
 }
 
+// ========= //
 
+export const fso = (() => { try { return new ActiveXObject("Scripting.FileSystemObject") } catch (e) { } })();
 
 export function on_load() {
 	if (!fso.FolderExists(CACHE_FOLDER))
@@ -743,8 +744,6 @@ export function resize(source, crc) {
 	img = img.Resize(w, h, 2);
 	img.SaveAs(CACHE_FOLDER + crc, "image/jpeg");
 }
-
-
 
 export function load_image_from_cache(metadb, crc) {
 	if (fso.FileExists(CACHE_FOLDER + crc)) { // image in folder cache
