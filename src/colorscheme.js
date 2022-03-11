@@ -57,7 +57,7 @@ export function getSysColors() {
 function parsePSSColor(str) {
   let rgb = str.match(/^\s*(\d+)-(\d+)-(\d+)\s*$/);
   if (rgb) {
-    return RGB(rgb[1], rgb[1], rgb[2]);
+		return RGB(rgb[1], rgb[2], rgb[3]);
   }
   return 0;
 }
