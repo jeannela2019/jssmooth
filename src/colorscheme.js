@@ -2,7 +2,7 @@
  * @description
  */
 
-import { ColorTypeCUI, ColorTypeDUI, RGB } from "./common";
+import { blendColors, ColorTypeCUI, ColorTypeDUI, RGB } from "./common";
 import { ppt, colors, ColorMode } from "./configure";
 
 const InstanceType = {
@@ -97,4 +97,23 @@ export function updateColors() {
       updateColors(ppt.colorMode);
       break;
   }
+}
+
+function getRowColors(colors) {
+	const row = colors.row = {};
+
+	// normal row;
+	row.text = colors.text;
+	row.secondaryText = blendColors(colors.text, colors.background, 0.25);
+	row.rating = blendColors(colors.text, colors.background, 0.2);
+
+	// selected row;
+	row.textsel = (ppt.enableCustomColors ? colors.selectedText : colors.background);
+	row.secondaryTextsel = blendColors(row.textsel, colors.selection, 0.25);
+	row.rating = blendColors(row.textsel, colors.selection, 0.2);
+	row.backgroundsel = colors.selection & 0xb0ffffff;
+
+
+
+
 }

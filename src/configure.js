@@ -58,8 +58,7 @@ export const ppt = {
   headerBarHeight: 25,
   autocollapse: window.GetProperty("_PROPERTY: Autocollapse groups", false),
   enableFullScrollEffectOnFocusChange: false,
-  enableCustomColors: window.GetProperty("_PROPERTY: Custom Colors", false),
-  colorMode: window.GetProperty("_PROPERTY: Color Mode", ColorMode.Custom),
+	colorMode: window.GetProperty("_PROPERTY: Color Mode(0:sys,1:fb,2:user)", ColorMode.Custom),
   showgroupheaders: window.GetProperty("_DISPLAY: Show Group Headers", true),
   showwallpaper: window.GetProperty("_DISPLAY: Show Wallpaper", false),
   wallpaperalpha: 150,
@@ -73,5 +72,13 @@ export const ppt = {
   showArtistAlways: window.GetProperty("_DISPLAY: Show Artist in Track Row", true),
   showRating: window.GetProperty("_DISPLAY: Show Rating in Track Row", true),
   showMood: window.GetProperty("_DISPLAY: Show Mood in Track Row", true),
-  enableTouchControl: window.GetProperty("_PROPERTY: Touch control", true)
+	enableTouchControl: window.GetProperty("_PROPERTY: Touch control", false)
 };
+
+Object.defineProperty(ppt, "enableCustomColors", {
+	get: () => ppt.colorMode === ColorMode.Custom,
+}
+);
+// ppt.enableCustomColors = () => {
+// 	return ppt.colorMode === ColorMode.Custom;
+// }
