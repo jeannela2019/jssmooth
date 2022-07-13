@@ -1,0 +1,30 @@
+{
+    "env": {
+        "browser": true,
+        "es2020": true
+    },
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "ecmaVersion": "latest",
+        "sourceType": "module"
+    },
+    "rules": {
+        // "no-invalid-this": 2,
+        "no-extra-semi": "error",
+        "no-extra-boolean-cast": "error",
+        "no-undef": "error",
+        "no-unexpected-multiline": "error",
+        "no-redeclare": "warn"
+    },
+    "globals": {
+        "gdi": "readonly",
+        "plman": "readonly",
+        "window": "readonly",
+        "fb": "readonly",
+        "utils": "readonly",
+        "include": "readonly",
+        "ActiveXObject": "readonly",
+        "FbMetadbHandleList": "readonly"
+    },
+    "ignorePatterns": "js/*"
+}
